@@ -26,8 +26,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!done) { done = true; setLoading(false); }
     });
     // 会话持久化:登录一次后保存在 localStorage,自动续期,
-    // 直到用户主动点「退出登录」才失效
-    supabase.auth.getSession().then(({ data }) => {
+    // 直到用户主动点「退出登录」才失效。
+    // 开发预览沙盒例外:v0 预览每次重启换域名,localStorage 按域隔离导致会话必丢,
+    // 无会话时用测试账号静默登录(仅 DEV 构建含此逻辑,生产环境不受影响)
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session && import.meta.env.DEV) {
+        const email = import.meta.env.VITE_DEV_LOGIN_EMAIL as string | undefined;
+        const password = import.meta.env.VITE_DEV_LOGIN_PASSWORD as string | undefined;
+        if (email && password) {
+          const { data: auto } = await supabase.auth.signInWithPassword({ email, password });
+          if (auto.session) return; // onAuthStateChange 会接管 session 更新
+        }
+      }
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (!done) { done = true; setLoading(false); }
