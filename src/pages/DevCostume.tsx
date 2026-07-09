@@ -10,8 +10,8 @@ const COLORS = { top: "#c62839", bottom: "#1e2f5c", accent: "#e8c05a" };
 function One({ styleId, gender }: { styleId: string; gender: "male" | "female" }) {
   return (
     <div className="flex flex-col items-center">
-      <div style={{ width: 200, height: 260 }} className="rounded border border-neutral-700 bg-neutral-900">
-        <Canvas camera={{ position: [0, 1.0, 3.2], fov: 35 }} dpr={1} frameloop="demand">
+      <div style={{ width: 200, height: 300 }} className="rounded border border-neutral-700 bg-neutral-900">
+        <Canvas camera={{ position: [0, 0.85, 3.6], fov: 32 }} dpr={1} frameloop="demand" onCreated={({ camera }) => camera.lookAt(0, 0.8, 0)}>
           <ambientLight intensity={0.8} />
           <directionalLight position={[3, 5, 4]} intensity={1.2} />
           <Suspense fallback={null}>
