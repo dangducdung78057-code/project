@@ -182,7 +182,7 @@ function samplePos(kfs: Keyframe[], id: string, t: number): [number, number] {
 
 /** 虚拟评委/主摄像机:舞台正前方 10m 外、视线高 1.2m(坐姿评委) */
 const JUDGE = { x: 0, y: 1.2, z: STAGE_D / 2 + 10 };
-/** 每个学生占据半径 0.3 米的物理判定空间 */
+/** 每个学生占据半径 0.3 ���的物理判定空间 */
 const BODY_RADIUS = 0.3;
 
 /** 演员实际身高(米):heightCm 按 150cm �����映射到舞台比例 */
@@ -199,7 +199,7 @@ const _direction = new THREE.Vector3();
 /**
  * 实时视线遮挡推演:在内存中���速构建"虚拟判定��柱体"(极低开销,不走 GPU 渲染),
  * 从评委视点向每个学生的脸部(身高 90% 处,��睛/脸部而非头顶)发射射线;
- * 若射线击中���第一个人不是目标本身,且在目标之前(0.1m 容差防圆柱半径自身误判),判定被遮挡。
+ * 若射线击中������一个人不是目标本身,且在目标之前(0.1m 容差防圆柱半径自身误判),判定被遮挡。
  */
 function computeOcclusions(perfs: Performer[]): Map<string, string> {
   const res = new Map<string, string>();
@@ -1031,7 +1031,7 @@ function CostumeStyleSection() {
         </p>
       ) : getCostumeStyle(styleId).femaleVariant ? (
         <p className="mt-1.5 text-[10px] leading-snug text-[#9fb3c8]">
-          {`女裙男装:男生穿「${getCostumeStyle(styleId).name}」,女生自动着「${getCostumeStyle(getCostumeStyle(styleId).femaleVariant!).name}」`}
+          {`女裙男装:男生穿「${getCostumeStyle(styleId).name}」,���生自动着「${getCostumeStyle(getCostumeStyle(styleId).femaleVariant!).name}」`}
         </p>
       ) : null}
     </div>
@@ -1528,7 +1528,13 @@ export function Formation3DEditor({
         </>
       )}
       <div className="absolute inset-0 z-0">
-        <Canvas shadows dpr={dpr} camera={{ position: [0, 11, 15], fov: 45 }}>
+        <Canvas
+          shadows
+          dpr={dpr}
+          camera={{ position: [0, 11, 15], fov: 45 }}
+          // 全局色彩空间校准:强制 sRGB 输出,保证 UI 色板选的 HEX 在广色域屏(Mac/iPad)上不偏色
+          gl={{ outputColorSpace: THREE.SRGBColorSpace, antialias: true }}
+        >
           <StageScene />
         </Canvas>
       </div>
@@ -1626,7 +1632,7 @@ function TrialLockGate({
   // 手机端:锁定由 MobileViewerBar 提示,不再叠加横幅与倒计时角标
   if (hideBanner) return null;
 
-  // 试用期内:只显示轻量倒计时角标
+  // 试用期���:只显示轻量倒计时角标
   if (!locked) {
     if (!status.expiresAt || status.adminUnlocked) return null;
     return (

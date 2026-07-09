@@ -196,6 +196,10 @@ export function StudentGlbModel({
         map: src.map ?? null,
         gradientMap,
       });
+      // 关闭色调映射:R3F 默认的 ACESFilmic 会把输出颜色整体压灰压暗,
+      // 注入的 HEX 色号在亮部无法 100% 还原(正是"渲染偏深"的系统性来源)。
+      // 关闭后所选色号线性直出,配合 sRGB 输出色彩空间精确显示。
+      mat.toneMapped = false;
       mat.name = src.name;
       // 单材质白衣模型(如 Tripo AI 生成件)的像素级换色 + 款式分区:
       // 1. 贴图中"高亮度 + ��饱和"的纯白布料染色,皮肤/头发自动豁免;
