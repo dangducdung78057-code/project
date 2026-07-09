@@ -301,14 +301,19 @@ uniform float uCollarFrom;`,
 {
   float lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
   float sat = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b)) - min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));
-  float whiteMask = smoothstep(0.60, 0.78, lum) * (1.0 - smoothstep(0.06, 0.16, sat));
+  // 布料判定:低饱和(白/灰布料,含阴影褶皱的暗部)都算布料;
+  // 亮度下限放宽到 0.22,贴图烘焙的阴影区不再漏染(修复"东一块西一块")。
+  // 皮肤/头发饱和度较高,仍被 sat 项豁免。
+  float clothMask = smoothstep(0.22, 0.40, lum) * (1.0 - smoothstep(0.12, 0.26, sat));
   // 高度分区选色:默认上装色 -> 分界线以下换下装色 -> 腰带条/领口条换点缀色
   vec3 zone = uTopTint;
   if (vBodyH < uSplit) zone = uBottomTint;
   if (uBeltW > 0.0 && abs(vBodyH - uSplit) < uBeltW) zone = uAccentTint;
   if (vBodyH > uCollarFrom && vBodyH < uCollarFrom + 0.05) zone = uAccentTint;
-  // 精确色号替换:白色布料区域直接输出所选色号,不与底图相乘避免偏色
-  diffuseColor.rgb = mix(diffuseColor.rgb, zone, whiteMask);
+  // 精确色号 + 均匀渲染:布料区域统一输出所选色号本色,
+  // 仅保留轻微明暗起伏(0.85~1.0)体现褶皱,不再出现色块断裂
+  float shade = 0.85 + 0.15 * smoothstep(0.3, 0.9, lum);
+  diffuseColor.rgb = mix(diffuseColor.rgb, zone * shade, clothMask);
 }`,
             );
         };
