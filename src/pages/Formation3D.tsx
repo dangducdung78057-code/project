@@ -199,7 +199,7 @@ const _direction = new THREE.Vector3();
 /**
  * 实时视线遮挡推演:在内存中���速构建"虚拟判定��柱体"(极低开销,不走 GPU 渲染),
  * 从评委视点向每个学生的脸部(身高 90% 处,��睛/脸部而非头顶)发射射线;
- * 若射线击中的第一个人不是目标本身,且在目标之前(0.1m 容差防圆柱半径自身误判),判定被遮挡。
+ * 若射线击中���第一个人不是目标本身,且在目标之前(0.1m 容差防圆柱半径自身误判),判定被遮挡。
  */
 function computeOcclusions(perfs: Performer[]): Map<string, string> {
   const res = new Map<string, string>();
@@ -861,7 +861,7 @@ function FormationsPanel() {
           </span>
         </div>
         <StageGroupSection />
-        <CostumeStyleSection />
+                {/* 服装款式选择已隐藏:当前仅按推荐色号精确染色,不叠穿服装模型 */}
         <CostumeSection />
         <LightingSection />
       </div>
