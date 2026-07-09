@@ -137,17 +137,6 @@ export const COSTUME_STYLES: CostumeStyle[] = [
     modelUrl: "/models/style-kimono.glb",
     fit: { height: 0.54, top: 0.72 },
   },
-  {
-    id: "m-romper",
-    name: "幼儿爬服",
-    summary: "低龄连体爬服叠穿,幼儿园/亲子节目",
-    split: 0,
-    beltWidth: 0,
-    collarFrom: 1,
-    onePiece: true,
-    modelUrl: "/models/style-romper.glb",
-    fit: { height: 0.40, top: 0.72 },
-  },
 ];
 
 export function getCostumeStyle(id: string): CostumeStyle {

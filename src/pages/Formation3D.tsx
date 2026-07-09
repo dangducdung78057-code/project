@@ -939,7 +939,7 @@ function buildRecommendation(count: number, stageGroup: StageGroup, seed: number
   const palette = COSTUME_PALETTES[seed % COSTUME_PALETTES.length];
   const styleOrder =
     stageGroup === "primary"
-      ? ["m-tulle", "m-romper", "m-dress", "m-baby-formal"]
+      ? ["m-tulle", "m-baby-formal", "m-dress", "m-kimono"]
       : ["m-three-piece", "m-two-piece", "m-white-dress", "m-jumpsuit"];
   const wanted = styleOrder[seed % styleOrder.length];
   const style = COSTUME_STYLES.find((s) => s.id === wanted) ?? COSTUME_STYLES[0];
