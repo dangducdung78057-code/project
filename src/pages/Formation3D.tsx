@@ -182,7 +182,7 @@ const JUDGE = { x: 0, y: 1.2, z: STAGE_D / 2 + 10 };
 /** 每个学生占据半径 0.3 米的物理判定空间 */
 const BODY_RADIUS = 0.3;
 
-/** 演员实际身高(米):heightCm 按 150cm 基准映射到舞台比例 */
+/** 演员实际身高(米):heightCm 按 150cm 基��映射到舞台比例 */
 function performerHeightM(p: Performer): number {
   return (p.heightCm / 150) * 1.7;
 }
@@ -1025,6 +1025,10 @@ function CostumeStyleSection() {
       {getCostumeStyle(styleId).maleVariant ? (
         <p className="mt-1.5 text-[10px] leading-snug text-[#9fb3c8]">
           {`女裙男装:女生穿「${getCostumeStyle(styleId).name}」,男生自动着「${getCostumeStyle(getCostumeStyle(styleId).maleVariant!).name}」`}
+        </p>
+      ) : getCostumeStyle(styleId).femaleVariant ? (
+        <p className="mt-1.5 text-[10px] leading-snug text-[#9fb3c8]">
+          {`女裙男装:男生穿「${getCostumeStyle(styleId).name}」,女生自动着「${getCostumeStyle(getCostumeStyle(styleId).femaleVariant!).name}」`}
         </p>
       ) : null}
     </div>

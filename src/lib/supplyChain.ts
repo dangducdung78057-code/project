@@ -167,10 +167,13 @@ export function buildTechPack(req: RfqRequest): TechPack {
     },
     designSpecifications: {
       baseModel: style.id,
-      // 裙装款附注男生替代款(女裙男装),供服装厂按性别分单生产
+      // 性别专属款附注替代款(女裙男装),供服装厂按性别分单生产:
+      // 裙装标注男生替代款,西装标注女生替代款
       baseModelName: style.maleVariant
         ? `${style.name}(男生:${getCostumeStyle(style.maleVariant).name})`
-        : style.name,
+        : style.femaleVariant
+          ? `${style.name}(女生:${getCostumeStyle(style.femaleVariant).name})`
+          : style.name,
       colorWay,
       referenceImages: req.referenceImages ?? [],
     },
