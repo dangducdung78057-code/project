@@ -172,6 +172,9 @@ export function StudentGlbModel({
     const scale = size.y > 0.001 ? heightM / size.y : 1;
     cloned.scale.multiplyScalar(scale);
     cloned.position.y = -box.min.y * scale;
+    // 记录人物水平占地宽度(米),供服装叠穿层做宽度匹配
+    // (Q 版娃娃体型宽,真实比例服装需按此加宽才能穿得上)
+    cloned.userData.bodyWidthM = Math.max(size.x, size.z) * scale;
     // 水平居中(扫描模型原点常偏离脚底中心)
     const center = new THREE.Vector3();
     box.getCenter(center);
@@ -365,6 +368,10 @@ uniform float uCollarFrom;`,
           colors={colors}
           onePiece={style.onePiece}
           split={style.split}
+          bodyWidthM={(instance.userData.bodyWidthM as number) ?? heightM * 0.4}
+          // Q 版娃娃(小学段)头占身高约四成,肩线远低于真实比例,
+          // 服装上沿需下移到 0.66 左右才对齐肩膀
+          chibi={stageGroup === "primary"}
         />
       ) : null}
     </group>
@@ -384,6 +391,8 @@ function GarmentOverlay({
   colors,
   onePiece,
   split,
+  bodyWidthM,
+  chibi,
 }: {
   url: string;
   fit: { height: number; top: number };
@@ -391,10 +400,14 @@ function GarmentOverlay({
   colors: CostumeColors;
   onePiece: boolean;
   split: number;
+  /** 人物模型的水平占地宽度(米),服装横向缩放到与之匹配 */
+  bodyWidthM: number;
+  /** Q 版体型(小学段):肩线更低,服装上沿自动下移 */
+  chibi: boolean;
 }) {
   const { scene } = useGLTF(url);
 
-  const garment = useMemo(() => {
+  const { garment, widthFactor } = useMemo(() => {
     const cloned = scene.clone(true);
 
     // 姿态归一化(与人物同款逻辑):Z-up 模型立起来
@@ -406,7 +419,9 @@ function GarmentOverlay({
       cloned.updateMatrixWorld(true);
     }
 
-    // 穿着定位:缩放到 身高 x fit.height,上沿对齐 身高 x fit.top
+    // 穿着定位:缩放到 身高 x fit.height,上沿对齐 身高 x fit.top。
+    // Q 版娃娃头占身高近四成,肩线在 ~0.62,fit.top 按真实比例设定时需下压
+    const effTop = chibi ? Math.min(fit.top, 0.66) : fit.top;
     const box = new THREE.Box3().setFromObject(cloned);
     const size = new THREE.Vector3();
     box.getSize(size);
@@ -417,7 +432,18 @@ function GarmentOverlay({
     box.getCenter(center);
     cloned.position.x = -center.x * scale;
     cloned.position.z = -center.z * scale;
-    cloned.position.y = heightM * fit.top - box.max.y * scale;
+    cloned.position.y = heightM * effTop - box.max.y * scale;
+
+    // 宽度匹配:服装模型多为真实成人比例(瘦长),Q 版人物又矮又宽,
+    // 只按身高缩放会导致服装远窄于身体(穿不上)。
+    // 按人物实际占地宽度横向补偿,外层 group 在世界坐标系缩放 x/z,
+    // 不受服装内部 Z-up 旋转影响
+    cloned.updateMatrixWorld(true);
+    const scaledBox = new THREE.Box3().setFromObject(cloned);
+    const scaledSize = new THREE.Vector3();
+    scaledBox.getSize(scaledSize);
+    const garmentW = Math.max(scaledSize.x, scaledSize.z);
+    const widthFactor = THREE.MathUtils.clamp((bodyWidthM * 1.04) / Math.max(garmentW, 0.001), 0.75, 4);
 
     // 白衣染色:连体款整身上装色;两截款按服装自身高度分上/下装色
     const gMinY = box.min.y;
@@ -482,8 +508,12 @@ uniform float uSplit;`,
       };
       mesh.material = Array.isArray(mesh.material) ? mesh.material.map(convert) : convert(mesh.material);
     });
-    return cloned;
-  }, [scene, heightM, fit.height, fit.top, colors.top, colors.bottom, onePiece, split]);
+    return { garment: cloned, widthFactor };
+  }, [scene, heightM, fit.height, fit.top, colors.top, colors.bottom, onePiece, split, bodyWidthM, chibi]);
 
-  return <primitive object={garment} />;
+  return (
+    <group scale={[widthFactor, 1, widthFactor]}>
+      <primitive object={garment} />
+    </group>
+  );
 }
