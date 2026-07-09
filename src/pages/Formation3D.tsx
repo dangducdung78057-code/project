@@ -8,8 +8,11 @@ import { StageLighting, type LightMode } from "@/components/StageLighting";
 import { OutdoorFieldScene, type FieldType } from "@/components/OutdoorFieldScene";
 import { StudentGlbModel, type StageGroup } from "@/components/StudentGlbModel";
 import { ModelPreviewPanel } from "@/components/ModelPreviewPanel";
-import { UNIVERSAL_FORMATIONS, STAGE_KNOWLEDGE } from "@/lib/stageKnowledge";
+import { UNIVERSAL_FORMATIONS, STAGE_KNOWLEDGE, retrieveStageKnowledge } from "@/lib/stageKnowledge";
 import type { ColorPalette } from "@/lib/stageKnowledge";
+import { useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import type { StageInputData } from "@/lib/stageos";
 import { FORMATION_COMPUTES, gridPositions, type FormationCompute } from "@/lib/formationLayouts";
 import * as THREE from "three";
 import { create } from "zustand";
@@ -182,7 +185,7 @@ const JUDGE = { x: 0, y: 1.2, z: STAGE_D / 2 + 10 };
 /** 每个学生占据半径 0.3 米的物理判定空间 */
 const BODY_RADIUS = 0.3;
 
-/** 演员实际身高(米):heightCm 按 150cm 基��映射到舞台比例 */
+/** 演员实际身高(米):heightCm 按 150cm �����映射到舞台比例 */
 function performerHeightM(p: Performer): number {
   return (p.heightCm / 150) * 1.7;
 }
@@ -1672,7 +1675,59 @@ function TrialLockGate({
 
 // ---------- 页面 ----------
 
+/**
+ * 项目方案同步:带 ?project=<id> 进入时,从 Supabase 读取该项目的表单输入,
+ * 把向导生成方案时使用的同一套知识库建议(配色 / 队形 / 款式)与真实人数
+ * 应用到 3D 编辑器,保证「表单建议的东西 = 3D 里渲染的东西」。
+ */
+function useProjectPlanSync() {
+  const [params] = useSearchParams();
+  const projectId = params.get("project");
+
+  useEffect(() => {
+    if (!projectId) return;
+    let cancelled = false;
+    (async () => {
+      const { data: row } = await supabase
+        .from("stage_inputs")
+        .select("data")
+        .eq("project_id", projectId)
+        .maybeSingle();
+      if (cancelled || !row?.data) return;
+      const input = row.data as StageInputData;
+      const s = useEditorStore.getState();
+
+      // 1. 真实人数(与 mockPlan 相同的男女推导逻辑)
+      const female = input.femaleCount ?? Math.floor((input.performerCount ?? 0) / 2);
+      const male = input.maleCount ?? Math.max(0, (input.performerCount ?? 0) - female);
+      if (male + female > 0) s.setRoster(male, female);
+
+      // 2. 学段 → 模特体型
+      s.setStageGroup(input.schoolStage === "primary" ? "primary" : "secondary");
+
+      // 3. 知识库建议(与向导生成 mock 方案共用同一检索,结果必然一致)
+      const knowledge = retrieveStageKnowledge({
+        programType: input.programType,
+        performerCount: input.performerCount,
+        screenThemeColor: input.screenThemeColor,
+        programTheme: input.programTheme,
+      });
+      const palette = knowledge.palettes[0];
+      if (palette) s.setCostume(palette);
+      // 建议队形:取第一个在 3D 端有布点算法实现的队形
+      const formation = knowledge.formations.find((f) => FORMATION_COMPUTES[f.name]);
+      if (formation) s.applyPreset(formation.name);
+      // 建议款式:按学段取推荐首选(小学段纱裙 / 初高段三件套)
+      s.setCostumeStyleId(input.schoolStage === "primary" ? "m-tulle" : "m-three-piece");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+}
+
 export default function Formation3D() {
+  useProjectPlanSync();
   return (
     <main className="h-screen w-full">
       <h1 className="sr-only">3D 队形编辑器</h1>

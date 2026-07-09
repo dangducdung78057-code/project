@@ -369,6 +369,9 @@ export default function ProjectDetail() {
         </div>
         <div className="flex flex-col gap-2 w-full md:flex-row md:w-auto md:items-center md:shrink-0">
           <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center"><Link to={`/projects/${id}/edit`}>编辑输入</Link></Button>
+          <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center" title="按本项目人数与建议配色/队形打开 3D 编辑器">
+            <Link to={`/formation-3d?project=${id}`}>3D 队形预览</Link>
+          </Button>
           <Button
             size="sm"
             onClick={handleGenerate}
