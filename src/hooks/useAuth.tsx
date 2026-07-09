@@ -25,7 +25,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(s?.user ?? null);
       if (!done) { done = true; setLoading(false); }
     });
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
+      // 开发预览专用自动登录:v0 预览沙盒每次重启域名会变,localStorage 按域隔离,
+      // 旧会话必然丢失。配置 VITE_DEV_LOGIN_EMAIL/PASSWORD 后开发环境自动登录,
+      // 生产构建(import.meta.env.DEV = false)完全不含此逻辑。
+      if (!data.session && import.meta.env.DEV) {
+        const email = import.meta.env.VITE_DEV_LOGIN_EMAIL as string | undefined;
+        const password = import.meta.env.VITE_DEV_LOGIN_PASSWORD as string | undefined;
+        if (email && password) {
+          const { data: auto } = await supabase.auth.signInWithPassword({ email, password });
+          if (auto.session) {
+            setSession(auto.session);
+            setUser(auto.session.user);
+            if (!done) { done = true; setLoading(false); }
+            return;
+          }
+        }
+      }
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (!done) { done = true; setLoading(false); }
