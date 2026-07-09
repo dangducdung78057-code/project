@@ -595,7 +595,7 @@ export default function ProjectDetail() {
                     <span className="kbd-route">本地渲染</span>
                   </h4>
                   <div className="h-[640px] overflow-hidden rounded-md">
-                    <Formation3DEditor maleCount={input.maleCount} femaleCount={input.femaleCount} />
+                    <Formation3DEditor stageInput={input} />
                   </div>
                 </section>
                 <section className="rounded border border-border p-3 space-y-2" aria-labelledby="render-colorrag">

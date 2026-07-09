@@ -198,7 +198,7 @@ const _direction = new THREE.Vector3();
 
 /**
  * 实时视线遮挡推演:在内存中���速构建"虚拟判定��柱体"(极低开销,不走 GPU 渲染),
- * 从评委视点向每个学生的脸部(身高 90% 处,眼睛/脸部而非头顶)发射射线;
+ * 从评委视点向每个学生的脸部(身高 90% 处,��睛/脸部而非头顶)发射射线;
  * 若射线击中的第一个人不是目标本身,且在目标之前(0.1m 容差防圆柱半径自身误判),判定被遮挡。
  */
 function computeOcclusions(perfs: Performer[]): Map<string, string> {
@@ -1336,7 +1336,7 @@ function PropertiesPanel() {
   );
 }
 
-/** 时间轴面板:播放/暂停、进度条、关键帧管理 */
+/** ���间轴面板:播放/暂停、进度条、关键帧管理 */
 function TimelinePanel() {
   const currentTime = useEditorStore((s) => s.currentTime);
   const playing = useEditorStore((s) => s.playing);
@@ -1481,14 +1481,17 @@ function OcclusionPanel() {
 
 // ---------- 可嵌入编辑器 ----------
 
-/** 可嵌入的 3D 队形编辑器:放入任意 relative 容器�����,支持传入真实男���人数 */
+/** 可嵌入的 3D 队形编辑器:放入任意 relative 容器,支持传入真实男女人数或完整表单输入 */
 export function Formation3DEditor({
   maleCount,
   femaleCount,
+  stageInput,
   className,
 }: {
   maleCount?: number;
   femaleCount?: number;
+  /** 项目表单输入:传入后自动应用学段模特 / 建议配色 / 建议队形 / 建议款式 */
+  stageInput?: StageInputData;
   className?: string;
 }) {
   const dpr = useMemo<[number, number]>(() => [1, 1.8], []);
@@ -1496,12 +1499,20 @@ export function Formation3DEditor({
   // 手机端进入只读预览:全屏画布可看可播,编辑面板收起,站位/队形/服装/灯光锁定
   const isMobile = useIsMobile();
 
-  // 按项目真实人数重建名单
+  // 完整表单输入优先:人数 + 学段模特 + 知识库建议一次性应用
   useEffect(() => {
+    if (stageInput) {
+      applyStageInputToEditor(stageInput);
+    }
+  }, [stageInput]);
+
+  // 仅传人数时:按项目真实人数重建名单
+  useEffect(() => {
+    if (stageInput) return;
     if (maleCount !== undefined && femaleCount !== undefined && maleCount + femaleCount > 0) {
       setRoster(maleCount, femaleCount);
     }
-  }, [maleCount, femaleCount, setRoster]);
+  }, [maleCount, femaleCount, setRoster, stageInput]);
 
   return (
     <div className={cn("relative h-full w-full overflow-hidden bg-[#181b21] font-sans", className)}>
@@ -1678,8 +1689,36 @@ function TrialLockGate({
 /**
  * 项目方案同步:带 ?project=<id> 进入时,从 Supabase 读取该项目的表单输入,
  * 把向导生成方案时使用的同一套知识库建议(配色 / 队形 / 款式)与真实人数
- * 应用到 3D 编辑器,保证「表单建议的东西 = 3D 里渲染的东西」。
+ * 应用到 3D 编辑器,保证「表单建议的东西 = 3D ��渲染的东西」。
  */
+/** 把项目表单输入应用到 3D 编辑器 store(人数 / 学段模特 / 建议配色 / 建议队形 / 建议款式) */
+export function applyStageInputToEditor(input: StageInputData) {
+  const s = useEditorStore.getState();
+
+  // 1. 真实人数(与 mockPlan 相同的男女推导逻辑)
+  const female = input.femaleCount ?? Math.floor((input.performerCount ?? 0) / 2);
+  const male = input.maleCount ?? Math.max(0, (input.performerCount ?? 0) - female);
+  if (male + female > 0) s.setRoster(male, female);
+
+  // 2. 学段 → 模特体型(小学 = Q 版娃娃,初高中 = 少年模型)
+  s.setStageGroup(input.schoolStage === "primary" ? "primary" : "secondary");
+
+  // 3. 知识库建议(与向导生成 mock 方案共用同一检索,结果必然一致)
+  const knowledge = retrieveStageKnowledge({
+    programType: input.programType,
+    performerCount: input.performerCount,
+    screenThemeColor: input.screenThemeColor,
+    programTheme: input.programTheme,
+  });
+  const palette = knowledge.palettes[0];
+  if (palette) s.setCostume(palette);
+  // 建议队形:取第一个在 3D 端有布点算法实现的队形
+  const formation = knowledge.formations.find((f) => FORMATION_COMPUTES[f.name]);
+  if (formation) s.applyPreset(formation.name);
+  // 建议款式:按学段取推荐首选(小学段纱裙 / 初高段三件套)
+  s.setCostumeStyleId(input.schoolStage === "primary" ? "m-tulle" : "m-three-piece");
+}
+
 function useProjectPlanSync() {
   const [params] = useSearchParams();
   const projectId = params.get("project");
@@ -1694,31 +1733,7 @@ function useProjectPlanSync() {
         .eq("project_id", projectId)
         .maybeSingle();
       if (cancelled || !row?.data) return;
-      const input = row.data as StageInputData;
-      const s = useEditorStore.getState();
-
-      // 1. 真实人数(与 mockPlan 相同的男女推导逻辑)
-      const female = input.femaleCount ?? Math.floor((input.performerCount ?? 0) / 2);
-      const male = input.maleCount ?? Math.max(0, (input.performerCount ?? 0) - female);
-      if (male + female > 0) s.setRoster(male, female);
-
-      // 2. 学段 → 模特体型
-      s.setStageGroup(input.schoolStage === "primary" ? "primary" : "secondary");
-
-      // 3. 知识库建议(与向导生成 mock 方案共用同一检索,结果必然一致)
-      const knowledge = retrieveStageKnowledge({
-        programType: input.programType,
-        performerCount: input.performerCount,
-        screenThemeColor: input.screenThemeColor,
-        programTheme: input.programTheme,
-      });
-      const palette = knowledge.palettes[0];
-      if (palette) s.setCostume(palette);
-      // 建议队形:取第一个在 3D 端有布点算法实现的队形
-      const formation = knowledge.formations.find((f) => FORMATION_COMPUTES[f.name]);
-      if (formation) s.applyPreset(formation.name);
-      // 建议款式:按学段取推荐首选(小学段纱裙 / 初高段三件套)
-      s.setCostumeStyleId(input.schoolStage === "primary" ? "m-tulle" : "m-three-piece");
+      applyStageInputToEditor(row.data as StageInputData);
     })();
     return () => {
       cancelled = true;
