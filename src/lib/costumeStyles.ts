@@ -30,6 +30,12 @@ export type CostumeStyle = {
    * 符合真实演出「女裙男装」的着装惯例,避免男生穿裙子。
    */
   maleVariant?: string;
+  /**
+   * 女生替代款式 id(仅西装等男生专属款需要):
+   * 选中西装时男生照常穿西装,女生自动换穿该替代款(礼裙),
+   * 避免女生套男装西服。
+   */
+  femaleVariant?: string;
 };
 
 // 全部为真实模型款(云盘「模特服装图库」,服装叠穿在人物模型上)
@@ -85,46 +91,50 @@ export const COSTUME_STYLES: CostumeStyle[] = [
   {
     id: "m-baby-formal",
     name: "小西装",
-    summary: "低龄礼服套装叠穿,主持人/颁奖",
+    summary: "低龄礼服套装叠穿,主持人/颁奖(女生自动着礼裙)",
     split: 0.5,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: false,
     modelUrl: "/models/style-baby-formal.glb",
-    fit: { height: 0.50, top: 0.72 },
+    fit: { height: 0.58, top: 0.82 },
+    femaleVariant: "m-dress",
   },
   {
     id: "m-three-piece",
     name: "三件套礼服",
-    summary: "马甲三件套叠穿,正式晚会",
+    summary: "马甲三件套叠穿,正式晚会(女生自动着素白长裙)",
     split: 0.5,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: false,
     modelUrl: "/models/style-three-piece.glb",
-    fit: { height: 0.50, top: 0.72 },
+    fit: { height: 0.58, top: 0.82 },
+    femaleVariant: "m-white-dress",
   },
   {
     id: "m-two-piece",
     name: "两件套礼服",
-    summary: "两件套西装叠穿,合唱指挥/领诵",
+    summary: "两件套西装叠穿,合唱指挥/领诵(女生自动着礼裙)",
     split: 0.5,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: false,
     modelUrl: "/models/style-two-piece.glb",
-    fit: { height: 0.50, top: 0.72 },
+    fit: { height: 0.58, top: 0.82 },
+    femaleVariant: "m-dress",
   },
   {
     id: "m-jumpsuit",
     name: "衬衫西裤套装",
-    summary: "男士衬衫 + 西裤叠穿,合唱/朗诵标准男装",
+    summary: "男士衬衫 + 西裤叠穿,合唱/朗诵标准男装(女生自动着纱裙)",
     split: 0.5,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: false,
     modelUrl: "/models/style-jumpsuit.glb",
-    fit: { height: 0.58, top: 0.72 },
+    fit: { height: 0.62, top: 0.82 },
+    femaleVariant: "m-tulle",
   },
   {
     id: "m-kimono",
@@ -144,14 +154,18 @@ export function getCostumeStyle(id: string): CostumeStyle {
 }
 
 /**
- * 按性别解析实际穿着的款式:
- * 女生返回所选款式本身;男生遇到裙装(带 maleVariant)时自动换穿替代礼服款,
- * 保证「女裙男装」的正确着装组合。
+ * 按性别解析实际穿着的款式(双向):
+ * - 男生遇到裙装(带 maleVariant)自动换穿替代礼服款;
+ * - 女生遇到西装(带 femaleVariant)自动换穿替代裙装款。
+ * 保证「女裙男装」的正确着装组合,任一性别都不会穿错款。
  */
 export function resolveCostumeStyle(id: string, gender: "male" | "female"): CostumeStyle {
   const style = getCostumeStyle(id);
   if (gender === "male" && style.maleVariant) {
     return getCostumeStyle(style.maleVariant);
+  }
+  if (gender === "female" && style.femaleVariant) {
+    return getCostumeStyle(style.femaleVariant);
   }
   return style;
 }
