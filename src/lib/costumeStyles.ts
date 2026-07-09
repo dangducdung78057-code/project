@@ -26,6 +26,12 @@ export type CostumeStyle = {
    * height = 服装总高占身高的比例;top = 服装上沿对齐的身高位置(肩线约 0.82)
    */
   fit?: { height: number; top: number };
+  /**
+   * 男生替代款式 id(仅裙装等女生专属款需要):
+   * 选中裙装时女生照常穿裙,男生自动换穿该替代款(礼服/西装),
+   * 符合真实演出「女裙男装」的着装惯例,避免男生穿裙子。
+   */
+  maleVariant?: string;
 };
 
 export const COSTUME_STYLES: CostumeStyle[] = [
@@ -68,11 +74,12 @@ export const COSTUME_STYLES: CostumeStyle[] = [
   {
     id: "dress",
     name: "连衣裙 / 连体服",
-    summary: "整身同色,舞蹈群舞的整体感最强",
+    summary: "整身同色,舞蹈群舞的整体感最强(男生自动着经典学生装)",
     split: 0,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: true,
+    maleVariant: "classic",
   },
   {
     id: "formal",
@@ -87,46 +94,50 @@ export const COSTUME_STYLES: CostumeStyle[] = [
   {
     id: "m-dress",
     name: "礼裙",
-    summary: "真实裙摆服装叠穿,染整身色,晚会/合唱领唱",
+    summary: "真实裙摆服装叠穿,染整身色,晚会/合唱领唱(男生自动着两件套礼服)",
     split: 0,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: true,
     modelUrl: "/models/style-dress.glb",
     fit: { height: 0.44, top: 0.70 },
+    maleVariant: "m-two-piece",
   },
   {
     id: "m-embroidered",
     name: "刺绣裙",
-    summary: "绣花连衣裙叠穿,民族风/古典舞",
+    summary: "绣花连衣裙叠穿,民族风/古典舞(男生自动着和风罩袍)",
     split: 0,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: true,
     modelUrl: "/models/style-embroidered.glb",
     fit: { height: 0.46, top: 0.70 },
+    maleVariant: "m-kimono",
   },
   {
     id: "m-tulle",
     name: "纱裙",
-    summary: "蓬蓬纱裙叠穿,芭蕾/童话剧",
+    summary: "蓬蓬纱裙叠穿,芭蕾/童话剧(男生自动着连体演出服)",
     split: 0,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: true,
     modelUrl: "/models/style-tulle.glb",
     fit: { height: 0.42, top: 0.70 },
+    maleVariant: "m-jumpsuit",
   },
   {
     id: "m-white-dress",
     name: "素白长裙",
-    summary: "简约长裙叠穿,诗朗诵/烛光合唱",
+    summary: "简约长裙叠穿,诗朗诵/烛光合唱(男生自动着三件套礼服)",
     split: 0,
     beltWidth: 0,
     collarFrom: 1,
     onePiece: true,
     modelUrl: "/models/style-white-dress.glb",
     fit: { height: 0.52, top: 0.70 },
+    maleVariant: "m-three-piece",
   },
   {
     id: "m-baby-formal",
@@ -198,4 +209,17 @@ export const COSTUME_STYLES: CostumeStyle[] = [
 
 export function getCostumeStyle(id: string): CostumeStyle {
   return COSTUME_STYLES.find((s) => s.id === id) ?? COSTUME_STYLES[0];
+}
+
+/**
+ * 按性别解析实际穿着的款式:
+ * 女生返回所选款式本身;男生遇到裙装(带 maleVariant)时自动换穿替代礼服款,
+ * 保证「女裙男装」的正确着装组合。
+ */
+export function resolveCostumeStyle(id: string, gender: "male" | "female"): CostumeStyle {
+  const style = getCostumeStyle(id);
+  if (gender === "male" && style.maleVariant) {
+    return getCostumeStyle(style.maleVariant);
+  }
+  return style;
 }

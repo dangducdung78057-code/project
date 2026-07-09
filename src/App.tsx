@@ -19,7 +19,6 @@ import Exports from "./pages/Exports";
 import SettingsPage from "./pages/Settings";
 import AuthPage from "./pages/Auth";
 import Formation3D from "./pages/Formation3D";
-import DevCostume from "./pages/DevCostume";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -39,7 +38,6 @@ const App = () => (
               <Routes>
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/formation-3d" element={<Formation3D />} />
-                <Route path="/dev-costume" element={<DevCostume />} />
                 <Route path="/index" element={<Navigate to="/" replace />} />
                 <Route
                   path="/*"

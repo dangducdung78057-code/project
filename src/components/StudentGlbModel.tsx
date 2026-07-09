@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { SkeletonUtils } from "three-stdlib";
-import { getCostumeStyle } from "@/lib/costumeStyles";
+import { resolveCostumeStyle } from "@/lib/costumeStyles";
 
 // ---- Color ID Mapping(块一:一键换装与改色系统) ----
 // 每个模型可选配一张 ID 蒙版贴图(与模型同名,后缀 -idmap.png,共享同一套 UV):
@@ -195,7 +195,7 @@ export function StudentGlbModel({
       });
       mat.name = src.name;
       // 单材质白衣模型(如 Tripo AI 生成件)的像素级换色 + 款式分区:
-      // 1. 贴图中"高亮度 + 低饱和"的纯白布料染色,皮肤/头发自动豁免;
+      // 1. 贴图中"高亮度 + ��饱和"的纯白布料染色,皮肤/头发自动豁免;
       // 2. 按像素在身体上的归一化高��(脚 0 -> 头 1)分区:
       //    下装区染下装色、上装区染上装色、腰带/领口条染点缀色,
       //    从而在同一模型上呈现水手服/背带裤/连衣裙等不同款式轮廓。
@@ -203,7 +203,7 @@ export function StudentGlbModel({
         // ---- 方案 A:Color ID Mapping(参数化材质替换) ----
         // 读取 ID 蒙版 RGB 通道作为部位遮罩,正片叠底染色,
         // 保留白模光影褶皱,毫秒级换色且 100% 不穿模。
-        const style = getCostumeStyle(styleId);
+        const style = resolveCostumeStyle(styleId, gender);
         const part1 = new THREE.Color(colors.top); // R 通道:上衣
         const part2 = style.onePiece ? new THREE.Color(colors.top) : new THREE.Color(colors.bottom); // G 通道:下装
         const part3 = new THREE.Color(colors.accent); // B 通道:点缀
@@ -252,7 +252,7 @@ uniform vec3 uColorPart3;`,
           `cloth-idmap-${style.id}-${part1.getHexString()}-${part2.getHexString()}-${part3.getHexString()}`;
       } else if (!slot && src.map) {
         // ---- 方案 B(回退):高度分区 + 白色检测启发式 ----
-        const style = getCostumeStyle(styleId);
+        const style = resolveCostumeStyle(styleId, gender);
         const topTint = new THREE.Color(colors.top);
         const bottomTint = style.onePiece ? new THREE.Color(colors.top) : new THREE.Color(colors.bottom);
         const accentTint = new THREE.Color(colors.accent);
@@ -333,7 +333,7 @@ uniform float uCollarFrom;`,
       });
     }
     return cloned;
-  }, [scene, heightM, colors.top, colors.bottom, colors.accent, styleId, idMapTex]);
+  }, [scene, heightM, colors.top, colors.bottom, colors.accent, styleId, idMapTex, gender]);
 
   // 选中时轻微自发光提示(MeshToonMaterial 支持 emissive)
   useEffect(() => {
@@ -351,8 +351,9 @@ uniform float uCollarFrom;`,
   }, [instance, selected]);
 
   // 朝向校正放在外层(绕父级 Y 轴),不与实例内部的 Z-up 校正(rotation.x)相互干扰;
-  // 实例已水平居中,绕原点旋转不影响站位与脚底对齐
-  const style = getCostumeStyle(styleId);
+  // 实例已水平居中,绕原点旋转不影响站位与脚底对齐。
+  // 款式按性别解析:男生遇裙装自动换穿替代礼服款(女裙男装)
+  const style = resolveCostumeStyle(styleId, gender);
   return (
     <group rotation={[0, FACING_FIX_Y, 0]}>
       <primitive object={instance} />

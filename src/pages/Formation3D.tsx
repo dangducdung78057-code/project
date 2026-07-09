@@ -1020,6 +1020,11 @@ function CostumeStyleSection() {
           </button>
         ))}
       </div>
+      {getCostumeStyle(styleId).maleVariant ? (
+        <p className="mt-1.5 text-[10px] leading-snug text-[#9fb3c8]">
+          {`女裙男装:女生穿「${getCostumeStyle(styleId).name}」,男生自动着「${getCostumeStyle(getCostumeStyle(styleId).maleVariant!).name}」`}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -1424,7 +1429,7 @@ function TimelinePanel() {
 /** Occlusion Status 终端面板:实时输出遮挡警告 */
 function OcclusionPanel() {
   const performers = useEditorStore((s) => s.performers);
-  // 直接订阅 store 中的报警列表(站位一变即已同步重算,无需组件内再计算)
+  // 直接订阅 store 中的报警列��(站位一变即已同步重算,无需组件内再计算)
   const occlusions = useEditorStore((s) => s.occlusions);
   const warnings = useMemo(() => {
     const byId = new Map(performers.map((p) => [p.id, p]));
