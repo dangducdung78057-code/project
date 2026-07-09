@@ -1,10 +1,8 @@
-// 儿童演出服款式预设,两种实现方式:
-// 1. 分区染色款(不带 modelUrl):不改模型几何,染色着色器按"身体高度分区"模拟款式,
-//    把白色布料按归一化身高(脚底 0 -> 头顶 1)划分为下装/上装/腰带/领口分别染色。
-// 2. 真实模型款(带 modelUrl):人物模型保留,该款式的 3D 白衣服装作为覆盖层
-//    "叠穿"在人物身上(按 fit 参数对齐肩线与身高比例),白衣染色照常生效,
-//    既能看到人也有真实的裙摆/西装轮廓。
-// 说明:分区数值为演出服常见比例,基于小学/初高段模型实测微调。
+// 儿童演出服款式预设(全部为真实模型款,带 modelUrl):
+// 人物模型保留,该款式的 3D 白衣服装作为覆盖层"叠穿"在人物身上
+// (按 fit 参数对齐肩线与身高比例),白衣染色照常生效,
+// 既能看到人也有真实的裙摆/西装轮廓。
+// split/beltWidth/collarFrom/onePiece 仍用于人物底模的分区染色回退。
 
 export type CostumeStyle = {
   id: string;
@@ -34,63 +32,8 @@ export type CostumeStyle = {
   maleVariant?: string;
 };
 
+// 全部为真实模型款(云盘「模特服装图库」,服装叠穿在人物模型上)
 export const COSTUME_STYLES: CostumeStyle[] = [
-  {
-    id: "classic",
-    name: "经典学生装",
-    summary: "上衣 + 长裤/裙,标准两截式,最百搭",
-    split: 0.5,
-    beltWidth: 0,
-    collarFrom: 1,
-    onePiece: false,
-  },
-  {
-    id: "sailor",
-    name: "水手服",
-    summary: "海军领点缀 + 上下两截,合唱/朗诵经典款",
-    split: 0.48,
-    beltWidth: 0,
-    collarFrom: 0.72,
-    onePiece: false,
-  },
-  {
-    id: "sport",
-    name: "运动套装",
-    summary: "上下分色 + 腰间撞色条,韵律操/啦啦操适用",
-    split: 0.5,
-    beltWidth: 0.025,
-    collarFrom: 1,
-    onePiece: false,
-  },
-  {
-    id: "overalls",
-    name: "背带裤",
-    summary: "下装色一直延伸到胸口,活泼低龄感",
-    split: 0.66,
-    beltWidth: 0,
-    collarFrom: 1,
-    onePiece: false,
-  },
-  {
-    id: "dress",
-    name: "连衣裙 / 连体服",
-    summary: "整身同色,舞蹈群舞的整体感最强(男生自动着经典学生装)",
-    split: 0,
-    beltWidth: 0,
-    collarFrom: 1,
-    onePiece: true,
-    maleVariant: "classic",
-  },
-  {
-    id: "formal",
-    name: "礼服套装",
-    summary: "两截式 + 领口点缀 + 腰带,颁奖/主持人款",
-    split: 0.52,
-    beltWidth: 0.02,
-    collarFrom: 0.75,
-    onePiece: false,
-  },
-  // ---- 真实模型款(云盘「模特服装图库」,服装叠穿在人物模型上) ----
   {
     id: "m-dress",
     name: "礼裙",

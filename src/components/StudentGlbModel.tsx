@@ -129,7 +129,7 @@ export function StudentGlbModel({
   colors,
   selected,
   stageGroup = "primary",
-  styleId = "classic",
+  styleId = "m-two-piece",
 }: {
   gender: "male" | "female";
   heightM: number;

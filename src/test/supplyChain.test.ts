@@ -80,7 +80,7 @@ describe("RFQ 工艺单转译", () => {
   const colorConfig = { part1: "#3aa89e", part2: "#4a5568", part3: "#e8a468" };
 
   it("分体款拆出上衣/下装/点缀三个部位,通道与 Color ID 蒙版一致", () => {
-    const tp = buildTechPack({ styleId: "sailor", colorConfig, studentCount: 36 });
+    const tp = buildTechPack({ styleId: "m-two-piece", colorConfig, studentCount: 36 });
     expect(tp.designSpecifications.colorWay).toHaveLength(3);
     expect(tp.designSpecifications.colorWay.map((c) => c.idChannel)).toEqual(["R", "G", "B"]);
     expect(tp.designSpecifications.colorWay[0].hex).toBe("#3aa89e");
@@ -88,21 +88,21 @@ describe("RFQ 工艺单转译", () => {
     expect(tp.status).toBe("PENDING_QUOTES");
   });
 
-  it("连体款(连衣裙)只有整身色 + 点缀,不出现下装部位", () => {
-    const tp = buildTechPack({ styleId: "dress", colorConfig, studentCount: 36 });
+  it("连体款(礼裙)只有整身色 + 点缀,不出现下装部位", () => {
+    const tp = buildTechPack({ styleId: "m-dress", colorConfig, studentCount: 36 });
     expect(tp.designSpecifications.colorWay).toHaveLength(2);
     expect(tp.designSpecifications.colorWay.some((c) => c.idChannel === "G")).toBe(false);
   });
 
   it("默认体型段为 9-11 岁(4-5 年级)", () => {
-    const tp = buildTechPack({ styleId: "classic", colorConfig, studentCount: 36 });
+    const tp = buildTechPack({ styleId: "m-baby-formal", colorConfig, studentCount: 36 });
     expect(tp.buyerProfile.targetDemographic).toContain("9-11");
   });
 
   it("商家未接入时 submitRfq 返回预留占位但工艺单仍生成", async () => {
     expect(isRfqConnected()).toBe(false);
     const out = await submitRfq(
-      { styleId: "sailor", colorConfig, studentCount: 36 },
+      { styleId: "m-two-piece", colorConfig, studentCount: 36 },
       { totalQuantity: 36, daysUntilPerformance: 20 },
     );
     expect(out.reserved).toBe(true);

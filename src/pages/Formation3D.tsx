@@ -427,7 +427,7 @@ const useEditorStore = create<EditorState>((set, get) => ({
     if (get().locked) return;
     set({ costume: p });
   },
-  costumeStyleId: "classic",
+  costumeStyleId: "m-two-piece",
   setCostumeStyleId: (id) => {
     if (get().locked) return; // 只读模式:禁止换款式
     set({ costumeStyleId: id });
@@ -938,7 +938,9 @@ function buildRecommendation(count: number, stageGroup: StageGroup, seed: number
   const formation = scored[seed % scored.length];
   const palette = COSTUME_PALETTES[seed % COSTUME_PALETTES.length];
   const styleOrder =
-    stageGroup === "primary" ? ["sailor", "overalls", "dress", "classic"] : ["formal", "classic", "dress", "sport"];
+    stageGroup === "primary"
+      ? ["m-tulle", "m-romper", "m-dress", "m-baby-formal"]
+      : ["m-three-piece", "m-two-piece", "m-white-dress", "m-jumpsuit"];
   const wanted = styleOrder[seed % styleOrder.length];
   const style = COSTUME_STYLES.find((s) => s.id === wanted) ?? COSTUME_STYLES[0];
   return { formation, palette, style };
@@ -1222,7 +1224,7 @@ function PropertiesPanel() {
   const previewStyleId = useEditorStore((s) => s.costumeStyleId);
   const selected = performers.find((p) => p.id === selectedId);
 
-  // 预览对象:选中谁看谁,未选中时默认展示男生模特
+  // 预览对象:选中谁看谁,未选中���默认展示男生模特
   const previewGender = selected?.gender ?? "male";
   const previewHeightM = ((selected?.heightCm ?? 150) / 150) * 1.7;
   const previewTop = costume

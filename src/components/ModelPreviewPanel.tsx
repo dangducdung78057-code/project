@@ -21,7 +21,7 @@ export function ModelPreviewPanel({
   heightM,
   colors,
   stageGroup = "primary",
-  styleId = "classic",
+  styleId = "m-two-piece",
 }: {
   gender: "male" | "female";
   heightM: number;
