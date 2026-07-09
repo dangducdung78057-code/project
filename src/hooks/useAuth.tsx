@@ -31,11 +31,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 无会话时用测试账号静默登录(仅 DEV 构建含此逻辑,生产环境不受影响)
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session && import.meta.env.DEV) {
+        // 依次尝试:1) 环境变量账号登录 2) 该账号不存在则自动注册
+        // 3) 都不行(如账号已存在但密码不符)则用内置开发预览账号,保证预览必能进
         const email = import.meta.env.VITE_DEV_LOGIN_EMAIL as string | undefined;
         const password = import.meta.env.VITE_DEV_LOGIN_PASSWORD as string | undefined;
-        if (email && password) {
-          const { data: auto } = await supabase.auth.signInWithPassword({ email, password });
+        const candidates: Array<{ email: string; password: string }> = [];
+        if (email && password) candidates.push({ email, password });
+        candidates.push({ email: "dev-preview-stageos@example.com", password: "DevPreview2026!x" });
+        for (const cred of candidates) {
+          const { data: auto } = await supabase.auth.signInWithPassword(cred);
           if (auto.session) return; // onAuthStateChange 会接管 session 更新
+          const { data: reg } = await supabase.auth.signUp(cred);
+          if (reg.session) return;
         }
       }
       setSession(data.session);
