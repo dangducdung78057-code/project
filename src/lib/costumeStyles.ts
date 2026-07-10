@@ -137,6 +137,18 @@ export const COSTUME_STYLES: CostumeStyle[] = [
     femaleVariant: "m-tulle",
   },
   {
+    id: "m-formal-suit",
+    name: "正式西装",
+    summary: "全套正装西服叠穿,颁奖/大型晚会司仪(女生自动着素白长裙)",
+    split: 0.5,
+    beltWidth: 0,
+    collarFrom: 1,
+    onePiece: false,
+    modelUrl: "/models/style-formal-suit.glb",
+    fit: { height: 0.58, top: 0.82 },
+    femaleVariant: "m-white-dress",
+  },
+  {
     id: "m-kimono",
     name: "和风罩袍",
     summary: "和服式罩袍叠穿,戏剧/传统文化节目",
