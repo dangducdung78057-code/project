@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "deliveryId": "stageos-outfit-004-gate-12-phase-1-expansion-request-system",
+  "gate": "Gate-12 Phase 1",
+  "deliveryType": "Rules-Only Build",
+  "status": { "build": "Gate-12 Phase 1 Build Completed by this scoped delivery commit", "humanSignOff": "Gate-12 Phase 1 Human Sign-off Pending", "passed": false, "assetGeneration": "Prohibited", "phase2": "Not Started" },
+  "readOnlyInputContracts": [
+    { "gate": "Gate-11 Phase 1", "path": "../asset-expansion-rules/GATE-11-PHASE-1-MANIFEST.json", "commitHash": "e0a018d199bb959da8651d1dc0850862beae4dbf" },
+    { "gate": "Gate-11 Phase 2", "path": "../compatibility-boundary-system/GATE-11-PHASE-2-MANIFEST.json", "commitHash": "561b2099e1a18964cb0a6a2662afebaebce9326c" }
+  ],
+  "frozenDependencies": ["Gate-01 through Gate-11", "Blueprint", "Production Specification", "Visual Assets"],
+  "decisionVocabulary": ["Direct Reuse", "Conditional Reuse", "Review Required", "Full Gate Revalidation"],
+  "requestLifecycle": ["Draft", "Compatibility Check", "Review Required", "Human Sign-off", "Approved", "Asset Generation Permission", "Rejected", "Blocked", "Expired"],
+  "files": ["README.md", "expansion-request-schema.json", "request-validation-rules.json", "compatibility-orchestration-rules.json", "reuse-decision-rules.json", "expansion-blueprint-draft-schema.json", "request-lifecycle-rules.json", "human-signoff-audit-contract.json", "asset-generation-permission-guard.json", "validation-cases.json", "GATE-12-PHASE-1-BUILD-REPORT.md", "GATE-12-PHASE-1-MANIFEST.json"],
+  "validation": { "jsonSyntax": "PASS — 10/10 JSON files parse", "manifestIntegrity": "PASS — 12/12 files match", "ruleIdUniqueness": "PASS — 46/46 local Rule and Transition IDs unique", "validationCases": "PASS — 24/24 assertions", "crossReferences": "PASS — all matched Rule IDs resolve locally or to Gate-11 Phase 2", "frozenScope": "PASS — Gate-01 through Gate-11, Blueprint, Production Specification and Visual Assets unchanged", "gitDiffScope": "PASS — changes limited to expansion-request-system" }
+}

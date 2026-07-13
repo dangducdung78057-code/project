@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 2",
+  "outputContract": "../expansion-request-system/expansion-blueprint-draft-schema.json",
+  "designation": "Draft Only",
+  "stateMachine": ["Draft","Compatibility Approved","Human Review","Production Eligible","Asset Generation Permission"],
+  "allowedTransitions": [
+    {"transitionId":"AEP-BPT-001","from":"Draft","to":"Compatibility Approved","requires":["Gate-11 check complete","no unresolved blocking decision"]},
+    {"transitionId":"AEP-BPT-002","from":"Compatibility Approved","to":"Human Review","requires":["inheritance classification complete","required actions recorded"]},
+    {"transitionId":"AEP-BPT-003","from":"Human Review","to":"Production Eligible","requires":["valid Human Review approval","content hash binding","all required actions complete"]},
+    {"transitionId":"AEP-BPT-004","from":"Production Eligible","to":"Asset Generation Permission","requires":["separate explicit asset-generation authorization"]}
+  ],
+  "rules": [
+    {"ruleId":"AEP-BPG-001","name":"Draft-only generation","requirement":"Execution creates a Draft Only Expansion Blueprint in state Draft."},
+    {"ruleId":"AEP-BPG-002","name":"Required provenance","requiredFields":["blueprintId","requestId","designation","state","sourceHashes","compatibilityDecision","matchedRuleIds","directInheritance","localRevalidationRequired","inheritanceProhibited","requiredActions","risks","assetGenerationGuard"]},
+    {"ruleId":"AEP-BPG-003","name":"Draft cannot skip","prohibitedTransitions":["Draft -> Human Review","Draft -> Production Eligible","Draft -> Asset Generation Permission"],"failure":"Blocked"},
+    {"ruleId":"AEP-BPG-004","name":"Human review mandatory","requirement":"Compatibility Approved must enter Human Review before Production Eligible.","failure":"Blocked"},
+    {"ruleId":"AEP-BPG-005","name":"Permission independent","requirement":"Production Eligible does not imply Asset Generation Permission.","failure":"Blocked"},
+    {"ruleId":"AEP-BPG-006","name":"Forbidden content exclusion","requirement":"Inheritance Prohibited fields are recorded as exclusions and never copied into inherited output."},
+    {"ruleId":"AEP-BPG-007","name":"Reference-only vocabulary","requirement":"Blueprint contains references only to existing Character Unit, Material DNA, Palette, Cloud Collar and Production Rules."},
+    {"ruleId":"AEP-BPG-008","name":"Invalidation","whenAny":{"sourceVersionDrift":true,"contentHashChanged":true,"approvalExpired":true,"requiredActionIncomplete":true},"result":"Blocked","requiredAction":"Return to the earliest affected state and revalidate."}
+  ]
+}

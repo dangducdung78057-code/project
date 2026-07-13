@@ -1,0 +1,23 @@
+{
+  "schemaVersion":"1.0.0",
+  "gate":"Gate-13",
+  "sourceContract":"Gate-12 Phase 2 Approved Expansion Blueprint",
+  "mappingPolicy":"Existing frozen references only",
+  "bindings":[
+    {"bindingId":"G13-BND-001","sourceField":"characterUnitReference","target":"Character Unit Selection","allowedSource":"Existing Character Unit","mismatchDecision":"BLOCKED"},
+    {"bindingId":"G13-BND-002","sourceField":"materialDNAReference","target":"Material DNA Binding","allowedSource":"Existing Material DNA","mismatchDecision":"BLOCKED"},
+    {"bindingId":"G13-BND-003","sourceField":"paletteReference","target":"Palette Binding","allowedSource":"Existing Palette","mismatchDecision":"BLOCKED"},
+    {"bindingId":"G13-BND-004","sourceField":"cloudCollarReference","target":"Cloud Collar Binding","allowedSource":"Existing Cloud Collar","mismatchDecision":"BLOCKED"},
+    {"bindingId":"G13-BND-005","sourceField":"productionRulesReference","target":"Production Rules Binding","allowedSource":"Existing Production Rules","mismatchDecision":"BLOCKED"}
+  ],
+  "rules":[
+    {"ruleId":"G13-BAM-001","condition":"all five references exist in approved Blueprint and frozen source registry","decision":"Binding PASS","requiredAction":"record immutable reference and hash"},
+    {"ruleId":"G13-BAM-002","condition":"Character Unit missing, changed, or newly defined","decision":"BLOCKED","requiredAction":"use approved existing Character Unit"},
+    {"ruleId":"G13-BAM-003","condition":"Material DNA mismatch or newly defined","decision":"BLOCKED","requiredAction":"return to Compatibility Boundary"},
+    {"ruleId":"G13-BAM-004","condition":"Palette mismatch or newly defined","decision":"BLOCKED","requiredAction":"return to Compatibility Boundary"},
+    {"ruleId":"G13-BAM-005","condition":"Cloud Collar mismatch or newly defined","decision":"BLOCKED","requiredAction":"return to Compatibility Boundary"},
+    {"ruleId":"G13-BAM-006","condition":"Production Rules mismatch or newly defined","decision":"BLOCKED","requiredAction":"return to Production inheritance review"},
+    {"ruleId":"G13-BAM-007","condition":"any frozen reference version or hash drifts after approval","decision":"BLOCKED","requiredAction":"expire approval and revalidate"},
+    {"ruleId":"G13-BAM-008","condition":"mapping attempts to create or modify source assets","decision":"BLOCKED","requiredAction":"preserve frozen source unchanged"}
+  ]
+}

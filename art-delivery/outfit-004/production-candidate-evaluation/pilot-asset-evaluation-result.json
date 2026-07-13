@@ -1,0 +1,27 @@
+{
+  "evaluationId": "G17-EVAL-001",
+  "assetId": "G16-ASSET-001",
+  "assetStatus": "APPROVED_PILOT_DRAFT",
+  "assetReference": "../asset-generation-execution/generated-draft-v2.png",
+  "assetSha256": "a64268513439e2993688110554d193101c6e03d9906d889b3e3fce7cfa3bb4f1",
+  "evaluations": {
+    "assetIntegrity": "PASS",
+    "blueprintFidelity": "PASS",
+    "materialDNA": "PASS",
+    "palette": "PASS",
+    "cloudCollar": "PASS",
+    "characterIdentity": "PASS",
+    "scopeControl": "PASS"
+  },
+  "bindings": {
+    "blueprintId": "EBP-outfit-004-primary-dance",
+    "materialDNAVersion": "Gate-11/12 Material DNA",
+    "paletteVersion": "Gate-03/11 Palette System",
+    "cloudCollarVersion": "Gate-02/11 Cloud Collar System",
+    "program": "Primary Dance Version",
+    "characterUnitId": "Teen Girl Center"
+  },
+  "production": false,
+  "batch": false,
+  "result": "PASS"
+}

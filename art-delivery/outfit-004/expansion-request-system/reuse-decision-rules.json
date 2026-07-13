@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 1",
+  "rules": [
+    { "ruleId": "ERS-DEC-001", "boundaryDecision": "Direct Reuse", "blueprintDisposition": "Draft Only", "requiredAction": "Record inherited fields and proceed to Human Sign-off; Permission remains Blocked." },
+    { "ruleId": "ERS-DEC-002", "boundaryDecision": "Conditional Reuse", "blueprintDisposition": "Draft Only", "requiredAction": "Record local revalidation tasks and evidence requirements before Human Sign-off." },
+    { "ruleId": "ERS-DEC-003", "boundaryDecision": "Review Required", "blueprintDisposition": "Draft Only", "requiredAction": "Record unresolved questions and obtain qualified human review." },
+    { "ruleId": "ERS-DEC-004", "boundaryDecision": "Full Gate Revalidation", "blueprintDisposition": "Draft Only / Blocked", "requiredAction": "Record affected Gates; prohibit approval until every required Gate passes." },
+    { "ruleId": "ERS-DEC-005", "name": "Decision cannot authorize generation", "when": { "boundaryDecisionPresent": true }, "decision": "Permission Blocked", "requiredAction": "Require a separate valid Human Sign-off and Permission Guard evaluation." }
+  ]
+}

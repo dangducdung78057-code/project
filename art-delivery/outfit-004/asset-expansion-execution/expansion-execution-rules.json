@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 2",
+  "system": "Asset Expansion Execution Pipeline",
+  "scope": "Rule-only execution; no asset generation interface",
+  "decisionPriority": ["Full Gate Revalidation", "Review Required", "Conditional Reuse", "Direct Reuse"],
+  "pipeline": [
+    {"stageId":"AEP-STG-001","order":1,"name":"Approved Request Admission","required":true},
+    {"stageId":"AEP-STG-002","order":2,"name":"Gate-11 Compatibility Boundary Check","required":true},
+    {"stageId":"AEP-STG-003","order":3,"name":"Strictest Decision Aggregation","required":true},
+    {"stageId":"AEP-STG-004","order":4,"name":"Asset Inheritance Classification","required":true},
+    {"stageId":"AEP-STG-005","order":5,"name":"Expansion Blueprint Draft Generation","required":true},
+    {"stageId":"AEP-STG-006","order":6,"name":"Production Handoff Guard","required":true}
+  ],
+  "rules": [
+    {"ruleId":"AEP-EXE-001","name":"Approved request only","requirement":"Only a Gate-12 Phase 1 request with status Approved and valid sign-off evidence may enter execution.","failure":"Blocked"},
+    {"ruleId":"AEP-EXE-002","name":"Compatibility boundary mandatory","requirement":"Gate-11 Phase 2 check must run and preserve matched Rule IDs.","failure":"Blocked"},
+    {"ruleId":"AEP-EXE-003","name":"Strictest decision wins","requirement":"Aggregate decisions using declared priority; execution may not downgrade Gate-11 output.","failure":"Blocked"},
+    {"ruleId":"AEP-EXE-004","name":"Draft output only","requirement":"The only output is an Expansion Blueprint with designation Draft Only and state Draft.","failure":"Blocked"},
+    {"ruleId":"AEP-EXE-005","name":"No asset mutation","requirement":"Do not create images, garments, visual assets or modify an existing asset.","failure":"Blocked"},
+    {"ruleId":"AEP-EXE-006","name":"Fail closed","requirement":"Missing evidence, unresolved references or illegal state transitions stop execution.","failure":"Blocked"}
+  ]
+}

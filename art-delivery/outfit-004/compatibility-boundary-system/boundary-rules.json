@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 2",
+  "system": "Compatibility Boundary System",
+  "phase1InputContract": "../asset-expansion-rules/GATE-11-PHASE-1-MANIFEST.json",
+  "decisionPrecedence": ["Full Gate Revalidation", "Review Required", "Conditional Reuse", "Direct Reuse"],
+  "decisions": [
+    { "ruleId": "CBS-BND-001", "decision": "Direct Reuse", "definition": "All frozen identity, structure, program, production and visual-integrity inputs remain equivalent.", "requiredAction": "Record inherited contract references; no design change permitted." },
+    { "ruleId": "CBS-BND-002", "decision": "Conditional Reuse", "definition": "Frozen identity and core structure remain unchanged, but a bounded environment or scale variable changed.", "requiredAction": "Run every local check named by the matched trigger before release." },
+    { "ruleId": "CBS-BND-003", "decision": "Review Required", "definition": "Compatibility cannot be proven from Phase 1 contracts or production evidence alone.", "requiredAction": "Obtain documented human compatibility review; do not generate assets." },
+    { "ruleId": "CBS-BND-004", "decision": "Full Gate Revalidation", "definition": "A frozen identity, core structure, Material DNA, age, program or team-recognition boundary changed.", "requiredAction": "Stop inheritance and reopen every affected Gate from its authoritative source." }
+  ],
+  "resolutionRules": [
+    { "ruleId": "CBS-BND-005", "whenMultipleDecisionsMatch": true, "decision": "Use Highest Precedence", "reason": "A lower-severity rule may never downgrade a stricter boundary." },
+    { "ruleId": "CBS-BND-006", "whenRequiredInputMissing": true, "decision": "Review Required", "reason": "Compatibility must not be inferred from incomplete evidence." },
+    { "ruleId": "CBS-BND-007", "whenPhase1PipelineStageSkipped": true, "decision": "Full Gate Revalidation", "reason": "The inherited nine-stage Phase 1 validation contract is mandatory." },
+    { "ruleId": "CBS-BND-008", "whenPhase1RuleConflictExists": true, "decision": "Review Required", "reason": "Phase 2 cannot redefine or override Phase 1 Rule IDs." }
+  ]
+}

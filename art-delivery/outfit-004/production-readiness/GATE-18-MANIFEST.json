@@ -1,0 +1,37 @@
+{
+  "manifestId": "G18-MANIFEST-001",
+  "gate": "Gate-18 Readiness Build",
+  "version": "1.0",
+  "assetId": "G16-ASSET-001",
+  "sourceStatus": "PRODUCTION_CANDIDATE",
+  "files": [
+    "GATE-18-MANIFEST.json",
+    "production-conversion-rules.json",
+    "production-readiness-checklist.json",
+    "version-lock-rules.json",
+    "production-approval-contract.json",
+    "validation-cases.json",
+    "GATE-18-REPORT.md",
+    "GATE-18-HUMAN-PRODUCTION-APPROVAL-REPORT.md"
+  ],
+  "sourceReferences": {
+    "gate17Decision": "../production-candidate-evaluation/production-candidate-decision.json",
+    "gate17Signoff": "../production-candidate-evaluation/GATE-17-HUMAN-SIGNOFF-REPORT.md",
+    "candidateEvaluation": "../production-candidate-evaluation/pilot-asset-evaluation-result.json",
+    "gate16AssetRecord": "../asset-generation-execution/generation-execution-record.json",
+    "candidateAsset": "../asset-generation-execution/generated-draft-v2.png",
+    "auditBinding": "../controlled-generation/audit-binding-record.json"
+  },
+  "candidateVerification": "PASS",
+  "versionLockVerification": "PASS",
+  "conversionCriteriaWithoutHumanProductionApproval": "PASS",
+  "humanProductionApproval": "PASS",
+  "humanProductionApprovalReference": "GATE-18-HUMAN-PRODUCTION-APPROVAL-REPORT.md",
+  "approvalTimestamp": "2026-07-13T04:49:26Z",
+  "readinessDecision": "PASS",
+  "automaticProductionConversion": false,
+  "productionAssetCreated": false,
+  "production": false,
+  "batch": false,
+  "procurementRelease": false
+}

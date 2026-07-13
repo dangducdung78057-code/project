@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 2",
+  "productionSpecificationMutation": false,
+  "assetGenerationInterfaceProvided": false,
+  "defaultHandoffState": "Blocked",
+  "rules": [
+    {"ruleId":"AEP-HOF-001","name":"Draft handoff prohibited","when":{"blueprintState":"Draft"},"handoff":"Blocked","prohibitedDestinations":["Production Specification","Procurement","Asset Generation"]},
+    {"ruleId":"AEP-HOF-002","name":"Compatibility approval insufficient","when":{"blueprintState":"Compatibility Approved"},"handoff":"Blocked","requiredAction":"Complete Human Review."},
+    {"ruleId":"AEP-HOF-003","name":"Human review gate","when":{"blueprintState":"Human Review"},"handoff":"Blocked","requiredAction":"Resolve every review and revalidation action."},
+    {"ruleId":"AEP-HOF-004","name":"Production eligibility conditions","whenAll":{"blueprintState":"Production Eligible","humanReviewValid":true,"requiredActionsComplete":true,"sourceHashesCurrent":true},"handoff":"Candidate Only","requiredAction":"Obtain separately authorized Production Specification handoff outside this build."},
+    {"ruleId":"AEP-HOF-005","name":"Permission separation","requirement":"Production Eligible never grants Asset Generation Permission.","handoff":"Blocked"},
+    {"ruleId":"AEP-HOF-006","name":"No execution interface","requirement":"This ruleset cannot invoke image, garment, procurement or production systems.","handoff":"Blocked"},
+    {"ruleId":"AEP-HOF-007","name":"Existing production rules only","requirement":"Any production reference resolves to Existing Production Rules; no new Production Specification field is created here.","failure":"Blocked"}
+  ]
+}

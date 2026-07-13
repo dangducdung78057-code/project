@@ -1,0 +1,29 @@
+{
+  "validationId": "G20-VALIDATION-001",
+  "gate": "Gate-20",
+  "baselineAssetId": "G19-PROD-ASSET-001",
+  "allowedResults": ["PASS", "BLOCKED"],
+  "cases": [
+    {"caseId": "G20-VAL-001", "criterion": "Baseline Asset status is PRODUCTION_ASSET_ACCEPTED", "result": "PASS"},
+    {"caseId": "G20-VAL-002", "criterion": "Baseline Production Hash matches Gate-19 record", "result": "PASS"},
+    {"caseId": "G20-VAL-003", "criterion": "v1.0 cannot be overwritten", "result": "PASS"},
+    {"caseId": "G20-VAL-004", "criterion": "Changed content requires NEW_VERSION", "result": "PASS"},
+    {"caseId": "G20-VAL-005", "criterion": "Changed content requires NEW_HASH", "result": "PASS"},
+    {"caseId": "G20-VAL-006", "criterion": "Changed content requires NEW_REVIEW", "result": "PASS"},
+    {"caseId": "G20-VAL-007", "criterion": "All six governed versions are LOCKED", "result": "PASS"},
+    {"caseId": "G20-VAL-008", "criterion": "Batch defaults to BLOCKED and false", "result": "PASS"},
+    {"caseId": "G20-VAL-009", "criterion": "Team Expansion triggers a new Gate", "result": "PASS"},
+    {"caseId": "G20-VAL-010", "criterion": "Procurement missing any required field returns BLOCKED", "result": "PASS"},
+    {"caseId": "G20-VAL-011", "criterion": "Missing Human Approval returns BLOCKED", "result": "PASS"},
+    {"caseId": "G20-VAL-012", "criterion": "Procurement Release defaults to false", "result": "PASS"},
+    {"caseId": "G20-VAL-013", "criterion": "Team Expansion defaults to false", "result": "PASS"},
+    {"caseId": "G20-VAL-014", "criterion": "No second Production Asset is authorized or created", "result": "PASS"},
+    {"caseId": "G20-VAL-015", "criterion": "Gate-01 through Gate-19 remain frozen", "result": "PASS"}
+  ],
+  "passCount": 15,
+  "blockedCount": 0,
+  "overallResult": "PASS_GOVERNANCE_BUILD",
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

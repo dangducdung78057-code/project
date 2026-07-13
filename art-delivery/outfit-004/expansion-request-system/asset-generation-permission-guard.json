@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 1",
+  "defaultState": "Blocked",
+  "permissionIsContractOnly": true,
+  "assetGenerationInterfaceProvided": false,
+  "allRequiredConditions": ["request status is Approved", "valid Human Sign-off exists", "request and Blueprint hashes match sign-off", "Gate source revisions match", "Compatibility Boundary check completed", "all local revalidation evidence complete", "all full Gate revalidation requirements passed", "no Rejected, Blocked or Expired status", "no unresolved forbidden inheritance"],
+  "rules": [
+    { "ruleId": "ERS-GRD-001", "name": "Default deny", "when": { "evaluationAbsent": true }, "decision": "Blocked", "requiredAction": "Do not issue Permission." },
+    { "ruleId": "ERS-GRD-002", "name": "Pre-sign-off deny", "when": { "validHumanSignOff": false }, "decision": "Blocked", "requiredAction": "Complete Human Sign-off." },
+    { "ruleId": "ERS-GRD-003", "name": "Failure-state deny", "whenAny": { "requestRejected": true, "requestBlocked": true, "requestExpired": true }, "decision": "Blocked", "requiredAction": "Resolve through the lifecycle; Permission cannot be issued." },
+    { "ruleId": "ERS-GRD-004", "name": "Revalidation deny", "whenAny": { "localRevalidationIncomplete": true, "fullGateRevalidationIncomplete": true }, "decision": "Blocked", "requiredAction": "Complete and attach every required revalidation result." },
+    { "ruleId": "ERS-GRD-005", "name": "Integrity deny", "whenAny": { "requestHashMismatch": true, "blueprintHashMismatch": true, "sourceRevisionMismatch": true }, "decision": "Expired", "requiredAction": "Invalidate sign-off and repeat review." },
+    { "ruleId": "ERS-GRD-006", "name": "Permission contract output", "when": { "allRequiredConditionsMet": true }, "decision": "Asset Generation Permission", "requiredAction": "Record permission evidence only; this system does not generate or invoke assets." },
+    { "ruleId": "ERS-GRD-007", "name": "No generation interface", "requirement": "Permission is a governance result, never an executable asset-generation call." }
+  ]
+}

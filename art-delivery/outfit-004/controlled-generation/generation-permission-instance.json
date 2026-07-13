@@ -1,0 +1,28 @@
+{
+  "permissionId": "G15-PER-001",
+  "permissionDecision": "APPROVED_FOR_SINGLE_ASSET_GENERATION",
+  "blockingReason": null,
+  "approvalEvidenceReferences": [
+    "gate12-approved-blueprint-evidence.json",
+    "gate14-human-approval-evidence.json",
+    "audit-binding-record.json",
+    "human-approval-request.json"
+  ],
+  "requiredApproval": "Gate-15 Pre-Generation Human Sign-off",
+  "evidenceRequired": [
+    "Approved Blueprint Evidence",
+    "Compatibility Boundary PASS",
+    "Gate-13 Generation Permission PASS",
+    "Gate-14 Pilot PASS",
+    "Complete Generation Audit Contract",
+    "Human Approval PASS"
+  ],
+  "generationLimits": {
+    "maxAssetCount": 1,
+    "maxCharacterCount": 1,
+    "batchGenerationAllowed": false,
+    "productionAllowed": false
+  },
+  "assetGenerationAllowed": true,
+  "visualAssetGenerated": false
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-13",
+  "contractId": "G13-GAC-CONTRACT-001",
+  "title": "Generation Audit Contract",
+  "defaultPermissionDecision": "BLOCKED",
+  "additionalProperties": false,
+  "requiredFields": ["generatorType", "modelVersion", "promptVersion", "blueprintId", "characterUnitId", "materialDNAVersion", "paletteVersion", "cloudCollarVersion", "approvalTimestamp"],
+  "fieldDefinitions": {
+    "generatorType": {"label": "Generator Type", "type": "string", "minLength": 1},
+    "modelVersion": {"label": "Model Version", "type": "string", "minLength": 1},
+    "promptVersion": {"label": "Prompt Version", "type": "string", "minLength": 1},
+    "blueprintId": {"label": "Blueprint ID", "type": "string", "minLength": 1},
+    "characterUnitId": {"label": "Character Unit ID", "type": "string", "pattern": "^existing:"},
+    "materialDNAVersion": {"label": "Material DNA Version", "type": "string", "minLength": 1},
+    "paletteVersion": {"label": "Palette Version", "type": "string", "minLength": 1},
+    "cloudCollarVersion": {"label": "Cloud Collar Version", "type": "string", "minLength": 1},
+    "approvalTimestamp": {"label": "Approval Timestamp", "type": "string", "format": "date-time"}
+  },
+  "bindingRequirements": [
+    "blueprintId must equal the Approved Expansion Blueprint ID",
+    "characterUnitId must equal the selected existing Character Unit ID",
+    "materialDNAVersion must equal the frozen Material DNA version",
+    "paletteVersion must equal the frozen Palette version",
+    "cloudCollarVersion must equal the frozen Cloud Collar version",
+    "approvalTimestamp must match the valid Human Sign-off approval evidence",
+    "generatorType, modelVersion and promptVersion must identify the exact controlled generation configuration"
+  ],
+  "rules": [
+    {"ruleId": "G13-GAC-001", "condition": "all nine audit fields are present, non-empty and correctly bound", "permissionDecision": "PASS", "blockReason": null, "requiredAction": "attach immutable audit evidence to permission evaluation"},
+    {"ruleId": "G13-GAC-002", "condition": "any required audit field is missing or empty", "permissionDecision": "BLOCKED", "blockReason": "INCOMPLETE_AUDIT_EVIDENCE", "requiredAction": "supply every required audit field"},
+    {"ruleId": "G13-GAC-003", "condition": "Blueprint ID does not match the Approved Expansion Blueprint", "permissionDecision": "BLOCKED", "blockReason": "BLUEPRINT_AUDIT_MISMATCH", "requiredAction": "bind audit evidence to the approved Blueprint"},
+    {"ruleId": "G13-GAC-004", "condition": "Character Unit or frozen version field is stale or mismatched", "permissionDecision": "BLOCKED", "blockReason": "FROZEN_SOURCE_AUDIT_MISMATCH", "requiredAction": "rebind to frozen source versions and revalidate"},
+    {"ruleId": "G13-GAC-005", "condition": "Approval Timestamp is absent, invalid, expired or differs from approval evidence", "permissionDecision": "BLOCKED", "blockReason": "APPROVAL_AUDIT_MISMATCH", "requiredAction": "obtain valid Human Sign-off evidence"},
+    {"ruleId": "G13-GAC-006", "condition": "audit evidence belongs to a different request, Blueprint, approval or generation configuration", "permissionDecision": "BLOCKED", "blockReason": "AUDIT_EVIDENCE_BINDING_FAILURE", "requiredAction": "invalidate permission and rebuild audit evidence"}
+  ],
+  "assetGenerationExecuted": false
+}

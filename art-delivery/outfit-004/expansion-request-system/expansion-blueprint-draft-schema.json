@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stageos://gate-12/expansion-blueprint-draft/1.0.0",
+  "title": "StageOS Expansion Blueprint Draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["blueprintId", "requestId", "schemaVersion", "designation", "contentHash", "sourceEvidence", "compatibilityDecision", "matchedRuleIds", "inheritance", "revalidation", "unresolvedQuestions", "risks", "requiredActions", "requestStatus", "assetGenerationGuard"],
+  "properties": {
+    "blueprintId": { "type": "string", "pattern": "^EBD-[A-Z0-9-]+$" },
+    "requestId": { "type": "string", "pattern": "^ER-[A-Z0-9-]+$" },
+    "schemaVersion": { "const": "1.0.0" },
+    "designation": { "const": "Draft Only" },
+    "contentHash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "sourceEvidence": { "type": "object", "required": ["existingAssetId", "gateSourceReference", "requestInputHash"] },
+    "compatibilityDecision": { "enum": ["Direct Reuse", "Conditional Reuse", "Review Required", "Full Gate Revalidation"] },
+    "matchedRuleIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+    "inheritance": { "type": "object", "required": ["allowed", "conditional", "forbidden"], "properties": { "allowed": { "type": "array" }, "conditional": { "type": "array" }, "forbidden": { "type": "array" } } },
+    "revalidation": { "type": "object", "required": ["localTasks", "fullGateRequirements", "evidenceStatus"] },
+    "unresolvedQuestions": { "type": "array" },
+    "risks": { "type": "array" },
+    "requiredActions": { "type": "array", "minItems": 1 },
+    "requestStatus": { "enum": ["Review Required", "Human Sign-off", "Approved", "Blocked", "Rejected", "Expired"] },
+    "assetGenerationGuard": { "const": "Blocked" }
+  },
+  "prohibitedDestinationsBeforePermission": ["Production Specification", "Asset Generation", "Procurement"],
+  "rules": [
+    { "ruleId": "ERS-BPD-001", "name": "Draft-only designation", "requirement": "designation must equal Draft Only" },
+    { "ruleId": "ERS-BPD-002", "name": "Production entry prohibited", "when": { "destination": "Production Specification" }, "decision": "Blocked" },
+    { "ruleId": "ERS-BPD-003", "name": "Asset generation entry prohibited", "when": { "destination": "Asset Generation" }, "decision": "Blocked" },
+    { "ruleId": "ERS-BPD-004", "name": "Procurement entry prohibited", "when": { "destination": "Procurement" }, "decision": "Blocked" },
+    { "ruleId": "ERS-BPD-005", "name": "Frozen output replacement prohibited", "when": { "replacesFrozenOutput": true }, "decision": "Blocked" }
+  ]
+}

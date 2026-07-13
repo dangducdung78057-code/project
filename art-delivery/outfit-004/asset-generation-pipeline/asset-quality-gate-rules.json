@@ -1,0 +1,21 @@
+{
+  "schemaVersion":"1.0.0",
+  "gate":"Gate-13",
+  "defaultDecision":"BLOCKED",
+  "qualityStages":[
+    {"qualityGateId":"G13-QG-001","order":1,"name":"Input Evidence Integrity","required":true},
+    {"qualityGateId":"G13-QG-002","order":2,"name":"Frozen Reference Integrity","required":true},
+    {"qualityGateId":"G13-QG-003","order":3,"name":"Single Character Scope","required":true},
+    {"qualityGateId":"G13-QG-004","order":4,"name":"Visual Contract Readiness","required":true},
+    {"qualityGateId":"G13-QG-005","order":5,"name":"Human Approval Evidence","required":true},
+    {"qualityGateId":"G13-QG-006","order":6,"name":"Generation Permission Evidence","required":true}
+  ],
+  "rules":[
+    {"ruleId":"G13-AQG-001","condition":"all quality stages PASS","decision":"Quality Gate PASS","requiredAction":"permit independent generation guard evaluation"},
+    {"ruleId":"G13-AQG-002","condition":"any quality stage FAIL or PENDING","decision":"BLOCKED","requiredAction":"resolve failing stage"},
+    {"ruleId":"G13-AQG-003","condition":"request scope includes multiple characters or batch output","decision":"BLOCKED","requiredAction":"reduce to single character request"},
+    {"ruleId":"G13-AQG-004","condition":"output includes image, 3D model, garment file, or procurement file during pipeline build","decision":"BLOCKED","requiredAction":"remove generated artifact and fail validation"},
+    {"ruleId":"G13-AQG-005","condition":"request attempts production batch workflow","decision":"BLOCKED","requiredAction":"remain in controlled single-request pipeline"},
+    {"ruleId":"G13-AQG-006","condition":"QA evidence does not match request content hash","decision":"BLOCKED","requiredAction":"invalidate QA and repeat validation"}
+  ]
+}

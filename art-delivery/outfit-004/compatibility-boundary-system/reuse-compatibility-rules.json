@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 2",
+  "rules": [
+    {
+      "ruleId": "CBS-REU-001",
+      "name": "Exact configuration reuse",
+      "whenAll": { "sameCharacter": true, "sameAgeGroup": true, "sameProgramType": true, "sameBaseGarment": true, "samePaletteContract": true, "sameMaterialDNA": true, "sameCloudCollar": true, "sameProductionConstraints": true, "sameVisualEnvironment": true },
+      "decision": "Direct Reuse",
+      "requiredAction": "Reference the original approved configuration and preserve all frozen identifiers."
+    },
+    {
+      "ruleId": "CBS-REU-002",
+      "name": "Headcount-only reuse",
+      "whenAll": { "sameRole": true, "sameAgeGroup": true, "sameProgramType": true, "headcountChangedOnly": true, "structureUnchanged": true, "paletteRatiosUnchanged": true, "priorityRulesUnchanged": true },
+      "decision": "Conditional Reuse",
+      "requiredChecks": ["Size Allocation", "Formation Readability", "Production Capacity"],
+      "requiredAction": "Complete local scale and formation checks."
+    },
+    {
+      "ruleId": "CBS-REU-003",
+      "name": "Formation-only reuse",
+      "whenAll": { "formationChangedOnly": true, "characterSetUnchanged": true, "costumeStructureUnchanged": true, "teamIdentityUnchanged": true },
+      "decision": "Conditional Reuse",
+      "requiredChecks": ["Three-direction Visual Integrity", "Occlusion", "Role Priority Readability"],
+      "requiredAction": "Revalidate formation-dependent visibility."
+    },
+    {
+      "ruleId": "CBS-REU-004",
+      "name": "Same-hue bounded palette reuse",
+      "whenAll": { "sameHueFamily": true, "teamPrimaryColorIdentityChanged": false, "signaturePercentAtMost12": true, "premiumPercentAtMost35": true, "basicUnifiedAreaAtLeast60": true },
+      "decision": "Conditional Reuse",
+      "inheritsPhase1RuleIds": ["PAL-001", "PAL-002", "PAL-003", "PAL-004"],
+      "requiredChecks": ["Color Card Delta", "Team Recognition"],
+      "requiredAction": "Verify the adjusted color card against Phase 1 palette limits."
+    },
+    {
+      "ruleId": "CBS-REU-005",
+      "name": "Insufficient equivalence evidence",
+      "whenAny": { "sourceConfigurationUnknown": true, "targetConfigurationIncomplete": true, "frozenIdentifierMismatchUnresolved": true },
+      "decision": "Review Required",
+      "requiredAction": "Supply authoritative source and target evidence for human review."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "manifestId": "G19-MANIFEST-001",
+  "gate": "Gate-19 Production Asset Build Readiness",
+  "version": "1.0",
+  "sourceAssetId": "G16-ASSET-001",
+  "productionScope": {
+    "project": "outfit-004",
+    "program": "Primary Dance Version",
+    "characterUnit": "Teen Girl Center",
+    "assetType": "Single Production Asset"
+  },
+  "allowedLimit": 1,
+  "status": "PRODUCTION_ASSET_ACCEPTED",
+  "humanAcceptanceReference": "GATE-19-HUMAN-PRODUCTION-ACCEPTANCE-REPORT.md",
+  "humanAcceptanceTimestamp": "2026-07-13T05:09:13Z",
+  "productionAssetId": "G19-PROD-ASSET-001",
+  "productionVersion": "v1.0",
+  "productionAssetReference": "production-asset-v1.0.png",
+  "productionAssetRecord": "production-asset-record.json",
+  "productionHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+  "files": [
+    "GATE-19-MANIFEST.json",
+    "production-asset-creation-rules.json",
+    "production-output-schema.json",
+    "production-integrity-checklist.json",
+    "validation-cases.json",
+    "GATE-19-REPORT.md",
+    "production-asset-record.json",
+    "production-asset-v1.0.png",
+    "GATE-19-HUMAN-PRODUCTION-ACCEPTANCE-REPORT.md"
+  ],
+  "sourceReferences": {
+    "gate18ApprovalContract": "../production-readiness/production-approval-contract.json",
+    "gate18ApprovalReport": "../production-readiness/GATE-18-HUMAN-PRODUCTION-APPROVAL-REPORT.md",
+    "gate18VersionLocks": "../production-readiness/version-lock-rules.json",
+    "sourceAssetRecord": "../asset-generation-execution/generation-execution-record.json",
+    "sourcePilotAsset": "../asset-generation-execution/generated-draft-v2.png"
+  },
+  "prohibited": [
+    "Production Asset creation during build readiness",
+    "Production file generation",
+    "Batch production",
+    "Procurement Release",
+    "Modification of G16-ASSET-001",
+    "Modification of Gate-01 through Gate-18"
+  ],
+  "productionAsset": "PRODUCTION_ASSET_CREATED",
+  "humanProductionAcceptance": "PASS",
+  "production": false,
+  "batch": false,
+  "procurementRelease": false
+}

@@ -1,0 +1,41 @@
+{
+  "manifestId": "G15-PRE-MANIFEST-001",
+  "version": "1.0.0",
+  "gateReference": "Gate-15 Pre-Generation Evidence",
+  "files": [
+    "generation-request.json",
+    "approved-blueprint-instance.json",
+    "generation-permission-instance.json",
+    "audit-binding-record.json",
+    "human-approval-request.json",
+    "asset-generation-approval-request.json",
+    "gate15-evidence-reconciliation-report.json",
+    "approved-blueprint-evidence.json",
+    "gate14-approval-reference.json",
+    "generation-readiness-check.json",
+    "GATE-15-PREGENERATION-MANIFEST.json"
+  ],
+  "sourceGateReferences": [
+    "Gate-12 Expansion Blueprint",
+    "Gate-13 Asset Generation Pipeline",
+    "Gate-14 Pilot Generation"
+  ],
+  "validationStatus": {
+    "fileIntegrity": "PASS — 11/11 controlled-generation JSON files inventoried",
+    "jsonSyntax": "PASS — 11/11 JSON files parse",
+    "idUniqueness": "PASS — all document definition IDs unique",
+    "sourceReferences": "PASS — Gate-12/13/14 references resolve",
+    "prohibitedFieldCheck": "PASS — no asset-generation output fields",
+    "frozenScope": "PASS — Gate-01 through Gate-14 unchanged",
+    "gitDiffScope": "PASS — changes limited to controlled-generation"
+  },
+  "currentStatus": "BLOCKED_EVIDENCE_MISSING",
+  "evidenceCompletion": {
+    "blueprintApprovalEvidence": "MISSING",
+    "gate14ApprovalEvidence": "MISSING",
+    "auditSelectionState": "PENDING",
+    "readinessDecision": "BLOCKED_EVIDENCE_MISSING"
+  },
+  "assetGenerationAllowed": false,
+  "visualAssetGenerated": false
+}

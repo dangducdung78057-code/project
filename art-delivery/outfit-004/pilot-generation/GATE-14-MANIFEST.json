@@ -1,0 +1,28 @@
+{
+  "gateId":"Gate-14",
+  "phase":"Pilot Asset Generation",
+  "scope":"First controlled single-character pilot evidence and metadata flow",
+  "status":{"build":"Gate-14 Pilot Build Completed","humanSignOff":"Gate-14 Human Sign-off Pending","passed":false,"pilotGeneration":"BLOCKED_PENDING_EVIDENCE","assetGenerationPhase":"Not Started","visualAssetGenerated":false},
+  "files":["README.md","pilot-generation-request.json","asset-generation-record.json","visual-quality-check.json","human-review-checklist.json","GATE-14-MANIFEST.json"],
+  "frozenInputs":["Gate-01 through Gate-13","Existing Blueprint","Existing Production Specification","Existing Visual Assets"],
+  "pilot":{"existingAssetId":"outfit-004","program":"Primary Dance Version","characterUnitId":"Teen Girl Center","scope":"Single Character","draftFormat":"JSON metadata only"},
+  "requiredEvidence":["Approved Expansion Blueprint","Compatibility Boundary PASS","Generation Permission PASS","Generation Audit Contract PASS","Human Approval PASS"],
+  "decision":"BLOCKED",
+  "blockReason":"Independent approved Blueprint and generation authorization instances are absent; test fixtures cannot authorize generation",
+  "prohibitedOutputs":["Image","3D Model","Garment File","Batch Asset","Procurement File","Production File","Commercial Deliverable"],
+  "validationCases":[
+    {"caseId":"G14-CASE-001","scenario":"single-character scope recorded","matchedIds":["G14-HR-006"],"decision":"PASS","requiredAction":"keep Teen Girl Center as the only character","result":"PASS"},
+    {"caseId":"G14-CASE-002","scenario":"Approved Expansion Blueprint missing","matchedIds":["G14-HR-001"],"decision":"BLOCKED","requiredAction":"provide independent approved Blueprint evidence","result":"PASS"},
+    {"caseId":"G14-CASE-003","scenario":"Compatibility Boundary cannot be verified without Blueprint","matchedIds":["G14-HR-002"],"decision":"BLOCKED","requiredAction":"bind Compatibility PASS to approved Blueprint","result":"PASS"},
+    {"caseId":"G14-CASE-004","scenario":"Generation Permission missing","matchedIds":["G14-HR-003"],"decision":"BLOCKED","requiredAction":"provide independent permission evidence","result":"PASS"},
+    {"caseId":"G14-CASE-005","scenario":"Generation Audit Contract not bound","matchedIds":["G14-HR-004"],"decision":"BLOCKED","requiredAction":"bind complete Gate-13 audit evidence","result":"PASS"},
+    {"caseId":"G14-CASE-006","scenario":"Human Approval missing","matchedIds":["G14-HR-005"],"decision":"BLOCKED","requiredAction":"provide independent human approval","result":"PASS"},
+    {"caseId":"G14-CASE-007","scenario":"Teen Girl Center retained for Primary target","matchedIds":["G14-HR-007","G14-VQ-005"],"decision":"LOCAL_REVALIDATION_REQUIRED","requiredAction":"validate Primary age proportion without renaming Character Unit","result":"PASS"},
+    {"caseId":"G14-CASE-008","scenario":"Visual quality attempted without visual asset","matchedIds":["G14-VQ-001","G14-VQ-002","G14-VQ-003","G14-VQ-004","G14-VQ-005","G14-VQ-006"],"decision":"NOT_RUN_BLOCKED","requiredAction":"do not infer visual PASS","result":"PASS"},
+    {"caseId":"G14-CASE-009","scenario":"Pilot Asset Draft requested while evidence missing","matchedIds":["G14-HR-001","G14-HR-003","G14-HR-004","G14-HR-005"],"decision":"METADATA_ONLY_BLOCKED","requiredAction":"record JSON metadata only; do not invoke generator","result":"PASS"},
+    {"caseId":"G14-CASE-010","scenario":"batch generation requested","matchedIds":["G14-HR-006"],"decision":"BLOCKED","requiredAction":"remain single-character pilot","result":"PASS"},
+    {"caseId":"G14-CASE-011","scenario":"procurement or production output requested","matchedIds":["G14-HR-009"],"decision":"BLOCKED","requiredAction":"produce no procurement or production file","result":"PASS"},
+    {"caseId":"G14-CASE-012","scenario":"commercial deliverable requested","matchedIds":["G14-HR-009"],"decision":"BLOCKED","requiredAction":"keep pilot non-commercial","result":"PASS"}
+  ],
+  "validation":{"fileIntegrity":"PASS — 6/6 files","jsonSyntax":"PASS — 5/5 JSON files parse","idUniqueness":"PASS — 30/30 defined IDs unique","validationCases":"PASS — 12/12 cases","frozenScope":"PASS — Gate-01 through Gate-13, Blueprint, Production Specification and existing Visual Assets unchanged","gitDiffScope":"PASS — changes limited to pilot-generation","prohibitedOutputCheck":"PASS — no image, model, garment, procurement, production or commercial file generated"}
+}

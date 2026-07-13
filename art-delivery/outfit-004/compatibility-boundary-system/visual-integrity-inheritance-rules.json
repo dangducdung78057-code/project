@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 2",
+  "sourceContract": "Frozen Visual Integrity evidence; reference only",
+  "rules": [
+    { "ruleId": "CBS-VII-001", "name": "Unchanged visual environment", "whenAll": { "colorCardUnchanged": true, "lightingUnchanged": true, "veilUnchanged": true, "stageEnvironmentUnchanged": true, "formationUnchanged": true }, "decision": "Direct Reuse", "requiredAction": "Reference existing three-direction visual-integrity evidence." },
+    { "ruleId": "CBS-VII-002", "name": "Bounded color-card adjustment", "whenAll": { "colorCardChanged": true, "sameHueFamily": true, "teamPrimaryColorIdentityChanged": false, "phase1PaletteConstraintsMet": true }, "decision": "Conditional Reuse", "requiredChecks": ["Color Shift", "Camera Capture", "Team Recognition"], "requiredAction": "Run palette-local visual review." },
+    { "ruleId": "CBS-VII-003", "name": "Lighting or LED change", "whenAny": { "lightingChanged": true, "ledEnvironmentChanged": true }, "decision": "Conditional Reuse", "inheritsPhase1RuleIds": ["PAL-007"], "requiredChecks": ["Reflectance", "Color Shift", "Camera Capture", "Three-direction Recognition"], "requiredAction": "Run lighting-local visual review in the target environment." },
+    { "ruleId": "CBS-VII-004", "name": "Thin veil parameter change", "whenAll": { "thinVeilChanged": true, "materialDNAUnchanged": true, "coreAttachmentUnchanged": true }, "decision": "Review Required", "requiredChecks": ["Translucency", "Layering", "Motion Trail", "Safety", "Three-direction Consistency"], "requiredAction": "Human review must determine whether the change remains within frozen Thin Veil boundaries." },
+    { "ruleId": "CBS-VII-005", "name": "Stage environment change", "when": { "stageEnvironmentChanged": true }, "decision": "Conditional Reuse", "requiredChecks": ["Background Contrast", "Viewing Distance", "Camera Angle", "Occlusion", "Team Recognition"], "requiredAction": "Run venue-local visual-integrity review." },
+    { "ruleId": "CBS-VII-006", "name": "Team recognition changed", "when": { "teamVisualIdentityChanged": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reopen palette, team composition, priority and visual-integrity Gates." },
+    { "ruleId": "CBS-VII-007", "name": "Material-driven visual behavior changed", "whenAny": { "reflectanceClassChangedByMaterial": true, "translucencyClassChangedByMaterial": true, "drapeClassChangedByMaterial": true }, "decision": "Full Gate Revalidation", "requiredAction": "Treat as Material DNA change and reopen dependent Gates." }
+  ]
+}

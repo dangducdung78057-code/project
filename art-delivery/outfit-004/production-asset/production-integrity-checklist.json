@@ -1,0 +1,43 @@
+{
+  "checklistId": "G19-PIC-001",
+  "gate": "Gate-19",
+  "sourceAssetId": "G16-ASSET-001",
+  "sourceAssetSha256": "a64268513439e2993688110554d193101c6e03d9906d889b3e3fce7cfa3bb4f1",
+  "checks": {
+    "sourceConsistency": "PASS",
+    "sourceHashConsistency": "PASS",
+    "blueprintVersionLockConsistency": "PASS",
+    "materialDNAVersionLockConsistency": "PASS",
+    "paletteVersionLockConsistency": "PASS",
+    "cloudCollarVersionLockConsistency": "PASS",
+    "characterUnitVersionLockConsistency": "PASS",
+    "characterDrift": "PASS_NO_DRIFT",
+    "blueprintDrift": "PASS_NO_DRIFT",
+    "materialDNADrift": "PASS_NO_DRIFT",
+    "paletteDrift": "PASS_NO_DRIFT",
+    "cloudCollarDrift": "PASS_NO_DRIFT"
+  },
+  "gate18Approval": "PASS",
+  "productionLimit": 1,
+  "productionAssetId": "G19-PROD-ASSET-001",
+  "productionAssetReference": "production-asset-v1.0.png",
+  "productionAssetSha256": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+  "productionChecks": {
+    "productionFileExists": "PASS",
+    "productionHashConsistency": "PASS",
+    "requiredAuditFieldsComplete": "PASS",
+    "approvalReferenceResolves": "PASS",
+    "singleAssetLimit": "PASS",
+    "visualIntegrity": "PASS",
+    "noAdditionalCharacter": "PASS",
+    "noBackgroundAssetPollution": "PASS"
+  },
+  "overallResult": "PASS_PRODUCTION_INTEGRITY",
+  "productionAssetIntegrity": "PASS",
+  "nextRequiredState": "NONE_ACCEPTED",
+  "productionAsset": "PRODUCTION_ASSET_ACCEPTED",
+  "humanProductionAcceptance": "PASS",
+  "production": false,
+  "batch": false,
+  "procurementRelease": false
+}

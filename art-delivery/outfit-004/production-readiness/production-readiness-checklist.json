@@ -1,0 +1,33 @@
+{
+  "checklistId": "G18-READY-001",
+  "gate": "Gate-18",
+  "assetId": "G16-ASSET-001",
+  "candidateVerification": {
+    "assetStatus": "PASS",
+    "gate17Signoff": "PASS",
+    "assetId": "PASS",
+    "sha256": "PASS"
+  },
+  "versionLockVerification": {
+    "blueprintVersion": "LOCKED",
+    "materialDNAVersion": "LOCKED",
+    "paletteVersion": "LOCKED",
+    "cloudCollarVersion": "LOCKED",
+    "characterUnitVersion": "LOCKED"
+  },
+  "productionConversionCriteria": {
+    "finalVisualReview": "PASS",
+    "blueprintLock": "PASS",
+    "materialDNALock": "PASS",
+    "paletteLock": "PASS",
+    "cloudCollarLock": "PASS",
+    "assetIntegrity": "PASS",
+    "auditComplete": "PASS",
+    "humanProductionApproval": "PASS"
+  },
+  "readinessDecision": "PASS",
+  "automaticProductionConversion": false,
+  "production": false,
+  "batch": false,
+  "procurementRelease": false
+}

@@ -1,0 +1,15 @@
+{
+  "auditBindingId": "G15-AUD-001",
+  "generatorType": "OpenAI Image Generation",
+  "modelVersion": "openai/gpt-image-2",
+  "promptVersion": "v1.0",
+  "blueprintId": "EBP-outfit-004-primary-dance",
+  "characterUnitId": "Teen Girl Center",
+  "materialDNAVersion": "Gate-11/12 Material DNA",
+  "paletteVersion": "Gate-03/11 Palette System",
+  "cloudCollarVersion": "Gate-02/11 Cloud Collar System",
+  "approvalTimestamp": "2026-07-12T19:55:18Z",
+  "humanApprovalReference": "Gate-15 Final Human Approval Decision — explicit project owner instruction",
+  "auditStatus": "PASS_COMPLETE_FIELDS_BOUND",
+  "visualAssetGenerated": false
+}

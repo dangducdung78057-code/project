@@ -1,0 +1,30 @@
+{
+  "manifestId": "G17-MANIFEST-001",
+  "gate": "Gate-17 Evaluation Build",
+  "version": "1.0",
+  "assetId": "G16-ASSET-001",
+  "files": [
+    "GATE-17-MANIFEST.json",
+    "pilot-asset-evaluation-result.json",
+    "replication-boundary-evaluation.json",
+    "production-candidate-decision.json",
+    "validation-results.json",
+    "GATE-17-EVALUATION-REPORT.md",
+    "GATE-17-HUMAN-SIGNOFF-REPORT.md"
+  ],
+  "sourceReferences": {
+    "gate16Execution": "../asset-generation-execution/generation-execution-record.json",
+    "gate16HumanSignoff": "../asset-generation-execution/GATE-16-HUMAN-SIGNOFF-REPORT.md",
+    "gate12BlueprintEvidence": "../controlled-generation/gate12-approved-blueprint-evidence.json",
+    "auditBinding": "../controlled-generation/audit-binding-record.json"
+  },
+  "evaluationDecision": "PRODUCTION_CANDIDATE_READY",
+  "humanSignoffStatus": "PASS",
+  "humanSignoffReference": "GATE-17-HUMAN-SIGNOFF-REPORT.md",
+  "approvalTimestamp": "2026-07-13T04:19:22Z",
+  "assetStatus": "PRODUCTION_CANDIDATE",
+  "productionCandidateGranted": true,
+  "assetGeneration": "NOT_STARTED",
+  "production": false,
+  "batch": false
+}

@@ -1,0 +1,15 @@
+{
+  "recordId": "G14-AGR-outfit-004-primary-dance-001",
+  "requestId": "G14-PILOT-outfit-004-primary-dance-001",
+  "recordType": "Pilot Asset Draft Metadata",
+  "status": "BLOCKED_NOT_GENERATED",
+  "singleCharacterScope": true,
+  "characterUnitId": "Teen Girl Center",
+  "targetProgram": "Primary Dance Version",
+  "sourceBindings": {"blueprintId": null, "characterUnit": "Teen Girl Center", "materialDNAVersion": null, "paletteVersion": null, "cloudCollarVersion": null, "productionRulesVersion": null},
+  "authorizationEvidence": {"compatibilityBoundary": "NOT_VERIFIABLE", "generationPermission": "MISSING", "auditContract": "NOT_BOUND", "humanApproval": "MISSING"},
+  "generationExecution": {"generatorInvoked": false, "generatorType": null, "modelVersion": null, "promptVersion": null, "startedAt": null, "completedAt": null},
+  "outputs": {"assetGenerationRequest": "DRAFT_RECORDED", "pilotAssetDraft": "METADATA_ONLY", "visualAssetGenerated": false, "imageFiles": [], "modelFiles": [], "garmentFiles": [], "procurementFiles": [], "productionFiles": [], "commercialDeliverables": []},
+  "decision": "BLOCKED",
+  "requiredAction": "Bind independent approved evidence before generating one pilot asset"
+}

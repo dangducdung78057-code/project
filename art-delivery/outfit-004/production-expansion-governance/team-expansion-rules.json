@@ -1,0 +1,39 @@
+{
+  "rulesId": "G20-TEAM-EXPANSION-001",
+  "gate": "Gate-20",
+  "baselineAssetId": "G19-PROD-ASSET-001",
+  "baselineCharacterUnit": "Teen Girl Center",
+  "expansionTarget": "Team / Ensemble",
+  "requiresNewGate": true,
+  "validationDomains": {
+    "roleDistribution": [
+      "Define Center, Team, and Supporting roles",
+      "Assign an independent Character Unit ID to every role",
+      "Prohibit copying the Center asset as a substitute for role design"
+    ],
+    "characterBalance": [
+      "Preserve Center visual hierarchy",
+      "Maintain coherent but distinguishable team members",
+      "Define team count, formation, and relationship scope"
+    ],
+    "paletteConsistency": [
+      "Map each role to the approved Palette System",
+      "Review Center-to-Team color ratio",
+      "Treat a new color system as a new Gate condition"
+    ],
+    "materialConsistency": [
+      "Preserve approved material hierarchy and dance function",
+      "Map material usage per Character Unit",
+      "Treat a new material system as a new Gate condition"
+    ],
+    "cloudCollarConsistency": [
+      "Preserve Cloud Collar family identity",
+      "Review structural differences per role",
+      "Treat a new Cloud Collar structure as a new Gate condition"
+    ]
+  },
+  "defaultDecision": "BLOCKED_PENDING_NEW_GATE",
+  "teamExpansion": false,
+  "ensembleAssetCount": 0,
+  "newCharacterAuthorized": false
+}
