@@ -1,0 +1,10 @@
+{
+  "requestId": "G15-REQ-001",
+  "outfitId": "outfit-004",
+  "programType": "Primary Dance Version",
+  "characterUnitId": "Teen Girl Center",
+  "assetScope": { "quantity": 1, "mode": "Single Character", "purpose": "Pilot Asset" },
+  "sourceGate": "Gate-12 Expansion Blueprint",
+  "currentStatus": "PENDING_EVIDENCE_REVIEW",
+  "visualAssetGenerated": false
+}

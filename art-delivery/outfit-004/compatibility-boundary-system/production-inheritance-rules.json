@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 2",
+  "sourceContract": "Frozen Production Specification; reference only",
+  "domains": [
+    { "domain": "Size", "directReuseWhen": ["same wearer measurements", "same grading table", "same movement allowance"], "localValidationWhen": ["headcount distribution changes", "measurement distribution changes within approved grading range"], "prohibitedInheritanceWhen": ["age group changes", "grading system changes", "base geometry changes"] },
+    { "domain": "Material", "directReuseWhen": ["same approved material code", "same supplier specification", "same lot performance class"], "localValidationWhen": ["approved equivalent lot", "environment-dependent reflectance change"], "prohibitedInheritanceWhen": ["Material DNA changes", "unapproved substitution", "safety property changes"] },
+    { "domain": "Process", "directReuseWhen": ["same process code", "same tolerances", "same assembly sequence"], "localValidationWhen": ["authorized workshop changes", "equipment changes within approved capability"], "prohibitedInheritanceWhen": ["core construction method changes", "cloud collar attachment method changes"] },
+    { "domain": "Cost", "directReuseWhen": ["same bill of materials", "same quantities", "same supplier rates and validity period"], "localValidationWhen": ["headcount changes", "supplier rate changes", "wastage assumption changes"], "prohibitedInheritanceWhen": ["cost used to justify unapproved material or process substitution"] },
+    { "domain": "Lead Time", "directReuseWhen": ["same capacity window", "same quantity", "same process route"], "localValidationWhen": ["headcount changes", "venue date changes", "supplier schedule changes"], "prohibitedInheritanceWhen": ["lead time falls below validated safety or quality minimum"] }
+  ],
+  "rules": [
+    { "ruleId": "CBS-PRI-001", "when": { "allDomainDirectReuseConditionsMet": true }, "decision": "Direct Reuse", "requiredAction": "Record source Production Specification revision and validity window." },
+    { "ruleId": "CBS-PRI-002", "when": { "onlyLocalProductionVariablesChanged": true, "frozenStructureUnchanged": true }, "decision": "Conditional Reuse", "requiredAction": "Revalidate affected size, material lot, process capability, cost or lead-time domain." },
+    { "ruleId": "CBS-PRI-003", "when": { "productionEvidenceIncomplete": true }, "decision": "Review Required", "requiredAction": "Production authority must verify feasibility and provenance." },
+    { "ruleId": "CBS-PRI-004", "when": { "prohibitedProductionInheritanceMatched": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reject inherited production fields and reopen dependent Gates." },
+    { "ruleId": "CBS-PRI-005", "when": { "costReductionRequiresUnapprovedSubstitution": true }, "decision": "Full Gate Revalidation", "requiredAction": "Do not substitute; revalidate Material DNA, Blueprint, cost and visual integrity." }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "approvalRequestId": "G15-HAR-001",
+  "status": "PENDING_HUMAN_REVIEW",
+  "reviewerRequired": "Authorized StageOS Human Reviewer",
+  "reviewScope": [
+    "Blueprint source and DRAFT_ONLY status",
+    "Character and frozen system references",
+    "Compatibility and permission evidence",
+    "Generation audit binding completeness",
+    "Single-character Pilot Asset scope"
+  ],
+  "approvalConditions": [
+    "All required evidence is independently verified",
+    "Audit binding is complete and hash-bound",
+    "No Frozen Gate is modified",
+    "Asset generation remains disabled until a separate PASS"
+  ],
+  "decision": "CONDITIONAL_APPROVAL_RECORDED_BUT_BLOCKED",
+  "humanApprovalReference": "Gate-15 Final Human Approval Decision — explicit project owner instruction",
+  "approvalTimestamp": "2026-07-12T19:55:18Z",
+  "decisionConstraint": "Generator Type and Model Version were explicitly left pending; permission cannot advance until both are selected and the complete Audit Contract is revalidated.",
+  "visualAssetGenerated": false
+}

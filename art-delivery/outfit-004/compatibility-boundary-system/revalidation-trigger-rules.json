@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 2",
+  "rules": [
+    { "ruleId": "CBS-TRG-001", "trigger": "LED Environment Change", "when": { "ledEnvironmentChanged": true }, "decision": "Conditional Reuse", "requiredChecks": ["Color Shift", "Reflectance", "Camera Capture", "Team Recognition"], "requiredAction": "Run target-LED local validation." },
+    { "ruleId": "CBS-TRG-002", "trigger": "Venue Change", "when": { "venueChanged": true }, "decision": "Conditional Reuse", "requiredChecks": ["Stage Clearance", "Background Contrast", "Viewing Distance", "Lighting", "Safety"], "requiredAction": "Run venue-local production and visual checks." },
+    { "ruleId": "CBS-TRG-003", "trigger": "Headcount Change", "whenAll": { "headcountChanged": true, "rolesUnchanged": true, "structureUnchanged": true }, "decision": "Conditional Reuse", "requiredChecks": ["Size Allocation", "Formation Density", "Production Capacity", "Cost", "Lead Time"], "requiredAction": "Run scale-local checks." },
+    { "ruleId": "CBS-TRG-004", "trigger": "Formation Change", "whenAll": { "formationChanged": true, "costumeConfigurationUnchanged": true }, "decision": "Conditional Reuse", "requiredChecks": ["Occlusion", "Role Priority", "Three-direction Recognition"], "requiredAction": "Run formation-local visual review." },
+    { "ruleId": "CBS-TRG-005", "trigger": "Minor Palette Adjustment", "whenAll": { "minorPaletteAdjustment": true, "sameHueFamily": true, "teamPrimaryColorIdentityChanged": false, "phase1PaletteConstraintsMet": true }, "decision": "Conditional Reuse", "requiredChecks": ["Color Card Delta", "Lighting Response", "Team Recognition"], "requiredAction": "Run palette-local review without redefining Phase 1 limits." },
+    { "ruleId": "CBS-TRG-006", "trigger": "Base Garment Change", "when": { "baseGarmentChanged": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reopen Gate-01 and every dependent Gate." },
+    { "ruleId": "CBS-TRG-007", "trigger": "Cloud Collar Core Change", "when": { "cloudCollarCoreStructureChanged": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reopen Gate-02 and every dependent structural, priority, production and visual check." },
+    { "ruleId": "CBS-TRG-008", "trigger": "Material DNA Change", "when": { "materialDNAChanged": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reopen Gate-05 Material DNA and all downstream dependencies." },
+    { "ruleId": "CBS-TRG-009", "trigger": "Age Group Change", "when": { "ageGroupChanged": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reopen age, role, structure, production and visual-integrity Gates." },
+    { "ruleId": "CBS-TRG-010", "trigger": "Program Type Change", "when": { "programTypeChanged": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reopen program compatibility and all movement-dependent Gates." },
+    { "ruleId": "CBS-TRG-011", "trigger": "Team Visual Identity Change", "when": { "teamVisualIdentityChanged": true }, "decision": "Full Gate Revalidation", "requiredAction": "Reopen palette, team composition, priority and visual-integrity Gates." },
+    { "ruleId": "CBS-TRG-012", "trigger": "Ambiguous Mixed Change", "when": { "multipleChangesCannotBeIsolated": true }, "decision": "Review Required", "requiredAction": "Human reviewer must classify each change; any frozen-boundary change escalates to full Gate revalidation." }
+  ]
+}

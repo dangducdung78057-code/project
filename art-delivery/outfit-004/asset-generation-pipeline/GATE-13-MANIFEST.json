@@ -1,0 +1,19 @@
+{
+  "schemaVersion":"1.0.0",
+  "gate":"Gate-13",
+  "title":"Asset Generation Pipeline",
+  "scope":"Controlled rules layer only",
+  "status":{"build":"Gate-13 Revision Completed","humanSignOff":"Gate-13 Human Sign-off Pending","passed":false,"assetGenerationPhase":"Not Started","bulkGeneration":"Prohibited"},
+  "defaultGuard":"BLOCKED",
+  "readOnlyInputs":[
+    {"gate":"Gate-11 Phase 2","path":"art-delivery/outfit-004/compatibility-boundary-system/","purpose":"Compatibility Boundary"},
+    {"gate":"Gate-12 Phase 1","path":"art-delivery/outfit-004/expansion-request-system/","purpose":"Human Sign-off and Asset Generation Permission"},
+    {"gate":"Gate-12 Phase 2","path":"art-delivery/outfit-004/asset-expansion-execution/","purpose":"Approved Expansion Blueprint and inherited references"}
+  ],
+  "files":["README.md","asset-generation-rules.json","generation-input-schema.json","blueprint-to-asset-mapping-rules.json","asset-quality-gate-rules.json","visual-validation-rules.json","human-approval-gate.json","generation-audit-contract.json","validation-cases.json","GATE-13-MANIFEST.json"],
+  "requestStates":["Draft Generation Request","Approved Generation Request","Production Asset Generation"],
+  "generationPredicates":["Expansion Blueprint Approved","Compatibility Boundary PASS","Human Sign-off PASS","Asset Generation Permission PASS"],
+  "firstControlledTest":{"source":"outfit-004","target":"Primary Dance Version","scope":"single character","output":"Asset Generation Request Draft","assetOutput":false},
+  "prohibitedOutputs":["image","3D model","garment file","procurement file"],
+  "validation":{"fileIntegrity":"PASS — 10/10 files","jsonSyntax":"PASS — 9/9 JSON files parse","idUniqueness":"PASS — 77/77 IDs unique","crossReferences":"PASS — all validation case IDs resolve","validationCases":"PASS — 30/30 cases including Generation Audit Contract tests","generationAuditContractIntegrity":"PASS — 9/9 required audit fields enforced and fail-closed","frozenScope":"PASS — Gate-01 through Gate-12 and existing assets unchanged","gitDiffScope":"PASS — changes limited to asset-generation-pipeline"}
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 2",
+  "allowedReferenceTypes": ["Existing Character Unit","Existing Material DNA","Existing Palette","Existing Cloud Collar","Existing Production Rules"],
+  "prohibitedCreationTypes": ["New Character","New Material DNA","New Cloud Collar","New Palette System"],
+  "classifications": ["Direct Inheritance","Local Revalidation Required","Inheritance Prohibited"],
+  "rules": [
+    {"ruleId":"AEP-INH-001","name":"Direct inheritance","whenAll":{"sourceApproved":true,"targetDefinitionUnchanged":true,"gate11Decision":"Direct Reuse"},"classification":"Direct Inheritance","requiredAction":"Reference the frozen source ID and evidence without copying or redefining it."},
+    {"ruleId":"AEP-INH-002","name":"Local revalidation inheritance","whenAny":{"gate11Decision":"Conditional Reuse","environmentChanged":true,"movementRangeChangedWithinBoundary":true,"sizeAllocationChanged":true,"lightingChanged":true},"classification":"Local Revalidation Required","requiredAction":"Record required local checks and keep the field non-production-eligible until evidence is approved."},
+    {"ruleId":"AEP-INH-003","name":"Review-required inheritance","when":{"gate11Decision":"Review Required"},"classification":"Local Revalidation Required","requiredAction":"Route to Human Review; do not infer approval."},
+    {"ruleId":"AEP-INH-004","name":"Full Gate revalidation prohibition","when":{"gate11Decision":"Full Gate Revalidation"},"classification":"Inheritance Prohibited","requiredAction":"Exclude the field from the Draft and reopen affected Gates."},
+    {"ruleId":"AEP-INH-005","name":"Frozen core change prohibition","whenAny":{"baseGarmentChanged":true,"cloudCollarCoreChanged":true,"materialDNAChanged":true,"ageGroupChanged":true,"programTypeChanged":true,"teamVisualIdentityChanged":true},"classification":"Inheritance Prohibited","requiredAction":"Stop inheritance and follow Gate-11 full revalidation."},
+    {"ruleId":"AEP-INH-006","name":"Existing references only","requirement":"Every inherited reference resolves to an existing frozen Character Unit, Material DNA, Palette, Cloud Collar or Production Rule.","classification":"Inheritance Prohibited","failure":"Blocked"},
+    {"ruleId":"AEP-INH-007","name":"No new definitions","whenAny":{"createsNewCharacter":true,"createsNewMaterialDNA":true,"createsNewCloudCollar":true,"createsNewPaletteSystem":true},"classification":"Inheritance Prohibited","requiredAction":"Reject creation in this execution layer and route to the governing Gate."},
+    {"ruleId":"AEP-INH-008","name":"Evidence per classification","requirement":"Each result records sourcePath, sourceId, matchedRuleIds, evidence, classification and requiredAction.","failure":"Blocked"}
+  ]
+}

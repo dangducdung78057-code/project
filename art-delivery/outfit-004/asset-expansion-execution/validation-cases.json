@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 2",
+  "cases": [
+    {
+      "caseId":"AEP-CASE-001",
+      "name":"First real flow — outfit-004 Primary Dance",
+      "input":{"requestId":"ER-outfit-004-primary-dance-001","requestStatus":"Approved","existingAssetId":"outfit-004","gateSourceReference":{"gate11Phase1":"e0a018d199bb959da8651d1dc0850862beae4dbf","gate11Phase2":"561b2099e1a18964cb0a6a2662afebaebce9326c","gate12Phase1":"777f506ca63b93cf482b389e37e382c84175a1c6"},"characterUnit":"Existing Character Unit / outfit-004","ageGroup":"Primary","programType":"Dance","materialDNAReference":"Existing Material DNA / outfit-004","paletteReference":"Existing Palette / outfit-004","cloudCollarReference":"Existing Cloud Collar / outfit-004","stageEnvironment":{"type":"Target school dance stage","changed":true},"productionRequirement":{"reference":"Existing Production Rules / outfit-004"},"requestHash":"approved-request-hash-fixture-001","signOffEvidence":{"decision":"Approved","bound":true}},
+      "matchedRuleIds":["AEP-EXE-001","AEP-EXE-002","AEP-PRS-002","CBS-TRG-002","CBS-VII-005","AEP-INH-001","AEP-INH-002","AEP-BPG-001","AEP-HOF-001"],
+      "decision":"Conditional Reuse",
+      "inheritance":{"direct":["Existing Character Unit","Existing Material DNA","Existing Palette","Existing Cloud Collar","Existing Production Rules"],"localRevalidation":["Stage Environment","Background Contrast","Viewing Distance","Lighting","Safety"],"prohibited":[]},
+      "output":{"type":"Expansion Blueprint Draft","designation":"Draft Only","state":"Draft","productionHandoff":"Blocked","assetGenerationPermission":"Blocked","visualAssetGenerated":false},
+      "requiredAction":"Run venue-local checks, then advance only through Compatibility Approved and Human Review.",
+      "expectedOutcome":"PASS","actualOutcome":"PASS"
+    },
+    {"caseId":"AEP-CASE-002","name":"Request is Draft","input":{"requestStatus":"Draft"},"matchedRuleIds":["AEP-PRS-002","AEP-EXE-006"],"decision":"Blocked","requiredAction":"Obtain Gate-12 Phase 1 approval.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-003","name":"Request is Rejected","input":{"requestStatus":"Rejected"},"matchedRuleIds":["AEP-PRS-006"],"decision":"Blocked","requiredAction":"Create and approve a new request.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-004","name":"Approval hash drift","input":{"sourceVersionDrift":true},"matchedRuleIds":["AEP-PRS-005","AEP-BPG-008"],"decision":"Expired","requiredAction":"Repeat compatibility check and approval.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-005","name":"Compatibility bypass","input":{"compatibilityCheckComplete":false},"matchedRuleIds":["AEP-EXE-002"],"decision":"Blocked","requiredAction":"Run complete Gate-11 Compatibility Boundary check.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-006","name":"Direct unchanged inheritance","input":{"sourceApproved":true,"targetDefinitionUnchanged":true,"gate11Decision":"Direct Reuse"},"matchedRuleIds":["AEP-INH-001"],"decision":"Direct Inheritance","requiredAction":"Reference frozen source evidence.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-007","name":"LED local revalidation","input":{"lightingChanged":true,"gate11Decision":"Conditional Reuse"},"matchedRuleIds":["CBS-TRG-001","CBS-VII-003","AEP-INH-002"],"decision":"Local Revalidation Required","requiredAction":"Run target-lighting checks.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-008","name":"Base Garment change","input":{"baseGarmentChanged":true},"matchedRuleIds":["CBS-TRG-006","AEP-INH-005"],"decision":"Inheritance Prohibited","requiredAction":"Reopen Gate-01 and dependent Gates.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-009","name":"Cloud Collar core change","input":{"cloudCollarCoreChanged":true},"matchedRuleIds":["CBS-TRG-007","AEP-INH-005"],"decision":"Inheritance Prohibited","requiredAction":"Reopen Gate-02 and dependent Gates.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-010","name":"Create new Character","input":{"createsNewCharacter":true},"matchedRuleIds":["AEP-INH-007","AEP-BPG-007"],"decision":"Blocked","requiredAction":"Route new character definition to governing Gates.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-011","name":"Create new Material DNA","input":{"createsNewMaterialDNA":true},"matchedRuleIds":["AEP-INH-007","AEP-BPG-007"],"decision":"Blocked","requiredAction":"Route Material DNA definition to Gate-05.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-012","name":"Create new Cloud Collar","input":{"createsNewCloudCollar":true},"matchedRuleIds":["AEP-INH-007","AEP-BPG-007"],"decision":"Blocked","requiredAction":"Route Cloud Collar definition to Gate-02.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-013","name":"Create new Palette System","input":{"createsNewPaletteSystem":true},"matchedRuleIds":["AEP-INH-007","AEP-BPG-007"],"decision":"Blocked","requiredAction":"Route Palette definition to Gate-03.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-014","name":"Draft jumps to Production Eligible","input":{"from":"Draft","to":"Production Eligible"},"matchedRuleIds":["AEP-BPG-003","AEP-HOF-001"],"decision":"Blocked","requiredAction":"Follow Compatibility Approved and Human Review.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-015","name":"Production Eligible requests asset generation","input":{"blueprintState":"Production Eligible","separatePermission":false},"matchedRuleIds":["AEP-BPG-005","AEP-HOF-005"],"decision":"Blocked","requiredAction":"Obtain separate Asset Generation Permission.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-016","name":"Draft enters Production Specification","input":{"blueprintState":"Draft","destination":"Production Specification"},"matchedRuleIds":["AEP-HOF-001","AEP-HOF-006"],"decision":"Blocked","requiredAction":"Keep Draft inside Gate-12 governance.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-017","name":"Draft enters procurement","input":{"blueprintState":"Draft","destination":"Procurement"},"matchedRuleIds":["AEP-HOF-001"],"decision":"Blocked","requiredAction":"Keep Draft outside procurement.","expectedOutcome":"PASS","actualOutcome":"PASS"},
+    {"caseId":"AEP-CASE-018","name":"Visual asset generation attempted","input":{"destination":"Asset Generation"},"matchedRuleIds":["AEP-EXE-005","AEP-HOF-006"],"decision":"Blocked","requiredAction":"Stop; this pipeline has no generation interface.","expectedOutcome":"PASS","actualOutcome":"PASS"}
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stageos://gate-12/expansion-request-schema/1.0.0",
+  "title": "StageOS Expansion Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requestId", "schemaVersion", "createdAt", "sourceRevision", "evidenceIndex", "existingAssetId", "gateSourceReference", "characterUnit", "ageGroup", "programType", "materialDNAReference", "paletteReference", "cloudCollarReference", "stageEnvironment", "productionRequirement"],
+  "properties": {
+    "requestId": { "type": "string", "pattern": "^ER-[A-Z0-9-]+$" },
+    "schemaVersion": { "const": "1.0.0" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "sourceRevision": { "type": "string", "minLength": 7 },
+    "evidenceIndex": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "existingAssetId": { "type": "string", "minLength": 1 },
+    "gateSourceReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate", "manifestPath", "commitHash", "frozenVersion"],
+      "properties": { "gate": { "type": "string" }, "manifestPath": { "type": "string" }, "commitHash": { "type": "string", "pattern": "^[0-9a-f]{40}$" }, "frozenVersion": { "type": "string" } }
+    },
+    "characterUnit": { "type": "object", "required": ["id", "role", "sourceIdentity"], "properties": { "id": { "type": "string" }, "role": { "type": "string" }, "sourceIdentity": { "type": "string" } } },
+    "ageGroup": { "enum": ["Primary", "Teen"] },
+    "programType": { "type": "string", "minLength": 1 },
+    "materialDNAReference": { "$ref": "#/$defs/versionedReference" },
+    "paletteReference": { "allOf": [{ "$ref": "#/$defs/versionedReference" }, { "type": "object", "required": ["signaturePercent", "premiumPercent", "basicUnifiedAreaPercent"], "properties": { "signaturePercent": { "type": "number", "maximum": 12 }, "premiumPercent": { "type": "number", "maximum": 35 }, "basicUnifiedAreaPercent": { "type": "number", "minimum": 60 } } }] },
+    "cloudCollarReference": { "allOf": [{ "$ref": "#/$defs/versionedReference" }, { "type": "object", "required": ["type", "coreStructureVersion"], "properties": { "type": { "type": "string" }, "coreStructureVersion": { "type": "string" } } }] },
+    "stageEnvironment": { "type": "object", "required": ["venue", "lighting", "led", "background", "movementAmplitude", "headcount", "formation"], "properties": { "venue": { "type": "string" }, "lighting": { "type": "string" }, "led": { "type": "string" }, "background": { "type": "string" }, "movementAmplitude": { "type": "string" }, "headcount": { "type": "integer", "minimum": 1 }, "formation": { "type": "string" } } },
+    "productionRequirement": { "type": "object", "required": ["size", "material", "process", "costCeiling", "leadTime", "constraints"], "properties": { "size": { "type": "string" }, "material": { "type": "string" }, "process": { "type": "string" }, "costCeiling": { "type": "number", "minimum": 0 }, "leadTime": { "type": "string" }, "constraints": { "type": "array", "items": { "type": "string" } } } }
+  },
+  "$defs": { "versionedReference": { "type": "object", "required": ["id", "version", "changeDeclaration"], "properties": { "id": { "type": "string" }, "version": { "type": "string" }, "changeDeclaration": { "type": "string" } } } }
+}

@@ -1,0 +1,37 @@
+{
+  "versionLockId": "G18-VLOCK-001",
+  "gate": "Gate-18",
+  "assetId": "G16-ASSET-001",
+  "allowedResults": ["LOCKED", "BLOCKED"],
+  "locks": {
+    "blueprintVersion": {
+      "result": "LOCKED",
+      "value": "EBP-outfit-004-primary-dance",
+      "sourceReference": "../controlled-generation/gate12-approved-blueprint-evidence.json"
+    },
+    "materialDNAVersion": {
+      "result": "LOCKED",
+      "value": "Gate-11/12 Material DNA",
+      "sourceReference": "../production-candidate-evaluation/pilot-asset-evaluation-result.json"
+    },
+    "paletteVersion": {
+      "result": "LOCKED",
+      "value": "Gate-03/11 Palette System",
+      "sourceReference": "../production-candidate-evaluation/pilot-asset-evaluation-result.json"
+    },
+    "cloudCollarVersion": {
+      "result": "LOCKED",
+      "value": "Gate-02/11 Cloud Collar System",
+      "sourceReference": "../production-candidate-evaluation/pilot-asset-evaluation-result.json"
+    },
+    "characterUnitVersion": {
+      "result": "LOCKED",
+      "value": "Teen Girl Center / Primary Dance Version",
+      "sourceReference": "../asset-generation-execution/generation-execution-record.json"
+    }
+  },
+  "changePolicy": "Any locked value change invalidates readiness and requires human re-review.",
+  "unlockRequiresHumanApproval": true,
+  "overallResult": "LOCKED",
+  "production": false
+}

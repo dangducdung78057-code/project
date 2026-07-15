@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 1",
+  "readOnlyInputs": [
+    { "gate": "Gate-11 Phase 1", "manifest": "../asset-expansion-rules/GATE-11-PHASE-1-MANIFEST.json", "commitHash": "e0a018d199bb959da8651d1dc0850862beae4dbf" },
+    { "gate": "Gate-11 Phase 2", "manifest": "../compatibility-boundary-system/GATE-11-PHASE-2-MANIFEST.json", "commitHash": "561b2099e1a18964cb0a6a2662afebaebce9326c" }
+  ],
+  "decisionPrecedence": ["Direct Reuse", "Conditional Reuse", "Review Required", "Full Gate Revalidation"],
+  "rules": [
+    { "ruleId": "ERS-ORC-001", "name": "Mandatory compatibility check", "when": { "compatibilityCheckSkipped": true }, "decision": "Blocked", "requiredAction": "Stop processing, record bypass attempt and run the complete boundary check." },
+    { "ruleId": "ERS-ORC-002", "name": "Complete boundary evaluation", "when": { "requestAdmitted": true }, "decision": "Evaluate", "requiredRuleFamilies": ["CBS-REU", "CBS-CFL", "CBS-BPI", "CBS-PRI", "CBS-VII", "CBS-REV"], "requiredAction": "Evaluate every applicable Gate-11 Phase 2 family and preserve matched Rule IDs." },
+    { "ruleId": "ERS-ORC-003", "name": "Strictest decision aggregation", "when": { "multipleDecisionsMatched": true }, "decision": "Strictest Match", "requiredAction": "Select the highest-precedence decision; no lower decision may override it." },
+    { "ruleId": "ERS-ORC-004", "name": "No match handling", "when": { "noBoundaryRuleMatched": true }, "decision": "Review Required", "requiredAction": "Block automatic reuse and obtain human compatibility review." },
+    { "ruleId": "ERS-ORC-005", "name": "Full revalidation gate", "when": { "aggregateDecision": "Full Gate Revalidation" }, "decision": "Full Gate Revalidation", "requiredAction": "List affected Gates; Blueprint remains Draft Only until every revalidation is completed." },
+    { "ruleId": "ERS-ORC-006", "name": "Boundary evidence binding", "when": { "compatibilityCheckCompleted": true }, "decision": "Record Evidence", "requiredAction": "Bind input hash, Gate source revisions, all matched Rule IDs, decision and required actions." }
+  ]
+}

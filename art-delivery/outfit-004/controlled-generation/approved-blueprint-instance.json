@@ -1,0 +1,12 @@
+{
+  "instanceId": "G15-BPI-001",
+  "gate12BlueprintReference": "EBP-outfit-004-primary-dance",
+  "characterUnitId": "Teen Girl Center",
+  "materialDNAReference": "Gate-11/12 Material DNA",
+  "paletteReference": "Gate-03/11 Palette System",
+  "cloudCollarReference": "Gate-02/11 Cloud Collar System",
+  "productionRuleReference": "Existing Frozen Production Rules",
+  "status": "DRAFT_ONLY",
+  "approvalEvidence": null,
+  "visualAssetGenerated": false
+}

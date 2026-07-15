@@ -1,0 +1,31 @@
+{
+  "schemaVersion":"1.0.0",
+  "gate":"Gate-13",
+  "defaultGuard":"BLOCKED",
+  "allRequiredGenerationPredicates":[
+    "Expansion Blueprint Approved",
+    "Compatibility Boundary PASS",
+    "Human Sign-off PASS",
+    "Asset Generation Permission PASS"
+  ],
+  "approvalEvidenceRequired":["approvalId","approverId","approvedAt","requestContentHash","blueprintContentHash","compatibilityEvidenceHash","permissionEvidenceHash","decision"],
+  "permissionGuardOutput":{"requiredFields":["permissionDecision","blockReason","approvalReference","auditEvidence"],"permissionDecisionValues":["PASS","BLOCKED"],"blockedDecisionRequiresBlockReason":true,"passDecisionRequiresApprovalReference":true,"passDecisionRequiresCompleteAuditEvidence":true},
+  "generationAuditContractReference":"generation-audit-contract.json",
+  "auditEvidenceRequiredFields":["generatorType","modelVersion","promptVersion","blueprintId","characterUnitId","materialDNAVersion","paletteVersion","cloudCollarVersion","approvalTimestamp"],
+  "allowedTransitions":[
+    {"transitionId":"G13-HAG-T01","from":"Draft Generation Request","to":"Approved Generation Request","requires":["complete bindings","quality gate PASS","visual contract PASS","human approval evidence PASS"]},
+    {"transitionId":"G13-HAG-T02","from":"Approved Generation Request","to":"Production Asset Generation","requires":["Expansion Blueprint Approved","Compatibility Boundary PASS","Human Sign-off PASS","Asset Generation Permission PASS","all hashes unchanged"]}
+  ],
+  "rules":[
+    {"ruleId":"G13-HAG-001","condition":"all four generation predicates PASS and approval evidence hash-matches request","decision":"Asset Generation Allowed","requiredAction":"issue one controlled authorization"},
+    {"ruleId":"G13-HAG-002","condition":"Expansion Blueprint is absent or not Approved","decision":"BLOCKED","requiredAction":"obtain approved Blueprint"},
+    {"ruleId":"G13-HAG-003","condition":"Compatibility Boundary is not PASS","decision":"BLOCKED","requiredAction":"complete Gate-11 compatibility review"},
+    {"ruleId":"G13-HAG-004","condition":"Human Sign-off is not PASS","decision":"BLOCKED","requiredAction":"obtain independent human approval"},
+    {"ruleId":"G13-HAG-005","condition":"Asset Generation Permission is not PASS","decision":"BLOCKED","requiredAction":"obtain explicit generation permission"},
+    {"ruleId":"G13-HAG-006","condition":"approval evidence is missing, stale, expired, or hash-mismatched","decision":"BLOCKED","requiredAction":"invalidate approval and repeat human review"},
+    {"ruleId":"G13-HAG-007","condition":"request changes after approval","decision":"BLOCKED","requiredAction":"return request to Draft Generation Request"},
+    {"ruleId":"G13-HAG-008","condition":"approval or permission is inferred instead of explicitly evidenced","decision":"BLOCKED","requiredAction":"provide explicit PASS evidence"},
+    {"ruleId":"G13-HAG-009","condition":"Generation Audit Contract is missing, incomplete, stale, mismatched or unbound","decision":"BLOCKED","blockReason":"INVALID_AUDIT_EVIDENCE","requiredAction":"provide complete audit evidence for all nine required fields"},
+    {"ruleId":"G13-HAG-010","condition":"all four generation predicates and all nine audit fields PASS with matching approval reference","decision":"PASS","blockReason":null,"requiredAction":"record permission decision, approval reference and immutable audit evidence"}
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "validationId": "G19-VAL-001",
+  "gate": "Gate-19",
+  "allowedResults": ["PASS", "BLOCKED"],
+  "cases": [
+    {"caseId": "G19-VAL-001-01", "criterion": "Gate-18 Human Production Approval is PASS", "result": "PASS"},
+    {"caseId": "G19-VAL-001-02", "criterion": "Source Asset ID equals G16-ASSET-001", "result": "PASS"},
+    {"caseId": "G19-VAL-001-03", "criterion": "Source Hash equals approved hash", "result": "PASS"},
+    {"caseId": "G19-VAL-001-04", "criterion": "Blueprint Version is LOCKED", "result": "PASS"},
+    {"caseId": "G19-VAL-001-05", "criterion": "Material DNA Version is LOCKED", "result": "PASS"},
+    {"caseId": "G19-VAL-001-06", "criterion": "Palette Version is LOCKED", "result": "PASS"},
+    {"caseId": "G19-VAL-001-07", "criterion": "Cloud Collar Version is LOCKED", "result": "PASS"},
+    {"caseId": "G19-VAL-001-08", "criterion": "Character Unit Version is LOCKED", "result": "PASS"},
+    {"caseId": "G19-VAL-001-09", "criterion": "Production Limit equals 1", "result": "PASS"},
+    {"caseId": "G19-VAL-001-10", "criterion": "Batch is false", "result": "PASS"},
+    {"caseId": "G19-VAL-001-11", "criterion": "Procurement Release is false", "result": "PASS"},
+    {"caseId": "G19-VAL-001-12", "criterion": "Production Asset remains NOT_CREATED", "result": "PASS"},
+    {"caseId": "G19-VAL-001-13", "criterion": "Any failed prerequisite returns BLOCKED", "result": "PASS"}
+  ],
+  "passCount": 13,
+  "blockedCount": 0,
+  "overallResult": "PASS",
+  "failurePolicy": "Any single failed case changes the overall result to BLOCKED and prohibits production asset creation.",
+  "buildReadinessDecision": "READY_FOR_PRODUCTION_ASSET_CREATION_EXECUTION",
+  "productionAsset": "NOT_CREATED",
+  "production": false,
+  "batch": false,
+  "procurementRelease": false
+}

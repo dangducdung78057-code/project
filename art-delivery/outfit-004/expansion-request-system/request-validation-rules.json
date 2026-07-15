@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 1",
+  "rules": [
+    { "ruleId": "ERS-REQ-001", "name": "Required input completeness", "when": { "requiredInputMissing": true }, "decision": "Blocked", "requiredAction": "Supply every required Expansion Request field before compatibility checking." },
+    { "ruleId": "ERS-REQ-002", "name": "Existing asset resolvability", "when": { "existingAssetUnresolved": true }, "decision": "Rejected", "requiredAction": "Provide an authoritative Existing Asset ID." },
+    { "ruleId": "ERS-REQ-003", "name": "Gate source traceability", "whenAny": { "manifestUnresolved": true, "commitHashInvalid": true, "frozenVersionMismatch": true }, "decision": "Blocked", "requiredAction": "Restore traceable Gate source evidence." },
+    { "ruleId": "ERS-REQ-004", "name": "Evidence sufficiency", "when": { "evidenceInsufficient": true }, "decision": "Blocked", "requiredAction": "Attach evidence for every declared difference." },
+    { "ruleId": "ERS-REQ-005", "name": "Phase 1 contract compliance", "whenAny": { "ageProgramUnsupported": true, "paletteConstraintViolated": true, "materialDNAReferenceInvalid": true, "cloudCollarReferenceInvalid": true }, "decision": "Blocked", "requiredAction": "Resolve the Gate-11 Phase 1 input-contract violation." },
+    { "ruleId": "ERS-REQ-006", "name": "Valid request admission", "when": { "schemaValid": true, "sourceTraceable": true, "evidenceSufficient": true }, "decision": "Compatibility Check", "requiredAction": "Run the complete Gate-11 Compatibility Boundary System." }
+  ]
+}

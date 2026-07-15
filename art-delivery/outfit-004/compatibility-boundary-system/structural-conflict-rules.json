@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 2",
+  "rules": [
+    { "ruleId": "CBS-CFL-001", "name": "Age-group conflict", "when": { "ageGroupChanged": true }, "conflict": "Incompatible Age Group", "decision": "Full Gate Revalidation", "requiredAction": "Reopen age, role, structure, production and visual-integrity Gates." },
+    { "ruleId": "CBS-CFL-002", "name": "Program-type conflict", "when": { "programTypeChanged": true }, "conflict": "Incompatible Program Type", "decision": "Full Gate Revalidation", "requiredAction": "Revalidate movement, role, structure, Material DNA and production suitability." },
+    { "ruleId": "CBS-CFL-003", "name": "Movement-amplitude conflict", "whenAll": { "movementAmplitudeIncreased": true, "existingMovementEvidenceSufficient": false }, "conflict": "Incompatible Movement Amplitude", "decision": "Review Required", "requiredAction": "Perform movement and safety review; escalate if core structure must change." },
+    { "ruleId": "CBS-CFL-004", "name": "Material DNA conflict", "when": { "materialDNAChanged": true }, "conflict": "Incompatible Material DNA", "decision": "Full Gate Revalidation", "requiredAction": "Reopen Material DNA and every dependent production and visual Gate." },
+    { "ruleId": "CBS-CFL-005", "name": "Cloud Collar core conflict", "when": { "cloudCollarCoreStructureChanged": true }, "conflict": "Incompatible Cloud Collar", "decision": "Full Gate Revalidation", "requiredAction": "Reopen Cloud Collar, Base Garment compatibility, priority and production checks." },
+    { "ruleId": "CBS-CFL-006", "name": "Unauthorized Cloud Collar mix", "whenAny": { "cloudCollarVariantUnauthorized": true, "cloudCollarBaseGarmentCompatible": false, "centerVariantAppliedToTeam": true }, "conflict": "Forbidden Cloud Collar Mix", "decision": "Full Gate Revalidation", "inheritsPhase1RuleIds": ["CCC-002", "CCC-003", "CCC-005"], "requiredAction": "Stop reuse; select an authorized Phase 1 combination or reopen affected Gates." },
+    { "ruleId": "CBS-CFL-007", "name": "Production constraint conflict", "whenAny": { "mandatoryMaterialUnavailable": true, "requiredProcessUnavailable": true, "safetyConstraintViolated": true, "leadTimeBelowValidatedMinimum": true }, "conflict": "Incompatible Production Constraint", "decision": "Review Required", "requiredAction": "Production authority must resolve feasibility; any structural substitution triggers full Gate revalidation." },
+    { "ruleId": "CBS-CFL-008", "name": "Base Garment conflict", "when": { "baseGarmentChanged": true }, "conflict": "Core Structure Change", "decision": "Full Gate Revalidation", "requiredAction": "Stop all structural inheritance and reopen Base Garment and dependent Gates." },
+    { "ruleId": "CBS-CFL-009", "name": "Team identity conflict", "when": { "teamVisualIdentityChanged": true }, "conflict": "Team Recognition Change", "decision": "Full Gate Revalidation", "inheritsPhase1RuleIds": ["PAL-006"], "requiredAction": "Reopen palette, composition, priority and visual-integrity Gates." }
+  ]
+}

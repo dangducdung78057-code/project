@@ -1,0 +1,30 @@
+{
+  "validationId": "G18-VAL-001",
+  "gate": "Gate-18",
+  "assetId": "G16-ASSET-001",
+  "cases": [
+    {"id":"G18-V-001","check":"Asset Status is PRODUCTION_CANDIDATE","result":"PASS"},
+    {"id":"G18-V-002","check":"Gate-17 Human Sign-off is PASS","result":"PASS"},
+    {"id":"G18-V-003","check":"Asset ID matches","result":"PASS"},
+    {"id":"G18-V-004","check":"Asset file exists","result":"PASS"},
+    {"id":"G18-V-005","check":"SHA-256 matches","result":"PASS"},
+    {"id":"G18-V-006","check":"Blueprint Version is LOCKED","result":"PASS"},
+    {"id":"G18-V-007","check":"Material DNA Version is LOCKED","result":"PASS"},
+    {"id":"G18-V-008","check":"Palette Version is LOCKED","result":"PASS"},
+    {"id":"G18-V-009","check":"Cloud Collar Version is LOCKED","result":"PASS"},
+    {"id":"G18-V-010","check":"Character Unit Version is LOCKED","result":"PASS"},
+    {"id":"G18-V-011","check":"Final Visual Review is PASS","result":"PASS"},
+    {"id":"G18-V-012","check":"Asset Integrity is PASS","result":"PASS"},
+    {"id":"G18-V-013","check":"Audit record is complete","result":"PASS"},
+    {"id":"G18-V-014","check":"Human Production Approval is pending and no automatic conversion occurs","result":"PASS"},
+    {"id":"G18-V-015","check":"Production remains false","result":"PASS"},
+    {"id":"G18-V-016","check":"Batch remains false","result":"PASS"},
+    {"id":"G18-V-017","check":"Procurement Release remains false","result":"PASS"},
+    {"id":"G18-V-018","check":"Any failed lock produces BLOCKED","result":"PASS"},
+    {"id":"G18-V-019","check":"No Production Asset was created","result":"PASS"}
+  ],
+  "passCount": 19,
+  "failCount": 0,
+  "overallResult": "PASS",
+  "readinessDecision": "READY_FOR_HUMAN_PRODUCTION_APPROVAL"
+}

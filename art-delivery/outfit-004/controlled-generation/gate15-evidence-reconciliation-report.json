@@ -1,0 +1,88 @@
+{
+  "reportId": "G15-ERR-001",
+  "reportType": "Gate-15 Evidence Reconciliation Report",
+  "scope": {
+    "outfitId": "outfit-004",
+    "programType": "Primary Dance Version",
+    "characterUnitId": "Teen Girl Center",
+    "generationMode": "Single Character"
+  },
+  "result": "Evidence Missing",
+  "permission": "BLOCKED_EVIDENCE_MISMATCH",
+  "assetGenerationAllowed": false,
+  "visualAssetGenerated": false,
+  "blueprintReconciliation": {
+    "sourceInstance": "approved-blueprint-instance.json",
+    "currentStatus": "DRAFT_ONLY",
+    "approvalEvidence": null,
+    "gate12Evidence": {
+      "reference": "../asset-expansion-execution/GATE-12-PHASE-2-MANIFEST.json",
+      "recordedBlueprintState": "Draft",
+      "recordedHumanSignOff": "Pending",
+      "passed": false
+    },
+    "gate13Evidence": {
+      "reference": "../asset-generation-pipeline/GATE-13-MANIFEST.json",
+      "recordedOutput": "Asset Generation Request Draft",
+      "recordedHumanSignOff": "Gate-13 Human Sign-off Pending",
+      "passed": false
+    },
+    "gate14Evidence": {
+      "reference": "../pilot-generation/GATE-14-MANIFEST.json",
+      "recordedPilotGeneration": "BLOCKED_PENDING_EVIDENCE",
+      "passed": false
+    },
+    "approvedStateInheritable": false,
+    "decision": "BLOCKED"
+  },
+  "gate14PilotSignOffReconciliation": {
+    "manifestReference": "../pilot-generation/GATE-14-MANIFEST.json",
+    "checklistReference": "../pilot-generation/human-review-checklist.json",
+    "humanSignOffReference": null,
+    "validationResult": "12/12 validation cases PASS, but these validate blocking behavior and do not constitute pilot approval",
+    "approvalEvidence": null,
+    "approvalIssued": false,
+    "pilotStatus": "BLOCKED_PENDING_EVIDENCE",
+    "decision": "BLOCKED"
+  },
+  "auditBindingReconciliation": {
+    "reference": "audit-binding-record.json",
+    "requiredFieldChecks": {
+      "generatorType": "MISSING_UNASSIGNED",
+      "modelVersion": "MISSING_UNASSIGNED",
+      "promptVersion": "MISSING_UNASSIGNED",
+      "blueprintId": "PRESENT",
+      "characterUnitId": "PRESENT",
+      "materialDNAVersion": "PRESENT",
+      "paletteVersion": "PRESENT",
+      "cloudCollarVersion": "PRESENT",
+      "approvalTimestamp": "MISSING_NULL"
+    },
+    "completeFieldCount": 5,
+    "requiredFieldCount": 9,
+    "auditStatus": "INCOMPLETE_BLOCKED",
+    "decision": "BLOCKED"
+  },
+  "approvalRequestReconciliation": {
+    "reference": "asset-generation-approval-request.json",
+    "currentAuthorizationResult": "BLOCKED_EVIDENCE_MISMATCH",
+    "requestedAuthorizationResult": "APPROVED_FOR_SINGLE_ASSET_GENERATION",
+    "authorizationChanged": false,
+    "approvalPermitted": false
+  },
+  "blockingItems": [
+    "Gate-12 Blueprint evidence remains Draft with Human Sign-off Pending",
+    "Gate-13 records ruleset validation only and does not provide an approved generation instance",
+    "Gate-14 has no Human Sign-off Reference or Approval Evidence and remains BLOCKED_PENDING_EVIDENCE",
+    "Generator Type is UNASSIGNED",
+    "Model Version is UNASSIGNED",
+    "Prompt Version is UNASSIGNED",
+    "Approval Timestamp is null"
+  ],
+  "blockingItemCount": 7,
+  "finalDecision": {
+    "evidenceState": "Evidence Missing",
+    "permission": "BLOCKED_EVIDENCE_MISMATCH",
+    "requiredAction": "Provide independently signed Blueprint, Gate-14 pilot approval, and complete nine-field audit evidence before requesting reconciliation again"
+  }
+}

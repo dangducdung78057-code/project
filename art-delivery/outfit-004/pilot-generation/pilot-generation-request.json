@@ -1,0 +1,14 @@
+{
+  "gateId": "Gate-14",
+  "requestId": "G14-PILOT-outfit-004-primary-dance-001",
+  "status": "BLOCKED_PENDING_EVIDENCE",
+  "scope": {"existingAssetId": "outfit-004", "program": "Primary Dance Version", "characterUnitId": "Teen Girl Center", "generationMode": "Single Character Pilot"},
+  "frozenInputReferences": {"materialDNA": "Gate-11/12 reference required", "palette": "Gate-03/11 reference required", "cloudCollar": "Gate-02/11 reference required", "productionRules": "existing frozen rules only"},
+  "requiredPreflightEvidence": ["Approved Expansion Blueprint", "Compatibility Boundary PASS", "Generation Permission PASS", "Generation Audit Contract PASS", "Human Approval PASS"],
+  "evidenceStatus": {"approvedExpansionBlueprint": "MISSING_INDEPENDENT_INSTANCE", "compatibilityBoundary": "NOT_VERIFIABLE_WITHOUT_BLUEPRINT", "generationPermission": "MISSING_INDEPENDENT_INSTANCE", "generationAuditContract": "NOT_BOUND", "humanApproval": "MISSING_INDEPENDENT_INSTANCE"},
+  "decision": "BLOCKED",
+  "blockReasons": ["No independent Approved Expansion Blueprint evidence file exists", "No independent Asset Generation Permission evidence file exists", "Gate-13 validation cases are test fixtures and cannot be promoted to production authorization"],
+  "requiredAction": "Provide independently approved Blueprint, permission, audit, and approval evidence bound to this request before any pilot generation",
+  "outputAuthorization": {"assetGenerationRequest": "DRAFT_ONLY", "pilotAssetDraft": "METADATA_ONLY_BLOCKED", "visualAssetGeneration": "PROHIBITED", "batchGeneration": "PROHIBITED", "procurement": "PROHIBITED", "production": "PROHIBITED"},
+  "ageInterpretation": {"targetAgeGroup": "Primary", "frozenCharacterUnitName": "Teen Girl Center", "characterUnitRename": false, "requiredLocalRevalidation": "Age proportion and Primary-stage suitability"}
+}

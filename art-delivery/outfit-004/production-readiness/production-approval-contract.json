@@ -1,0 +1,41 @@
+{
+  "contractId": "G18-PAC-001",
+  "gate": "Gate-18",
+  "assetId": "G16-ASSET-001",
+  "sourceAssetReference": "../asset-generation-execution/generated-draft-v2.png",
+  "sourceAssetSha256": "a64268513439e2993688110554d193101c6e03d9906d889b3e3fce7cfa3bb4f1",
+  "requiredApprovalFields": [
+    "reviewerReference",
+    "approvalDecision",
+    "approvalTimestamp",
+    "approvedAssetId",
+    "approvedSourceHash",
+    "approvedProductionScope",
+    "productionLimit",
+    "batchStatus",
+    "procurementReleaseStatus"
+  ],
+  "humanProductionApproval": {
+    "status": "PASS",
+    "reviewerReference": "Gate-18 Human Production Approval — explicit StageOS project owner instruction",
+    "approvalDecision": "APPROVED_FOR_PRODUCTION_ASSET_CREATION_STEP",
+    "approvalTimestamp": "2026-07-13T04:49:26Z",
+    "approvedAssetId": "G16-ASSET-001",
+    "approvedSourceHash": "a64268513439e2993688110554d193101c6e03d9906d889b3e3fce7cfa3bb4f1",
+    "approvedProductionScope": {
+      "project": "outfit-004",
+      "program": "Primary Dance Version",
+      "characterUnit": "Teen Girl Center",
+      "sourceAssetId": "G16-ASSET-001"
+    },
+    "productionLimit": 1,
+    "batchStatus": false,
+    "procurementReleaseStatus": false,
+    "productionAssetCreation": "NOT_STARTED"
+  },
+  "approvalDoesNotCreateProductionAsset": true,
+  "maximumProductionAssetCount": 1,
+  "batch": false,
+  "procurementRelease": false,
+  "production": false
+}

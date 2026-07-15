@@ -1,0 +1,19 @@
+{
+  "readinessCheckId": "G15-READY-001",
+  "requestId": "G15-REQ-001",
+  "checks": {
+    "approvedBlueprintEvidence": "MISSING",
+    "gate14HumanSignOffReference": "MISSING",
+    "gate14ApprovalEvidence": "MISSING",
+    "auditGeneratorType": "PASS_OPENAI_IMAGE_GENERATION",
+    "auditModelVersion": "PASS_OPENAI_GPT_IMAGE_2",
+    "auditPromptVersion": "PASS_V1.0",
+    "auditApprovalTimestamp": "PASS_RECORDED_2026-07-12T19:55:18Z",
+    "humanApprovalReference": "PASS_EXPLICIT_PROJECT_OWNER_INSTRUCTION"
+  },
+  "currentStatus": "BLOCKED_EVIDENCE_MISSING",
+  "permission": "BLOCKED_EVIDENCE_MISMATCH",
+  "assetGenerationAllowed": false,
+  "visualAssetGenerated": false,
+  "requiredAction": "Obtain authentic Gate-12 Approved Blueprint evidence and Gate-14 Human Sign-off Approval Evidence, then revalidate the permission chain before permission can advance."
+}

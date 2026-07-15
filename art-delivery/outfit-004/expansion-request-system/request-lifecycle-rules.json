@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 1",
+  "states": ["Draft", "Compatibility Check", "Review Required", "Human Sign-off", "Approved", "Asset Generation Permission", "Rejected", "Blocked", "Expired"],
+  "allowedTransitions": [
+    { "transitionId": "ERS-LCY-T01", "from": "Draft", "to": "Compatibility Check", "condition": "request admitted" },
+    { "transitionId": "ERS-LCY-T02", "from": "Compatibility Check", "to": "Review Required", "condition": "boundary check completed and Draft Only blueprint created" },
+    { "transitionId": "ERS-LCY-T03", "from": "Review Required", "to": "Human Sign-off", "condition": "required reviews and revalidations complete" },
+    { "transitionId": "ERS-LCY-T04", "from": "Human Sign-off", "to": "Approved", "condition": "valid sign-off evidence bound to current hashes" },
+    { "transitionId": "ERS-LCY-T05", "from": "Approved", "to": "Asset Generation Permission", "condition": "permission guard passes" }
+  ],
+  "rules": [
+    { "ruleId": "ERS-LCY-001", "name": "Allowlist-only transitions", "when": { "transitionNotAllowlisted": true }, "decision": "Blocked", "requiredAction": "Reject transition and record audit event." },
+    { "ruleId": "ERS-LCY-002", "name": "Failure routing", "whenAny": { "inputInvalid": true, "evidenceMissing": true, "prerequisiteIncomplete": true }, "decision": "Blocked", "requiredAction": "Remain blocked until remediated and rechecked." },
+    { "ruleId": "ERS-LCY-003", "name": "Rejection terminal guard", "when": { "currentState": "Rejected", "advanceAttempted": true }, "decision": "Blocked", "requiredAction": "Create a new request for any renewed proposal." },
+    { "ruleId": "ERS-LCY-004", "name": "Source or approval expiry", "whenAny": { "sourceRevisionChanged": true, "approvalExpired": true }, "decision": "Expired", "requiredAction": "Invalidate permission and repeat compatibility checking and sign-off." },
+    { "ruleId": "ERS-LCY-005", "name": "Blueprint mutation expiry", "when": { "blueprintHashChangedAfterSignOff": true }, "decision": "Expired", "requiredAction": "Invalidate prior sign-off and return to Review Required." },
+    { "ruleId": "ERS-LCY-006", "name": "No status skipping", "whenAny": { "draftToApproved": true, "checkToApproved": true, "signOffSkipped": true }, "decision": "Blocked", "requiredAction": "Follow every required lifecycle state in order." }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schemaId": "G19-POS-001",
+  "gate": "Gate-19",
+  "schemaStatus": "INSTANTIATED_VALIDATED",
+  "instanceReference": "production-asset-record.json",
+  "productionAssetId": "G19-PROD-ASSET-001",
+  "productionVersion": "v1.0",
+  "productionHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+  "requiredFields": {
+    "productionAssetId": "string",
+    "sourcePilotAssetId": "string",
+    "productionVersion": "string",
+    "hash": "sha256",
+    "auditReference": "resolvable-path",
+    "approvalReference": "resolvable-path",
+    "blueprintVersion": "string",
+    "materialDNAVersion": "string",
+    "paletteVersion": "string",
+    "cloudCollarVersion": "string",
+    "characterUnitVersion": "string"
+  },
+  "fieldConstraints": {
+    "productionAssetId": "Must be unique and must not equal G16-ASSET-001",
+    "sourcePilotAssetId": "Must equal G16-ASSET-001",
+    "productionVersion": "Must begin at v1.0 for the first production asset",
+    "hash": "Must equal the SHA-256 of the created production file",
+    "auditReference": "Must resolve to the complete production audit record",
+    "approvalReference": "Must resolve to Gate-18 Human Production Approval",
+    "versionFields": "Must exactly inherit all five LOCKED values"
+  },
+  "maximumInstances": 1,
+  "instanceCreated": true,
+  "instanceCount": 1,
+  "productionAsset": "PRODUCTION_ASSET_ACCEPTED",
+  "humanProductionAcceptance": "PASS",
+  "production": false,
+  "batch": false,
+  "procurementRelease": false
+}

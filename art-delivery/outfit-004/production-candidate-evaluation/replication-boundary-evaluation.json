@@ -1,0 +1,26 @@
+{
+  "evaluationId": "G17-BOUNDARY-001",
+  "assetId": "G16-ASSET-001",
+  "replicationAuthorized": false,
+  "allowedWithFutureAuthorization": [
+    "Same character and program minor variation",
+    "Material detail optimization without Material DNA change",
+    "Compliant color adjustment without Palette System change"
+  ],
+  "reviewRequired": [
+    "Age group change",
+    "Program type change",
+    "Center or Team role change",
+    "Cloud Collar structural change",
+    "Material DNA change"
+  ],
+  "fullGateRecheckRequired": [
+    "Character identity change",
+    "Core silhouette change",
+    "Palette System change",
+    "Production Blueprint change"
+  ],
+  "production": false,
+  "batch": false,
+  "result": "PASS_BOUNDARIES_ENFORCED"
+}
