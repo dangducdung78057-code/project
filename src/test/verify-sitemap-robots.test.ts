@@ -127,13 +127,24 @@ describe("verifySitemapRobots — sitemap.xml 失败", () => {
 });
 
 describe("verifySitemapRobots — CLI 输出格式", () => {
+  function getCliCommand(): { command: string; args: string[] } {
+    const bun = spawnSync("bun", ["--version"], { encoding: "utf8" });
+    if (bun.status === 0) {
+      return { command: "bun", args: [SCRIPT_PATH] };
+    }
+    return {
+      command: process.execPath,
+      args: ["--experimental-strip-types", SCRIPT_PATH],
+    };
+  }
+
   function runInFixture(robots: string, sitemap: string) {
     const dir = mkdtempSync(join(tmpdir(), "vsr-"));
     mkdirSync(join(dir, "public"));
     writeFileSync(join(dir, "public/robots.txt"), robots);
     writeFileSync(join(dir, "public/sitemap.xml"), sitemap);
-    // bun 原生支持直接执行 TypeScript，避免在临时目录中依赖 bunx 的网络下载
-    return spawnSync("bun", [SCRIPT_PATH], {
+    const { command, args } = getCliCommand();
+    return spawnSync(command, args, {
       cwd: dir,
       encoding: "utf8",
     });
