@@ -127,17 +127,11 @@ describe("verifySitemapRobots — sitemap.xml 失败", () => {
 });
 
 describe("verifySitemapRobots — CLI 输出格式", () => {
-  function getCliCommand(): { command: string; args: string[] } {
-    const bun = spawnSync("bun", ["--version"], { encoding: "utf8" });
-    if (bun.status !== null && bun.status === 0) {
-      return { command: "bun", args: [SCRIPT_PATH] };
-    }
-    return {
-      command: process.execPath,
-      args: ["--experimental-strip-types", SCRIPT_PATH],
-    };
-  }
-  const cliCommand = getCliCommand();
+  const bun = spawnSync("bun", ["--version"], { encoding: "utf8" });
+  const cliCommand =
+    bun.status === 0
+      ? { command: "bun", args: [SCRIPT_PATH] }
+      : { command: process.execPath, args: ["--experimental-strip-types", SCRIPT_PATH] };
 
   function runInFixture(robots: string, sitemap: string) {
     const dir = mkdtempSync(join(tmpdir(), "vsr-"));
