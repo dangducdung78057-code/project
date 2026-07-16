@@ -137,14 +137,14 @@ describe("verifySitemapRobots — CLI 输出格式", () => {
       args: ["--experimental-strip-types", SCRIPT_PATH],
     };
   }
+  const cliCommand = getCliCommand();
 
   function runInFixture(robots: string, sitemap: string) {
     const dir = mkdtempSync(join(tmpdir(), "vsr-"));
     mkdirSync(join(dir, "public"));
     writeFileSync(join(dir, "public/robots.txt"), robots);
     writeFileSync(join(dir, "public/sitemap.xml"), sitemap);
-    const { command, args } = getCliCommand();
-    return spawnSync(command, args, {
+    return spawnSync(cliCommand.command, cliCommand.args, {
       cwd: dir,
       encoding: "utf8",
     });
