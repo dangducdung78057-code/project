@@ -129,7 +129,7 @@ describe("verifySitemapRobots — sitemap.xml 失败", () => {
 describe("verifySitemapRobots — CLI 输出格式", () => {
   function getCliCommand(): { command: string; args: string[] } {
     const bun = spawnSync("bun", ["--version"], { encoding: "utf8" });
-    if (bun.status === 0) {
+    if (bun.status !== null && bun.status === 0) {
       return { command: "bun", args: [SCRIPT_PATH] };
     }
     return {
