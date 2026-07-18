@@ -9,7 +9,9 @@ import {
   validateStageInput, validateStageInputDetailed, appendValidationHistory,
   type StageInputData, PROGRAM_TYPES, SCHOOL_STAGES, CONFIRMATION_STATUSES,
 } from "@/lib/stageos";
-import { generateMockPlan } from "@/lib/mockPlan";
+import { generateStagePlan, type StagePlanResult } from "@/features/plan-engine/generate-plan";
+import { toPlanSnapshotInsert } from "@/features/plan-engine/persist-snapshot";
+import { engineModeLabel } from "@/domain/stageos/provenance";
 import { getFlag, useFlags } from "@/lib/featureFlags";
 import { toast } from "sonner";
 import {
@@ -34,6 +36,7 @@ import { RenderPhotoCard } from "@/components/RenderPhotoCard";
 type Project = { id: string; title: string; status: string; performance_date: string | null; performer_count: number | null; updated_at: string };
 type Snapshot = {
   id: string; project_id: string; version: number; mode: string;
+  provider_status?: string | null;
   costume_plan: any; risks: any; reverse_schedule: any; platform_search: any;
   generated_at: string;
 };
@@ -177,9 +180,10 @@ export default function ProjectDetail() {
         return;
       }
 
-      // AI 生成 provider（feature flag，任何失败必须自动回退到 mock，绝不抛 Runtime Error）
+      // AI 增强生成(feature flag):任何失败自动回退到本地规则引擎,绝不抛 Runtime Error。
       let costumePlan: any, risks: any, reverseSchedule: any, platformSearch: any;
-      let mode: "ai" | "mock" = "mock";
+      let mode: "ai" | "local-rules" = "local-rules";
+      let planResult: StagePlanResult | null = null;
       let providerStatus: string | null = null;
       const useAi = getFlag("aiProvider");
       const validateAiPlan = (p: any): string[] => {
@@ -217,40 +221,48 @@ export default function ProjectDetail() {
                 });
               }
             } else {
-              toast.warning("AI provider 不可用，已使用 mock fallback。", { description: `缺少字段：${miss.join("、")}` });
+              toast.warning("AI 不可用,已回退本地规则引擎。", { description: `缺少字段：${miss.join("、")}` });
               providerStatus = "fallback";
             }
           } else {
-            toast.warning("AI provider 不可用，已使用 mock fallback。", {
+            toast.warning("AI 不可用,已回退本地规则引擎。", {
               description: data?.code ?? res.error?.message ?? "AI 返回异常",
             });
             providerStatus = "fallback";
           }
         } catch (aiErr: any) {
-          toast.warning("AI provider 不可用，已使用 mock fallback。", { description: aiErr?.message });
+          toast.warning("AI 不可用,已回退本地规则引擎。", { description: aiErr?.message });
           providerStatus = "fallback";
         }
       }
-      if (mode === "mock") {
-        const mocked = generateMockPlan(input);
-        costumePlan = mocked.costumePlan;
-        risks = mocked.risks;
-        reverseSchedule = mocked.reverseSchedule;
-        platformSearch = mocked.platformSearch;
+      if (mode === "local-rules") {
+        // 统一方案编排器(唯一生成入口):本地确定性规则引擎,离线可用、无需 Token。
+        planResult = generateStagePlan(input);
+        costumePlan = planResult.costumePlan;
+        risks = planResult.risks;
+        reverseSchedule = planResult.reverseSchedule;
+        platformSearch = planResult.platformSearch;
       }
       const nextVersion = (snapshots[0]?.version ?? 0) + 1;
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
-      const { error } = await supabase.from("plan_snapshots").insert({
-        project_id: project.id, user_id: uid, version: nextVersion, mode,
-        provider_status: providerStatus,
-        costume_plan: costumePlan as any, risks: risks as any,
-        reverse_schedule: reverseSchedule as any, platform_search: platformSearch as any,
-      } as any);
+      // 本地规则引擎结果走 toPlanSnapshotInsert(engine/schema_version/provenance/warnings 一并写入);
+      // AI 增强结果保留原有插入形状,mode 写 'ai'。
+      const insertRow = planResult
+        ? {
+            ...toPlanSnapshotInsert({ projectId: project.id, userId: uid ?? "", version: nextVersion, result: planResult }),
+            provider_status: providerStatus,
+          }
+        : {
+            project_id: project.id, user_id: uid, version: nextVersion, mode,
+            provider_status: providerStatus,
+            costume_plan: costumePlan as any, risks: risks as any,
+            reverse_schedule: reverseSchedule as any, platform_search: platformSearch as any,
+          };
+      const { error } = await supabase.from("plan_snapshots").insert(insertRow as any);
       if (error) throw error;
       await supabase.from("projects").update({ status: "planning" }).eq("id", project.id);
-      const label = mode === "ai" ? "AI" : providerStatus === "fallback" ? "mock (fallback)" : "mock";
-      toast.success(`已生成 v${nextVersion} 服装总表(${label})`);
+      toast.success(`已生成 v${nextVersion} 服装总表(${engineModeLabel(mode, providerStatus)})`);
       setGenerationNotice(null);
       load();
     } catch (e: any) { toast.error("生成失败:" + e.message); }
@@ -369,14 +381,15 @@ export default function ProjectDetail() {
         </div>
         <div className="flex flex-col gap-2 w-full md:flex-row md:w-auto md:items-center md:shrink-0">
           <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center"><Link to={`/projects/${id}/edit`}>编辑输入</Link></Button>
+          <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center"><Link to={`/projects/${id}/preview-25d`}>2.5D 预览</Link></Button>
           <Button
             size="sm"
             onClick={handleGenerate}
             disabled={busy}
-            title={hasPrivacyConfirmation ? (aiOn ? "生成 AI 排产（失败回退 mock）" : "生成 Mock 排产") : "请先完成用户/隐私确认"}
+            title={hasPrivacyConfirmation ? (aiOn ? "生成方案 · AI 增强(失败自动回退本地规则)" : "生成方案 · 本地规则引擎(离线可用)") : "请先完成用户/隐私确认"}
             className="w-full md:w-auto justify-center"
           >
-            <Sparkles className="h-4 w-4 mr-1" />{aiOn ? "生成 AI 排产" : "生成 Mock 排产"}
+            <Sparkles className="h-4 w-4 mr-1" />{aiOn ? "生成方案 · AI 增强" : "生成方案 · 本地规则"}
             {aiOn && <span className="ml-2 kbd-route whitespace-nowrap">AI</span>}
             {!hasPrivacyConfirmation && <span className="ml-2 kbd-route whitespace-nowrap">需确认</span>}
           </Button>
@@ -389,7 +402,7 @@ export default function ProjectDetail() {
           <div>
             <div className="font-medium text-warning">尚未完成用户/隐私确认</div>
             <div className="mt-1 text-muted-foreground text-xs">
-              请先在「确认 <span className="kbd-route">/confirm</span>」标签页完成确认后再生成排产。错误码:<span className="font-mono">CONFIRMATION_REQUIRED</span>
+              请先在「确认 <span className="kbd-route">/confirm</span>」标签页完成确认后再生成方案。错误码:<span className="font-mono">CONFIRMATION_REQUIRED</span>
             </div>
           </div>
         </div>
@@ -453,8 +466,8 @@ export default function ProjectDetail() {
           <h2 className="sr-only">服装总表工作区</h2>
           {!latest && (
             <div className="panel panel-body text-sm text-muted-foreground text-center py-10">
-              尚未生成排产。点击右上角 <b>生成 Mock 排产</b>。<br />
-              <span className="text-xs">流程:compile-prompt → costume-master-plan → gated-output → confirm → export</span>
+              尚未生成方案。点击右上角 <b>生成方案 · 本地规则</b>。<br />
+              <span className="text-xs">流程:输入校验 → 本地规则引擎生成(配色/服装/队形/舞台/倒排) → 确认 → 导出</span>
             </div>
           )}
           {latest && <PlanView snapshot={latest} ctx={{ programType: input?.programType, schoolStage: input?.schoolStage }} procurementOn={procurementSettings.procurementCandidatesEnabled} />}
@@ -468,7 +481,7 @@ export default function ProjectDetail() {
                     {snapshots.map((s) => (
                       <tr key={s.id}>
                         <td className="font-mono">v{s.version}</td>
-                        <td><ToneBadge tone="info">{s.mode}</ToneBadge></td>
+                        <td><ToneBadge tone="info">{engineModeLabel(s.mode, s.provider_status)}</ToneBadge></td>
                         <td className="font-mono text-xs text-muted-foreground">{new Date(s.generated_at).toLocaleString("zh-CN", { hour12: false })}</td>
                         <td className="font-mono">¥ {s.costume_plan?.totalEstimate ?? "—"}</td>
                       </tr>
@@ -478,7 +491,7 @@ export default function ProjectDetail() {
               </div>
               <MobileCardList>
                 {snapshots.map((s) => (
-                  <MobileCard key={s.id} title={<span className="font-mono">v{s.version}</span>} right={<ToneBadge tone="info">{s.mode}</ToneBadge>}>
+                  <MobileCard key={s.id} title={<span className="font-mono">v{s.version}</span>} right={<ToneBadge tone="info">{engineModeLabel(s.mode, s.provider_status)}</ToneBadge>}>
                     <MobileField label="生成时间" value={new Date(s.generated_at).toLocaleString("zh-CN", { hour12: false })} mono />
                     <MobileField label="合计" value={`¥ ${s.costume_plan?.totalEstimate ?? "—"}`} mono />
                   </MobileCard>
@@ -499,7 +512,7 @@ export default function ProjectDetail() {
             </div>
             <div className="panel-body space-y-3">
               <div className="text-xs text-muted-foreground">
-                用户/隐私确认为生成排产的前置条件。未完成确认前无法生成 Mock 排产。
+                用户/隐私确认为生成方案的前置条件。未完成确认前无法生成方案。
               </div>
               <Textarea rows={3} placeholder="填写确认/修订备注(可选)…" value={notes} onChange={(e) => setNotes(e.target.value)} />
               <div className="flex gap-2 flex-wrap">
@@ -556,7 +569,7 @@ export default function ProjectDetail() {
           <div className="panel">
             <div className="panel-header">
               <h3 className="text-sm font-semibold">导出</h3>
-              <span className="kbd-route">POST /export</span>
+              <span className="text-xs text-muted-foreground">JSON / Markdown</span>
             </div>
             <div className="panel-body space-y-3">
               <div className="text-sm text-muted-foreground">
@@ -586,6 +599,20 @@ export default function ProjectDetail() {
             </div>
             <div className="panel-body">
               <div className="space-y-4">
+                <section className="rounded border border-border p-3 space-y-2" aria-labelledby="render-25d">
+                  <h4 id="render-25d" className="text-xs font-semibold flex items-center gap-1.5">
+                    <Wand2 className="h-4 w-4 text-primary" aria-hidden="true" />2.5D 舞台预览与队形编排
+                    <ToneBadge tone="success">可用</ToneBadge>
+                  </h4>
+                  <div className="text-xs text-muted-foreground">
+                    PixiJS/WebGL 正面透视视口(非 SVG):台阶、36 人拖拽编排、9 种队形模板、关键帧与高清 PNG 导出,离线可用。
+                  </div>
+                  <div>
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={`/projects/${id}/preview-25d`}>打开 2.5D 工作台 →</Link>
+                    </Button>
+                  </div>
+                </section>
                 <section className="rounded border border-border p-3 space-y-2" aria-labelledby="render-3d">
                   <h4 id="render-3d" className="text-xs font-semibold flex items-center gap-1.5">
                     <LayersIcon className="h-4 w-4 text-primary" aria-hidden="true" />3D 队形推演预览
@@ -615,10 +642,15 @@ export default function ProjectDetail() {
                     </div>
                   )}
                 </section>
-                <div className="grid grid-cols-2 gap-3">
-                  <PlaceholderCard icon={<Wand2 />} title="3D 人台" route="/api/stageos/3d-mannequin" />
-                  <PlaceholderCard icon={<Video />} title="15s 视频" route="/api/stageos/render-video-15s" />
-                </div>
+                <section className="rounded border border-dashed border-border p-3 space-y-1 opacity-60" aria-labelledby="render-video">
+                  <h4 id="render-video" className="text-xs font-semibold flex items-center gap-1.5">
+                    <Video className="h-4 w-4 text-muted-foreground" aria-hidden="true" />15s 预览视频
+                    <ToneBadge tone="muted">规划中</ToneBadge>
+                  </h4>
+                  <div className="text-xs text-muted-foreground">
+                    待真实渲染管线接入后开放,当前不提供入口。
+                  </div>
+                </section>
               </div>
             </div>
           </div>
@@ -783,7 +815,7 @@ function PlanView({ snapshot, ctx, procurementOn }: { snapshot: Snapshot; ctx: M
       <div className="panel">
         <div className="panel-header">
           <h3 className="text-sm font-semibold">总额估算</h3>
-          <ToneBadge tone="muted">v{snapshot.version} · {snapshot.mode}</ToneBadge>
+          <ToneBadge tone="muted">v{snapshot.version} · {engineModeLabel(snapshot.mode, snapshot.provider_status)}</ToneBadge>
         </div>
         <div className="panel-body flex items-baseline gap-3">
           <div className="text-2xl font-semibold tabular-nums">¥ {plan.totalEstimate?.toLocaleString?.() ?? plan.totalEstimate}</div>
@@ -834,7 +866,7 @@ function PlanView({ snapshot, ctx, procurementOn }: { snapshot: Snapshot; ctx: M
       <div className="panel">
         <div className="panel-header">
           <h3 className="text-sm font-semibold">倒排时间表 reverseSchedule</h3>
-          <span className="kbd-route">/reverse-schedule</span>
+          <ToneBadge tone="muted">本地规则生成</ToneBadge>
         </div>
         <div className="hidden md:block">
           <table className="ops-table">
@@ -940,7 +972,7 @@ function PlanTable({ title, rows, ctx, procurementOn }: { title: string; rows: a
           </tbody>
         </table>
       </div>
-      <MobileCardList empty="暂��条目">
+      <MobileCardList empty="暂无条目">
         {list.map((r, i) => (
           <MobileCard
             key={i}
@@ -959,19 +991,6 @@ function PlanTable({ title, rows, ctx, procurementOn }: { title: string; rows: a
           </MobileCard>
         ))}
       </MobileCardList>
-    </div>
-  );
-}
-
-function PlaceholderCard({ icon, title, route }: { icon: React.ReactNode; title: string; route: string }) {
-  return (
-    <div className="panel p-4 border-dashed">
-      <div className="flex items-center gap-2 text-sm font-medium">
-        <span className="text-muted-foreground">{icon}</span>
-        {title}
-      </div>
-      <div className="mt-1 kbd-route">{route}</div>
-      <div className="mt-2 text-xs text-muted-foreground">占位卡片。真实渲染将在未来集成 StageOS 后端后展示。</div>
     </div>
   );
 }
@@ -1074,4 +1093,3 @@ function ValidationHistoryPanel({ input }: { input: StageInputData | null }) {
     </div>
   );
 }
-
