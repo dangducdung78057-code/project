@@ -3,10 +3,10 @@ import { readFileSync, mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve, join } from "node:path";
 import { spawnSync } from "node:child_process";
-import { verifySitemapRobots } from "../../scripts/verify-sitemap-robots";
+import { verifySitemapRobots } from "../../scripts/verify-sitemap-robots.mjs";
 
 const ROOT = resolve(__dirname, "../..");
-const SCRIPT_PATH = resolve(ROOT, "scripts/verify-sitemap-robots.ts");
+const SCRIPT_PATH = resolve(ROOT, "scripts/verify-sitemap-robots.mjs");
 
 function minimalRobots(url = "https://example.com/sitemap.xml") {
   return `User-agent: *\nAllow: /\n\nSitemap: ${url}\n`;
@@ -132,8 +132,7 @@ describe("verifySitemapRobots — CLI 输出格式", () => {
     mkdirSync(join(dir, "public"));
     writeFileSync(join(dir, "public/robots.txt"), robots);
     writeFileSync(join(dir, "public/sitemap.xml"), sitemap);
-    // bun 原生支持直接执行 TypeScript，避免在临时目录中依赖 bunx 的网络下载
-    return spawnSync("bun", [SCRIPT_PATH], {
+    return spawnSync("node", [SCRIPT_PATH], {
       cwd: dir,
       encoding: "utf8",
     });
