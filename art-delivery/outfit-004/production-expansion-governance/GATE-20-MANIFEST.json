@@ -1,0 +1,42 @@
+{
+  "manifestId": "G20-MANIFEST-001",
+  "gate": "Gate-20 Production Expansion Governance",
+  "version": "1.0",
+  "gateStatus": "GOVERNANCE_BUILD_COMPLETED",
+  "baselineAsset": {
+    "productionAssetId": "G19-PROD-ASSET-001",
+    "productionVersion": "v1.0",
+    "status": "PRODUCTION_ASSET_ACCEPTED",
+    "productionHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+    "sourceReference": "../production-asset/production-asset-record.json"
+  },
+  "governanceScope": {
+    "project": "outfit-004",
+    "program": "Primary Dance Version",
+    "characterUnit": "Teen Girl Center",
+    "assetLimit": 1,
+    "purpose": "Govern maintenance, versioning, batch, team expansion, and procurement boundaries without granting expansion authority."
+  },
+  "files": [
+    "GATE-20-MANIFEST.json",
+    "expansion-boundary-rules.json",
+    "batch-authorization-rules.json",
+    "team-expansion-rules.json",
+    "procurement-release-rules.json",
+    "version-governance-rules.json",
+    "validation-cases.json",
+    "GATE-20-REPORT.md"
+  ],
+  "forbiddenActions": [
+    "Batch Production",
+    "Team Expansion",
+    "Procurement Release",
+    "Creation of a second Production Asset",
+    "Modification of G19-PROD-ASSET-001 v1.0",
+    "Modification of Gate-01 through Gate-19"
+  ],
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false,
+  "secondProductionAssetCreated": false
+}

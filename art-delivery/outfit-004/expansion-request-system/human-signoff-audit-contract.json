@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 1",
+  "signOffRequiredFields": ["signOffId", "requestId", "blueprintId", "blueprintContentHash", "requestInputHash", "gateSourceReferences", "boundaryDecision", "matchedRuleIds", "revalidationEvidence", "approvalResult", "approverRoleReference", "signedAt", "expiresAt"],
+  "auditEventRequiredFields": ["eventId", "requestId", "eventType", "fromState", "toState", "timestamp", "actorRoleReference", "inputHash", "evidenceReferences", "outcome"],
+  "rules": [
+    { "ruleId": "ERS-AUD-001", "name": "Every transition audited", "when": { "stateTransitionOccurs": true }, "requirement": "Emit one immutable audit event." },
+    { "ruleId": "ERS-AUD-002", "name": "Boundary evidence audited", "when": { "compatibilityCheckCompletes": true }, "requirement": "Record all matched Rule IDs, evidence summary and aggregate decision." },
+    { "ruleId": "ERS-AUD-003", "name": "Sign-off hash binding", "when": { "humanSignOffRecorded": true }, "requirement": "Bind sign-off to current request and Blueprint hashes plus source revisions." },
+    { "ruleId": "ERS-AUD-004", "name": "Stale sign-off invalid", "whenAny": { "hashMismatch": true, "sourceMismatch": true, "signOffExpired": true }, "decision": "Expired", "requiredAction": "Invalidate approval and any Permission." },
+    { "ruleId": "ERS-AUD-005", "name": "Explicit approval result", "when": { "approvalResultMissing": true }, "decision": "Blocked", "requiredAction": "Record explicit approved or rejected result." },
+    { "ruleId": "ERS-AUD-006", "name": "Rules-only audit contract", "requirement": "No database, user system or identity provider is implemented by this delivery." }
+  ]
+}

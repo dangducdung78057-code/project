@@ -1,0 +1,21 @@
+{
+  "validationId": "G17-VAL-001",
+  "assetId": "G16-ASSET-001",
+  "cases": [
+    {"id":"G17-V-001","check":"Asset ID matches","result":"PASS"},
+    {"id":"G17-V-002","check":"Asset file exists","result":"PASS"},
+    {"id":"G17-V-003","check":"SHA-256 matches Gate-16 record","result":"PASS"},
+    {"id":"G17-V-004","check":"Gate-12 Blueprint reference matches","result":"PASS"},
+    {"id":"G17-V-005","check":"Material DNA version matches","result":"PASS"},
+    {"id":"G17-V-006","check":"Palette version matches","result":"PASS"},
+    {"id":"G17-V-007","check":"Cloud Collar version matches","result":"PASS"},
+    {"id":"G17-V-008","check":"Teen Girl Center identity matches","result":"PASS"},
+    {"id":"G17-V-009","check":"Primary Dance Version matches","result":"PASS"},
+    {"id":"G17-V-010","check":"Single character scope enforced","result":"PASS"},
+    {"id":"G17-V-011","check":"Production remains false","result":"PASS"},
+    {"id":"G17-V-012","check":"Batch remains false","result":"PASS"}
+  ],
+  "passCount": 12,
+  "failCount": 0,
+  "overallResult": "PASS"
+}

@@ -1,0 +1,45 @@
+{
+  "rulesId": "G18-PCR-001",
+  "gate": "Gate-18",
+  "version": "1.0",
+  "assetId": "G16-ASSET-001",
+  "sourceStatus": "PRODUCTION_CANDIDATE",
+  "allowedTransition": {
+    "from": "PRODUCTION_CANDIDATE",
+    "to": "PRODUCTION_ASSET",
+    "automatic": false,
+    "requiresHumanProductionApproval": true
+  },
+  "requiredCriteria": [
+    "Final Visual Review PASS",
+    "Production Blueprint Lock PASS",
+    "Material DNA Lock PASS",
+    "Palette Lock PASS",
+    "Cloud Collar Lock PASS",
+    "Asset Integrity PASS",
+    "Audit Complete PASS",
+    "Human Production Approval PASS"
+  ],
+  "allowedAfterApproval": [
+    "Create one production version for G16-ASSET-001",
+    "Output formally approved asset files",
+    "Create production specification references"
+  ],
+  "reviewRequired": [
+    "Size change",
+    "Material substitution",
+    "Process adjustment",
+    "Cost change",
+    "Character expansion"
+  ],
+  "prohibitedAutomaticActions": [
+    "PRODUCTION_ASSET conversion",
+    "Batch Production",
+    "Team Expansion",
+    "Procurement Release"
+  ],
+  "failClosedDecision": "BLOCKED",
+  "production": false,
+  "batch": false,
+  "procurementRelease": false
+}

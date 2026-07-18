@@ -1,0 +1,53 @@
+{
+  "productionAssetId": "G19-PROD-ASSET-001",
+  "sourcePilotAssetId": "G16-ASSET-001",
+  "productionVersion": "v1.0",
+  "project": "outfit-004",
+  "program": "Primary Dance Version",
+  "characterUnit": "Teen Girl Center",
+  "assetScope": "Single Production Asset",
+  "sourceFileReference": "../asset-generation-execution/generated-draft-v2.png",
+  "sourceHash": "a64268513439e2993688110554d193101c6e03d9906d889b3e3fce7cfa3bb4f1",
+  "productionFileReference": "production-asset-v1.0.png",
+  "productionHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+  "fileMetadata": {
+    "format": "PNG",
+    "width": 1024,
+    "height": 1024,
+    "colorMode": "RGB"
+  },
+  "auditReference": "../controlled-generation/audit-binding-record.json",
+  "approvalReference": "../production-readiness/GATE-18-HUMAN-PRODUCTION-APPROVAL-REPORT.md",
+  "approvalContractReference": "../production-readiness/production-approval-contract.json",
+  "versionLocksReference": "../production-readiness/version-lock-rules.json",
+  "inheritedVersions": {
+    "blueprintVersion": "EBP-outfit-004-primary-dance",
+    "materialDNAVersion": "Gate-11/12 Material DNA",
+    "paletteVersion": "Gate-03/11 Palette System",
+    "cloudCollarVersion": "Gate-02/11 Cloud Collar System",
+    "characterUnitVersion": "Teen Girl Center / Primary Dance Version"
+  },
+  "versionLockInheritance": {
+    "blueprintVersion": "LOCKED",
+    "materialDNAVersion": "LOCKED",
+    "paletteVersion": "LOCKED",
+    "cloudCollarVersion": "LOCKED",
+    "characterUnitVersion": "LOCKED"
+  },
+  "createdAt": "2026-07-13T05:06:45Z",
+  "status": "PRODUCTION_ASSET_ACCEPTED",
+  "productionIntegrityCheck": "PASS",
+  "humanProductionAcceptance": "PASS",
+  "humanAcceptance": {
+    "reviewerReference": "Gate-19 Human Production Acceptance — explicit StageOS project owner instruction",
+    "acceptanceDecision": "PRODUCTION_ASSET_ACCEPTED",
+    "acceptanceTimestamp": "2026-07-13T05:09:13Z",
+    "acceptedAssetId": "G19-PROD-ASSET-001",
+    "acceptedProductionHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+    "productionLimit": 1
+  },
+  "productionLimit": 1,
+  "assetCount": 1,
+  "batch": false,
+  "procurementRelease": false
+}

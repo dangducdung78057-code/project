@@ -1,0 +1,37 @@
+{
+  "rulesId": "G20-EXPANSION-BOUNDARY-001",
+  "gate": "Gate-20",
+  "baselineAssetId": "G19-PROD-ASSET-001",
+  "baselineVersion": "v1.0",
+  "allowed": [
+    "Maintenance version of the same Production Asset after explicit maintenance authorization",
+    "Authorized minor version update that preserves every locked design system",
+    "Quality correction that does not change character, Blueprint, Material DNA, Palette, Cloud Collar, size, or process",
+    "Audit metadata completion that does not alter the accepted binary"
+  ],
+  "reviewRequired": [
+    "New character",
+    "New program",
+    "New color system",
+    "New material system",
+    "New Cloud Collar structure",
+    "Size change",
+    "Process change",
+    "Cost-impacting content change"
+  ],
+  "fullGateRequired": [
+    "Team Expansion",
+    "Batch Production",
+    "Production Line Expansion",
+    "Procurement Release",
+    "Second Production Asset",
+    "Series expansion"
+  ],
+  "defaultDecision": "BLOCKED",
+  "reviewRequiredDecision": "BLOCKED_PENDING_REVIEW",
+  "fullGateDecision": "BLOCKED_PENDING_NEW_GATE",
+  "automaticExpansion": false,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

@@ -1,0 +1,38 @@
+{
+  "rulesId": "G20-PROCUREMENT-001",
+  "gate": "Gate-20",
+  "baselineAssetId": "G19-PROD-ASSET-001",
+  "stateFlow": [
+    "PRODUCTION_ASSET",
+    "PROCUREMENT_CANDIDATE",
+    "PROCUREMENT_APPROVAL",
+    "PROCUREMENT_RELEASE"
+  ],
+  "currentState": "PRODUCTION_ASSET",
+  "procurementCandidateRequiredFields": [
+    "productionSpec",
+    "materialSpec",
+    "costLayer",
+    "supplierReference",
+    "approvedProductionAssetId",
+    "productionVersion",
+    "productionHash",
+    "quantityScope",
+    "sizeScope",
+    "processScope"
+  ],
+  "approvalRequirements": [
+    "Production Asset status is PRODUCTION_ASSET_ACCEPTED",
+    "Specifications match locked versions",
+    "Cost Layer reviewed",
+    "Supplier Reference valid",
+    "Material substitution policy defined",
+    "Human Procurement Approval PASS"
+  ],
+  "missingRequiredFieldResult": "BLOCKED",
+  "missingHumanApprovalResult": "BLOCKED",
+  "productionAcceptanceDoesNotImplyProcurementAuthority": true,
+  "procurementCandidate": "NOT_CREATED",
+  "procurementApproval": "NOT_STARTED",
+  "procurementRelease": false
+}

@@ -1,0 +1,19 @@
+{
+  "checklistId": "G14-HRC-outfit-004-primary-dance-001",
+  "status": "PENDING_BLOCKED",
+  "preGenerationItems": [
+    {"reviewId":"G14-HR-001","item":"Independent Approved Expansion Blueprint present and hash-valid","result":"FAIL_MISSING"},
+    {"reviewId":"G14-HR-002","item":"Compatibility Boundary PASS bound to Blueprint","result":"NOT_VERIFIABLE"},
+    {"reviewId":"G14-HR-003","item":"Asset Generation Permission PASS bound to request","result":"FAIL_MISSING"},
+    {"reviewId":"G14-HR-004","item":"Generation Audit Contract complete and bound","result":"FAIL_NOT_BOUND"},
+    {"reviewId":"G14-HR-005","item":"Human Approval PASS with valid timestamp and hash","result":"FAIL_MISSING"},
+    {"reviewId":"G14-HR-006","item":"Single-character scope is Teen Girl Center only","result":"PASS"},
+    {"reviewId":"G14-HR-007","item":"Primary age-proportion revalidation task recorded","result":"PASS"}
+  ],
+  "postGenerationItems": [
+    {"reviewId":"G14-HR-008","item":"Visual Quality Check six dimensions complete","result":"NOT_RUN_BLOCKED"},
+    {"reviewId":"G14-HR-009","item":"No batch, procurement, production, or commercial output","result":"PASS"}
+  ],
+  "decision":"BLOCKED",
+  "approvalIssued": false
+}

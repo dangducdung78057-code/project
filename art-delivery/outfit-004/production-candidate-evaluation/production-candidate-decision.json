@@ -1,0 +1,22 @@
+{
+  "decisionId": "G17-DEC-001",
+  "assetId": "G16-ASSET-001",
+  "sourceStatus": "APPROVED_PILOT_DRAFT",
+  "decision": "PRODUCTION_CANDIDATE_READY",
+  "criteria": {
+    "visualReview": "PASS",
+    "humanApproval": "PASS",
+    "compatibilityCheck": "PASS",
+    "assetIntegrity": "PASS",
+    "auditRecord": "COMPLETE"
+  },
+  "humanSignoffStatus": "PASS",
+  "reviewerReference": "Gate-17 Human Sign-off — explicit StageOS project owner instruction",
+  "approvalDecision": "PRODUCTION_CANDIDATE",
+  "approvalTimestamp": "2026-07-13T04:19:22Z",
+  "assetStatus": "PRODUCTION_CANDIDATE",
+  "automaticProductionConversion": false,
+  "production": false,
+  "batch": false,
+  "productionCandidateGranted": true
+}

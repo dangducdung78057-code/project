@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 2",
+  "sourceContract": "Frozen Blueprint; reference only",
+  "fieldClasses": {
+    "inheritable": ["approvedConstructionSequence", "unchangedSeamMap", "unchangedComponentIdentifiers", "unchangedAssemblyOrder"],
+    "validationRequired": ["sizeGrading", "movementAllowance", "formationVisibility", "attachmentTolerance", "venueDependentClearance"],
+    "inheritanceProhibited": ["baseGarmentGeometry", "cloudCollarCoreGeometry", "materialDNADefinition", "ageGroupDefinition", "programTypeDefinition", "teamIdentityDefinition"]
+  },
+  "rules": [
+    { "ruleId": "CBS-BPI-001", "when": { "fieldClass": "inheritable", "sourceApproved": true, "targetValueUnchanged": true }, "decision": "Direct Reuse", "requiredAction": "Retain source revision and field-level provenance." },
+    { "ruleId": "CBS-BPI-002", "when": { "fieldClass": "validationRequired", "coreStructureUnchanged": true }, "decision": "Conditional Reuse", "requiredAction": "Validate the changed field only and attach evidence." },
+    { "ruleId": "CBS-BPI-003", "when": { "fieldClass": "inheritanceProhibited" }, "decision": "Full Gate Revalidation", "requiredAction": "Do not copy the field; reopen its authoritative Gate." },
+    { "ruleId": "CBS-BPI-004", "when": { "sourceBlueprintRevisionMissing": true }, "decision": "Review Required", "requiredAction": "Recover authoritative Blueprint revision before inheritance." },
+    { "ruleId": "CBS-BPI-005", "when": { "targetOverridesFrozenBlueprint": true }, "decision": "Full Gate Revalidation", "requiredAction": "Stop inheritance and route the override through affected Gates." }
+  ]
+}

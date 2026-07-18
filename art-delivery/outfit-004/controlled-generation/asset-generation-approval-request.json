@@ -1,0 +1,43 @@
+{
+  "requestId": "G15-AGR-001",
+  "blueprintId": "EBP-outfit-004-primary-dance",
+  "characterUnitId": "Teen Girl Center",
+  "materialDNAVersion": "Gate-11/12 Material DNA",
+  "paletteVersion": "Gate-03/11 Palette System",
+  "cloudCollarVersion": "Gate-02/11 Cloud Collar System",
+  "auditContractReference": "../asset-generation-pipeline/generation-audit-contract.json",
+  "humanApprovalReference": "Gate-15 Pre-Generation Human Sign-off = PASS",
+  "evidenceReferences": {
+    "gate12ApprovedBlueprintEvidence": "gate12-approved-blueprint-evidence.json",
+    "gate14HumanApprovalEvidence": "gate14-human-approval-evidence.json",
+    "auditBindingRecord": "audit-binding-record.json",
+    "gate15HumanApprovalRequest": "human-approval-request.json"
+  },
+  "generationScope": {
+    "outfitId": "outfit-004",
+    "programType": "Primary Dance Version",
+    "mode": "Single Character",
+    "purpose": "Pilot Asset"
+  },
+  "assetLimit": {
+    "maxAssetCount": 1,
+    "maxCharacterCount": 1,
+    "batchGenerationAllowed": false
+  },
+  "authorizationConditions": {
+    "gate12Blueprint": "BLOCKED_SOURCE_INSTANCE_DRAFT_ONLY",
+    "gate13PermissionRules": "PASS_RULESET_ONLY",
+    "gate14Pilot": "BLOCKED_PENDING_EVIDENCE",
+    "gate15PreGeneration": "PASS"
+  },
+  "requestedAuthorizationResult": "APPROVED_FOR_SINGLE_ASSET_GENERATION",
+  "authorizationResult": "BLOCKED_EVIDENCE_MISMATCH",
+  "blockingReasons": [
+    "approved-blueprint-instance.json remains DRAFT_ONLY",
+    "generation-permission-instance.json remains BLOCKED_PENDING_APPROVAL",
+    "audit-binding-record.json remains INCOMPLETE_BLOCKED with unassigned generator/model/prompt and null approval timestamp",
+    "Gate-14 pilot record remains BLOCKED_PENDING_EVIDENCE"
+  ],
+  "assetGenerationAllowed": false,
+  "visualAssetGenerated": false
+}

@@ -1,0 +1,53 @@
+{
+  "rulesId": "G20-VERSION-GOVERNANCE-001",
+  "gate": "Gate-20",
+  "baselineAssetId": "G19-PROD-ASSET-001",
+  "baselineHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+  "lockedVersions": {
+    "productionAssetVersion": {
+      "value": "v1.0",
+      "status": "LOCKED"
+    },
+    "blueprintVersion": {
+      "value": "EBP-outfit-004-primary-dance",
+      "status": "LOCKED"
+    },
+    "materialDNAVersion": {
+      "value": "Gate-11/12 Material DNA",
+      "status": "LOCKED"
+    },
+    "paletteVersion": {
+      "value": "Gate-03/11 Palette System",
+      "status": "LOCKED"
+    },
+    "cloudCollarVersion": {
+      "value": "Gate-02/11 Cloud Collar System",
+      "status": "LOCKED"
+    },
+    "characterVersion": {
+      "value": "Teen Girl Center / Primary Dance Version",
+      "status": "LOCKED"
+    }
+  },
+  "changeRequirements": [
+    "NEW_VERSION",
+    "NEW_HASH",
+    "NEW_REVIEW"
+  ],
+  "versionStates": [
+    "VERSION_PROPOSED",
+    "VERSION_BUILD_APPROVED",
+    "VERSION_CREATED",
+    "VERSION_PENDING_REVIEW",
+    "VERSION_ACCEPTED",
+    "VERSION_BLOCKED"
+  ],
+  "immutabilityRules": [
+    "G19-PROD-ASSET-001 v1.0 and its hash must never be overwritten",
+    "A changed binary must use a new version and hash",
+    "A new version cannot inherit Human Acceptance automatically",
+    "Structural change requires a new Gate"
+  ],
+  "overwriteBaselineAllowed": false,
+  "automaticAcceptance": false
+}

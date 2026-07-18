@@ -1,0 +1,21 @@
+{
+  "schemaVersion":"1.0.0",
+  "gate":"Gate-13",
+  "mode":"Pre-generation contract validation only",
+  "visualAssetGeneration":false,
+  "inheritedContracts":[
+    {"contractId":"G13-VVC-001","name":"Character Unit visual identity","source":"Existing Character Unit","required":true},
+    {"contractId":"G13-VVC-002","name":"Material DNA appearance","source":"Existing Material DNA","required":true},
+    {"contractId":"G13-VVC-003","name":"Palette constraints","source":"Existing Palette","required":true},
+    {"contractId":"G13-VVC-004","name":"Cloud Collar silhouette and layering","source":"Existing Cloud Collar","required":true},
+    {"contractId":"G13-VVC-005","name":"Stage environment validation conditions","source":"Approved Expansion Blueprint","required":true}
+  ],
+  "rules":[
+    {"ruleId":"G13-VVR-001","condition":"all inherited visual contracts are present and hash-matched","decision":"Visual Contract PASS","requiredAction":"record pre-generation evidence"},
+    {"ruleId":"G13-VVR-002","condition":"Material DNA visual contract mismatch","decision":"BLOCKED","requiredAction":"return to Gate-11 Compatibility Boundary"},
+    {"ruleId":"G13-VVR-003","condition":"Palette exceeds frozen constraints or reference mismatch","decision":"BLOCKED","requiredAction":"return to palette validation"},
+    {"ruleId":"G13-VVR-004","condition":"Cloud Collar silhouette, geometry, placement, or layer order differs","decision":"BLOCKED","requiredAction":"return to Cloud Collar compatibility validation"},
+    {"ruleId":"G13-VVR-005","condition":"stage lighting, LED, venue, or veil condition has unresolved local revalidation","decision":"BLOCKED","requiredAction":"complete local visual revalidation"},
+    {"ruleId":"G13-VVR-006","condition":"visual validation attempts to create an image or model","decision":"BLOCKED","requiredAction":"perform contract-only validation"}
+  ]
+}

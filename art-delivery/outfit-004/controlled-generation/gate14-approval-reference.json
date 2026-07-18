@@ -1,0 +1,15 @@
+{
+  "referenceId": "G15-G14-REF-001",
+  "sourceGate": "Gate-14 Pilot Asset Generation",
+  "sourceManifest": "../pilot-generation/GATE-14-MANIFEST.json",
+  "gate14SignOffResult": "HUMAN_SIGN_OFF_NOT_RECORDED_IN_SOURCE",
+  "validationResult": "PASS — 12/12 validation cases",
+  "humanSignOffReference": null,
+  "approvalEvidence": null,
+  "sourceBuildStatus": "Gate-14 Pilot Build Completed",
+  "sourcePilotStatus": "BLOCKED_PENDING_EVIDENCE",
+  "approvalIssued": false,
+  "referenceDecision": "BLOCKED_EVIDENCE_MISSING",
+  "blockingReason": "Gate-14 source files contain no Human Sign-off Reference or Approval Evidence.",
+  "visualAssetGenerated": false
+}

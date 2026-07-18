@@ -1,0 +1,16 @@
+{
+  "checkId": "G14-VQC-outfit-004-primary-dance-001",
+  "requestId": "G14-PILOT-outfit-004-primary-dance-001",
+  "status": "NOT_RUN_BLOCKED",
+  "reason": "No visual pilot asset exists because required authorization evidence is missing",
+  "checks": [
+    {"qualityId":"G14-VQ-001","dimension":"Silhouette consistency","status":"NOT_RUN_BLOCKED","requiredEvidence":"single-character pilot visual"},
+    {"qualityId":"G14-VQ-002","dimension":"Palette consistency","status":"NOT_RUN_BLOCKED","requiredEvidence":"frozen palette reference and pilot visual"},
+    {"qualityId":"G14-VQ-003","dimension":"Cloud Collar structure","status":"NOT_RUN_BLOCKED","requiredEvidence":"frozen Cloud Collar reference and pilot visual"},
+    {"qualityId":"G14-VQ-004","dimension":"Thin Veil rules","status":"NOT_RUN_BLOCKED","requiredEvidence":"Gate-06 rule evidence and pilot visual"},
+    {"qualityId":"G14-VQ-005","dimension":"Age proportion","status":"NOT_RUN_BLOCKED","requiredEvidence":"Primary proportion review for Teen Girl Center frozen ID"},
+    {"qualityId":"G14-VQ-006","dimension":"Stage adaptation","status":"NOT_RUN_BLOCKED","requiredEvidence":"Primary Dance stage environment and pilot visual"}
+  ],
+  "overallDecision": "BLOCKED",
+  "passCannotBeInferred": true
+}

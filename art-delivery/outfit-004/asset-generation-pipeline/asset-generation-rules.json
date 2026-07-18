@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-13",
+  "system": "Controlled Asset Generation Pipeline",
+  "defaultGuard": "BLOCKED",
+  "bulkGeneration": false,
+  "pipeline": [
+    {"stageId":"G13-STG-001","order":1,"name":"Approved Expansion Blueprint","required":true,"failureState":"BLOCKED"},
+    {"stageId":"G13-STG-002","order":2,"name":"Asset Generation Input Validation","required":true,"failureState":"BLOCKED"},
+    {"stageId":"G13-STG-003","order":3,"name":"Character Unit Selection","required":true,"failureState":"BLOCKED"},
+    {"stageId":"G13-STG-004","order":4,"name":"Material DNA Binding","required":true,"failureState":"BLOCKED"},
+    {"stageId":"G13-STG-005","order":5,"name":"Palette Binding","required":true,"failureState":"BLOCKED"},
+    {"stageId":"G13-STG-006","order":6,"name":"Cloud Collar Binding","required":true,"failureState":"BLOCKED"},
+    {"stageId":"G13-STG-007","order":7,"name":"Generation Permission Check","required":true,"failureState":"BLOCKED"},
+    {"stageId":"G13-STG-008","order":8,"name":"Asset Generation Allowed","required":true,"failureState":"BLOCKED"}
+  ],
+  "states": ["Draft Generation Request","Approved Generation Request","Production Asset Generation"],
+  "rules": [
+    {"ruleId":"G13-AGR-001","condition":"all pipeline stages execute in order","decision":"Continue","requiredAction":"preserve stage evidence"},
+    {"ruleId":"G13-AGR-002","condition":"any stage is skipped or reordered","decision":"BLOCKED","requiredAction":"reject generation request"},
+    {"ruleId":"G13-AGR-003","condition":"new request is created","decision":"Draft Generation Request","requiredAction":"keep generation disabled"},
+    {"ruleId":"G13-AGR-004","condition":"Draft Generation Request has complete bindings and independent human approval","decision":"Approved Generation Request","requiredAction":"record approval evidence"},
+    {"ruleId":"G13-AGR-005","condition":"Approved Generation Request has all four permission predicates PASS","decision":"Production Asset Generation","requiredAction":"issue single controlled generation authorization"},
+    {"ruleId":"G13-AGR-006","condition":"Draft Generation Request attempts direct Production Asset Generation transition","decision":"BLOCKED","requiredAction":"require Approved Generation Request state"},
+    {"ruleId":"G13-AGR-007","condition":"batch or multi-character generation requested","decision":"BLOCKED","requiredAction":"split into independently approved single-character requests"},
+    {"ruleId":"G13-AGR-008","condition":"pipeline design-stage test executes","decision":"Draft Generation Request","requiredAction":"do not invoke any asset generator"}
+  ]
+}

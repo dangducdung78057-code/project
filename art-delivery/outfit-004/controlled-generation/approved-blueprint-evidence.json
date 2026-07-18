@@ -1,0 +1,15 @@
+{
+  "evidenceId": "G15-BPE-001",
+  "blueprintId": "EBP-outfit-004-primary-dance",
+  "sourceGate": "Gate-12 Expansion Blueprint",
+  "gate12ApprovedBlueprintReference": "../asset-expansion-execution/GATE-12-PHASE-2-MANIFEST.json",
+  "approvalSource": null,
+  "characterUnitId": "Teen Girl Center",
+  "materialDNAReference": "Gate-11/12 Material DNA",
+  "paletteReference": "Gate-03/11 Palette System",
+  "cloudCollarReference": "Gate-02/11 Cloud Collar System",
+  "approvalStatus": "DRAFT_ONLY",
+  "evidenceDecision": "BLOCKED_EVIDENCE_MISSING",
+  "blockingReason": "No independent Approved Expansion Blueprint evidence exists; draft and validation fixtures cannot be promoted to approval evidence.",
+  "visualAssetGenerated": false
+}

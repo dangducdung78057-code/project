@@ -1,0 +1,32 @@
+{
+  "rulesId": "G20-BATCH-AUTH-001",
+  "gate": "Gate-20",
+  "baselineAssetId": "G19-PROD-ASSET-001",
+  "stateFlow": [
+    "PRODUCTION_ASSET",
+    "BATCH_CANDIDATE",
+    "BATCH_APPROVAL",
+    "BATCH_PRODUCTION"
+  ],
+  "currentState": "PRODUCTION_ASSET",
+  "batchCandidateRequirements": [
+    "Explicit multi-asset demand",
+    "Fixed quantity and role inventory",
+    "Independent preallocated Asset ID for every proposed asset",
+    "Source Asset and Blueprint binding for every proposed asset",
+    "No implicit team, series, or program expansion"
+  ],
+  "batchApprovalRequirements": [
+    "Blueprint inheritance PASS per asset",
+    "Version mapping complete per asset",
+    "Audit complete per asset",
+    "Human Batch Approval PASS",
+    "Explicit approved batch quantity"
+  ],
+  "independentAssetIdRequired": true,
+  "humanApprovalRequired": true,
+  "defaultDecision": "BLOCKED",
+  "batchCandidate": "NOT_CREATED",
+  "batchApproval": "NOT_STARTED",
+  "batch": false
+}

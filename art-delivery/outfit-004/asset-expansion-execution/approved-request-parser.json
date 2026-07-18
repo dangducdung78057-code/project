@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-12 Phase 2",
+  "sourceContract": "../expansion-request-system/expansion-request-schema.json",
+  "requiredInputFields": ["requestId","requestStatus","existingAssetId","gateSourceReference","characterUnit","ageGroup","programType","materialDNAReference","paletteReference","cloudCollarReference","stageEnvironment","productionRequirement","requestHash","signOffEvidence"],
+  "rules": [
+    {"ruleId":"AEP-PRS-001","name":"Schema conformance","requirement":"Input conforms to Gate-12 Phase 1 Expansion Request Schema.","failure":"Blocked"},
+    {"ruleId":"AEP-PRS-002","name":"Approved status","when":{"requestStatus":"Approved"},"failure":"Blocked"},
+    {"ruleId":"AEP-PRS-003","name":"Human sign-off binding","requirement":"Sign-off evidence binds requestId, requestHash, reviewer identity, timestamp and decision Approved.","failure":"Blocked"},
+    {"ruleId":"AEP-PRS-004","name":"Frozen source resolution","requirement":"Existing Asset ID and every Gate Source Reference resolve to frozen manifests and commits.","failure":"Blocked"},
+    {"ruleId":"AEP-PRS-005","name":"Version drift rejection","requirement":"Current source hashes equal the hashes bound by Human Sign-off.","failure":"Expired"},
+    {"ruleId":"AEP-PRS-006","name":"Terminal state rejection","whenAny":{"requestStatus":["Rejected","Blocked","Expired"]},"failure":"Blocked"},
+    {"ruleId":"AEP-PRS-007","name":"Canonical parse","outputFields":["existingAssetId","gateSourceReference","characterUnit","ageGroup","programType","materialDNAReference","paletteReference","cloudCollarReference","stageEnvironment","productionRequirement"]}
+  ]
+}

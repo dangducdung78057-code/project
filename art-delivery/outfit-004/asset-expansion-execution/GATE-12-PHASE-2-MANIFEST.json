@@ -1,0 +1,18 @@
+{
+  "manifestVersion": "1.0.0",
+  "gate": "Gate-12",
+  "phase": "Phase 2 — Asset Expansion Execution Pipeline",
+  "status": {"build":"Gate-12 Phase 2 Build Completed","humanSignOff":"Pending","passed":false,"assetGeneration":"Prohibited","nextGate":"Not Started"},
+  "scope": "Rule-only conversion of Approved Expansion Request to Draft Only Expansion Blueprint",
+  "files": ["README.md","expansion-execution-rules.json","approved-request-parser.json","asset-inheritance-engine.json","blueprint-generation-rules.json","production-handoff-rules.json","validation-cases.json","GATE-12-PHASE-2-MANIFEST.json"],
+  "readOnlyInputs": [
+    {"gate":"Gate-12 Phase 1","commitHash":"777f506ca63b93cf482b389e37e382c84175a1c6","path":"../expansion-request-system/"},
+    {"gate":"Gate-11 Phase 2","commitHash":"561b2099e1a18964cb0a6a2662afebaebce9326c","path":"../compatibility-boundary-system/"},
+    {"gate":"Gate-11 Phase 1","commitHash":"e0a018d199bb959da8651d1dc0850862beae4dbf","path":"../asset-expansion-rules/"}
+  ],
+  "blueprintStateMachine": ["Draft","Compatibility Approved","Human Review","Production Eligible","Asset Generation Permission"],
+  "allowedReferences": ["Existing Character Unit","Existing Material DNA","Existing Palette","Existing Cloud Collar","Existing Production Rules"],
+  "prohibitedCreation": ["New Character","New Material DNA","New Cloud Collar","New Palette System","Image","Garment","Visual Asset"],
+  "firstRealFlow": {"existingAssetId":"outfit-004","ageGroup":"Primary","programType":"Dance","output":"Expansion Blueprint Draft","designation":"Draft Only","state":"Draft","visualAssetGenerated":false},
+  "validation": {"fileIntegrity":"PASS — 8/8 files","jsonSyntax":"PASS — 7/7 JSON files parse","ruleIdUniqueness":"PASS — 46/46 local IDs unique","crossReferences":"PASS — all local and Gate-11 Rule IDs resolve","validationCases":"PASS — 18/18 cases including first real flow","frozenScope":"PASS — Gate-01 through Gate-12 Phase 1 and all existing assets unchanged","gitDiffScope":"PASS — changes limited to asset-expansion-execution"}
+}

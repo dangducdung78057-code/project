@@ -1,0 +1,18 @@
+{
+  "evidenceId": "G15-G14-HAE-001",
+  "gateId": "Gate-14",
+  "signoffStatus": "PASS",
+  "reviewerReference": "StageOS Project Owner — Gate-15 Final Evidence Closure explicit instruction",
+  "approvalTimestamp": "2026-07-12T20:00:13Z",
+  "validationReference": "../pilot-generation/GATE-14-MANIFEST.json#validationCases",
+  "validationResult": "PASS — 12/12 validation cases",
+  "pilotScope": {
+    "outfitId": "outfit-004",
+    "programType": "Primary Dance Version",
+    "characterUnitId": "Teen Girl Center",
+    "assetScope": "Single Character Pilot Asset",
+    "maxAssetCount": 1
+  },
+  "sourceStateDisclosure": "The source Gate-14 manifest remains blocked/pending and was not modified; this downstream human approval evidence is authorized by the explicit StageOS Project Owner instruction for the stated Gate-15 scope only.",
+  "visualAssetGenerated": false
+}

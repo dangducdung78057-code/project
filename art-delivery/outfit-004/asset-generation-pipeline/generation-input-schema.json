@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stageos://gate-13/generation-input-schema/1.0.0",
+  "title": "Controlled Asset Generation Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["generationRequestId","state","expansionBlueprintReference","blueprintStatus","compatibilityBoundaryStatus","humanSignOffStatus","assetGenerationPermissionStatus","characterUnitReference","materialDNAReference","paletteReference","cloudCollarReference","productionRulesReference","targetProgram","generationMode","sourceHashes","generationAuditContractReference"],
+  "properties": {
+    "generationRequestId": {"type":"string","pattern":"^AGR-[A-Z0-9-]+$"},
+    "state": {"const":"Draft Generation Request"},
+    "expansionBlueprintReference": {"type":"string","minLength":1},
+    "blueprintStatus": {"enum":["Approved","Not Approved"]},
+    "compatibilityBoundaryStatus": {"enum":["PASS","FAIL","PENDING"]},
+    "humanSignOffStatus": {"enum":["PASS","FAIL","PENDING"]},
+    "assetGenerationPermissionStatus": {"enum":["PASS","FAIL","PENDING"]},
+    "characterUnitReference": {"type":"string","pattern":"^existing:"},
+    "materialDNAReference": {"type":"string","pattern":"^existing:"},
+    "paletteReference": {"type":"string","pattern":"^existing:"},
+    "cloudCollarReference": {"type":"string","pattern":"^existing:"},
+    "productionRulesReference": {"type":"string","pattern":"^existing:"},
+    "targetProgram": {"type":"object","additionalProperties":false,"required":["existingAssetId","ageGroup","programType","role"],"properties":{"existingAssetId":{"const":"outfit-004"},"ageGroup":{"const":"Primary"},"programType":{"const":"Dance"},"role":{"type":"string","minLength":1}}},
+    "generationMode": {"const":"Single Character Test"},
+    "sourceHashes": {"type":"object","additionalProperties":false,"required":["blueprintHash","gate11CompatibilityHash","gate12PermissionHash"],"properties":{"blueprintHash":{"type":"string","minLength":16},"gate11CompatibilityHash":{"type":"string","minLength":16},"gate12PermissionHash":{"type":"string","minLength":16}}},
+    "generationAuditContractReference": {"const":"generation-audit-contract.json"}
+  },
+  "rules": [
+    {"ruleId":"G13-GIS-001","condition":"required field missing or additional field supplied","decision":"BLOCKED","requiredAction":"repair request input"},
+    {"ruleId":"G13-GIS-002","condition":"blueprint status is not Approved","decision":"BLOCKED","requiredAction":"return to Blueprint approval"},
+    {"ruleId":"G13-GIS-003","condition":"binding reference does not use existing namespace","decision":"BLOCKED","requiredAction":"reference a frozen existing asset"},
+    {"ruleId":"G13-GIS-004","condition":"source hash missing or mismatched","decision":"BLOCKED","requiredAction":"invalidate request and revalidate source evidence"},
+    {"ruleId":"G13-GIS-005","condition":"generation mode is not Single Character Test","decision":"BLOCKED","requiredAction":"limit request to one character"},
+    {"ruleId":"G13-GIS-006","condition":"all schema constraints pass","decision":"Draft Generation Request","requiredAction":"continue to binding validation"}
+  ]
+}
