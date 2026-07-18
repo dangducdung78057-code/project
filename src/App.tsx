@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -21,6 +22,9 @@ import AuthPage from "./pages/Auth";
 import Formation3D from "./pages/Formation3D";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+
+// 2.5D 舞台预览工作台（含 pixi.js，体积较大）按路由懒加载，避免拖慢首屏
+const Stage25DPreview = lazy(() => import("./pages/Stage25DPreview"));
 
 const queryClient = new QueryClient();
 
@@ -51,6 +55,20 @@ const App = () => (
                           <Route path="/projects/new/wizard" element={<ProjectWizard />} />
                           <Route path="/projects/:id/edit" element={<ProjectEditor />} />
                           <Route path="/projects/:id" element={<ProjectDetail />} />
+                          <Route
+                            path="/projects/:id/preview-25d"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="flex h-96 items-center justify-center text-sm text-muted-foreground">
+                                    正在加载 2.5D 舞台预览…
+                                  </div>
+                                }
+                              >
+                                <Stage25DPreview />
+                              </Suspense>
+                            }
+                          />
                           <Route path="/modules" element={<Modules />} />
                           <Route path="/exports" element={<Exports />} />
                           <Route path="/settings" element={<SettingsPage />} />
