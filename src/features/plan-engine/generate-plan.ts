@@ -71,9 +71,9 @@ export function generateStagePlan(input: StageInputData, _opts: GeneratePlanOpti
     provenance,
     warnings,
     knowledge: {
-      archetypeId: knowledge.archetype?.id ?? null,
-      archetypeLabel: knowledge.archetype?.label ?? null,
-      matchedBy: knowledge.matchedBy,
+      archetypeId: knowledge.archetype ?? null,
+      archetypeLabel: knowledge.archetype ?? null,
+      matchedBy: knowledge.matchedBy.join(";"),
     },
   };
 }

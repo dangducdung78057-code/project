@@ -2,24 +2,27 @@ import type { StageInputData } from "@/lib/stageos";
 import type { KnowledgeRetrieval } from "@/lib/stageKnowledge";
 import type { ConstraintResult } from "@/domain/stageos/types";
 
+const HIGH_MOVEMENT_RE = /街舞|爵士|啦啦操|武术|杂技|现代|modern|jazz|street|cheerleading|acrobatics/i;
+
 /**
  * 执行约束层:硬禁止 / 软警告 / 提示。
- * 规则引擎的确定性保底(可离线);65 条语料约束的检索结果
- * 通过 knowledge.appliedRules 已反映在知识层,此处补充输入组合级规则。
+ * 规则引擎的确定性保底(可离线);知识库 65 条语料约束的检索
+ * 已反映在知识层排序中,此处补充输入组合级规则。
  */
 export function applyConstraints(input: StageInputData, knowledge: KnowledgeRetrieval): ConstraintResult[] {
   const results: ConstraintResult[] = [];
+  const total = (input.maleCount ?? 0) + (input.femaleCount ?? 0);
 
-  if (input.movementIntensity === "高" && (input.ageRange === "小学低段" || input.ageRange === "幼儿园")) {
+  if (HIGH_MOVEMENT_RE.test(input.programType ?? "") && input.schoolStage === "primary") {
     results.push({
       ruleId: "engine-constraint-001",
       level: "soft",
       scope: "formation",
-      reason: "低龄段不建议高强度连续动作,队形变换频率应降低",
+      reason: "小学低龄段不建议高强度连续动作,队形变换频率应降低",
       alternative: "减少走位次数,保留原地律动与手势层次",
     });
   }
-  if (input.budgetLevel === "低" && (input.maleCount + input.femaleCount) > 60) {
+  if ((input.perPersonBudget ?? 180) < 120 && total > 60) {
     results.push({
       ruleId: "engine-constraint-002",
       level: "info",

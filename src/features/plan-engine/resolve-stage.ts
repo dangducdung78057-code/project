@@ -13,16 +13,14 @@ export type StageAdvice = {
 };
 
 export function resolveStage(input: StageInputData, knowledge: KnowledgeRetrieval): StageAdvice {
-  const archetype = knowledge.archetype;
+  const outdoor = /户外|操场|室外|露天/.test(input.venueType ?? "");
   return {
     venueType: input.venueType || "未填写",
     screenThemeColor: input.screenThemeColor || "未指定",
-    ledScreenTone: input.ledScreenTone || "未指定",
-    audioEnvironment: input.audioEnvironment || "未指定",
-    lightingStyle: archetype?.lightingStyle ?? "基础白光 + 面光均匀铺底",
-    backdropNote: archetype
-      ? `参考「${archetype.label}」原型:${archetype.referenceExample}`
-      : "未命中节目原型,按场地类型使用通用背景",
+    ledScreenTone: input.screenThemeColor || "未指定",
+    audioEnvironment: outdoor ? "户外扩声,注意风向与声音延迟" : "室内扩声",
+    lightingStyle: input.lightingStyle || "基础白光 + 面光均匀铺底",
+    backdropNote: `参考「${knowledge.archetype}」原型语料:背景屏主题色与主配色呼应,避免高饱和撞色`,
     props: [],
   };
 }

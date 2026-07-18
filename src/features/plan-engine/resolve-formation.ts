@@ -11,7 +11,7 @@ export type FormationResolution = {
 /** 生成队形建议:知识库命中第一个为推荐,其余为备选。 */
 export function resolveFormation(input: StageInputData, knowledge: KnowledgeRetrieval): FormationResolution {
   const [first, ...rest] = knowledge.formations;
-  const isChoral = /合唱|chorus|choir/i.test(`${input.programType} ${input.activityType}`);
+  const isChoral = /合唱|chorus|choir/i.test(`${input.programType ?? ""} ${input.programTheme ?? ""}`);
   return {
     recommended: first ?? null,
     alternatives: rest,

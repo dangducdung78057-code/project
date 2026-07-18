@@ -1,4 +1,4 @@
-import type { KnowledgeRetrieval, PaletteSuggestion } from "@/lib/stageKnowledge";
+import type { ColorPalette, KnowledgeRetrieval } from "@/lib/stageKnowledge";
 import type { PalettePreset } from "@/domain/stageos/types";
 
 export type PaletteResolution = {
@@ -6,10 +6,10 @@ export type PaletteResolution = {
   alternatives: PalettePreset[];
 };
 
-function toPreset(s: PaletteSuggestion): PalettePreset {
+function toPreset(s: ColorPalette): PalettePreset {
   return {
-    id: s.id,
-    name: s.label,
+    id: s.name,
+    name: s.name,
     primary: s.primary,
     primaryHex: s.primaryHex,
     secondary: s.secondary,
@@ -20,7 +20,7 @@ function toPreset(s: PaletteSuggestion): PalettePreset {
   };
 }
 
-/** 生成配色:知识库命中第一套为主配色,其余为备选。 */
+/** 生成配色:知识库按主题色排序后第一套为主配色,其余为备选。 */
 export function resolvePalette(knowledge: KnowledgeRetrieval): PaletteResolution {
   const [first, ...rest] = knowledge.palettes;
   return {

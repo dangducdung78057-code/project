@@ -6,6 +6,15 @@ export type InputValidation = {
   warnings: ConstraintResult[];
 };
 
+// 场地/备注文本启发式:StageInputData 当前没有结构化天气/动作强度/服装廓形字段,
+// 在结构化字段落地前,用 venueType / specialExpectation / programTheme / programType
+// 的确定性文本匹配兜底同一批安全规则。
+const OUTDOOR_RE = /户外|操场|室外|露天/;
+const RAIN_RE = /雨|梅雨|雷暴/;
+const HIGH_MOVEMENT_PROGRAM_RE = /街舞|爵士|啦啦操|武术|杂技|现代|modern|jazz|street|cheerleading|acrobatics/i;
+const HIGH_MOVEMENT_TEXT_RE = /高动作|高强度|跳跃|托举|翻滚|快速走位/;
+const LONG_COSTUME_RE = /长款|长裙|长袍|大摆|曳地/;
+
 /**
  * 引擎级输入校验(确定性,无外部依赖)。
  * 页面层的 validateStageInputDetailed 仍然保留,此处是方案引擎的保底校验。
@@ -26,16 +35,22 @@ export function validateInput(input: StageInputData): InputValidation {
       alternative: "确认人数填写无误,或拆分为多个节目",
     });
   }
-  if (input.venueType === "操场" && input.weather === "雨天") {
+
+  const venueText = input.venueType ?? "";
+  const noteText = `${input.specialExpectation ?? ""} ${input.programTheme ?? ""}`;
+  if (OUTDOOR_RE.test(venueText) && RAIN_RE.test(noteText)) {
     warnings.push({
       ruleId: "engine-input-002",
       level: "hard",
       scope: "stage",
-      reason: "户外操场 + 雨天:地面积水湿滑,跳跃/旋转类动作存在安全风险",
+      reason: "户外场地 + 雨天风险:地面积水湿滑,跳跃/旋转类动作存在安全风险",
       alternative: "移至室内体育馆,或将动作强度降级为中低强度",
     });
   }
-  if (input.movementIntensity === "高" && input.costumeForm === "长款") {
+
+  const highMovement =
+    HIGH_MOVEMENT_PROGRAM_RE.test(input.programType ?? "") || HIGH_MOVEMENT_TEXT_RE.test(noteText);
+  if (highMovement && LONG_COSTUME_RE.test(noteText)) {
     warnings.push({
       ruleId: "engine-input-003",
       level: "soft",
