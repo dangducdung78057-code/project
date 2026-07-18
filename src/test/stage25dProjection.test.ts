@@ -34,7 +34,8 @@ describe("2.5D 正面透视投影", () => {
   });
 
   it("投影/反投影往返一致(地面平面)", () => {
-    const origin = { x: 2.4, z: -1.6 };
+    // 取台阶区之外的地面点(z > 后区台阶带),往返应无损
+    const origin = { x: 2.4, z: 2.0 };
     const pr = projectPosition(origin, stage, layout);
     const back = unprojectPosition(pr.screenX, pr.screenY, stage, layout);
     expect(back.x).toBeCloseTo(origin.x, 1);

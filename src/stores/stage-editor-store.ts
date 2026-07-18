@@ -60,14 +60,11 @@ function snapshotPositions(performers: Performer[]): PositionsMap {
   return map;
 }
 
-function defaultHeightCm(ageRange: string | undefined, gender: "male" | "female"): number {
-  const base =
-    ageRange === "幼儿园" ? 112
-    : ageRange === "小学低段" ? 130
-    : ageRange === "小学高段" ? 146
-    : ageRange === "高中" ? (gender === "male" ? 172 : 162)
-    : gender === "male" ? 165 : 158; // 初中默认
-  return base;
+/** 按学段给匿名人物一个合理默认身高(学生名单未提供身高时兜底)。 */
+function defaultHeightCm(schoolStage: string | undefined, gender: "male" | "female"): number {
+  if (schoolStage === "primary") return 136;
+  if (schoolStage === "senior") return gender === "male" ? 172 : 162;
+  return gender === "male" ? 165 : 158; // 初中/未填写默认
 }
 
 type RawStudent = { studentId?: string; gender?: string; heightCm?: number };
@@ -100,7 +97,7 @@ export function buildInitialPerformers(input: StageInputData, spacing = DEFAULT_
       id: `pf-${i + 1}`,
       anonId: `S${String(i + 1).padStart(3, "0")}`,
       gender,
-      heightCm: stu?.heightCm ?? defaultHeightCm(input.ageRange, gender === "male" ? "male" : "female"),
+      heightCm: stu?.heightCm ?? defaultHeightCm(input.schoolStage, gender === "male" ? "male" : "female"),
       groupId: gender === "male" ? "grp-male" : "grp-female",
       position: grid[i] ?? { x: 0, z: 0 },
       appearanceId: "basic-white",

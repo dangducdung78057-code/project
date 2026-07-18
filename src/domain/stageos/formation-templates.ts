@@ -6,8 +6,20 @@ import { STAGE_EDGE_MARGIN } from "./defaults";
  * 队形模板注册表(领域层,2.5D/3D/导出共用)。
  * 模板只生成米制坐标,不替换场景图片;算法主体复用
  * formationLayouts.FORMATION_COMPUTES(与知识库 FormationTemplate.name 对应),
- * 并补充 Epic 首批要求的「心形」。
+ * 并补充 Epic 首批要求的「心形」与合唱高频站位。
  */
+
+/** 按排数均分人数(前少后多,更利视线)。 */
+function splitCounts(n: number, rows: number): number[] {
+  const base = Math.floor(n / rows);
+  const extra = n % rows;
+  return Array.from({ length: rows }, (_, i) => base + (i >= rows - extra ? 1 : 0));
+}
+
+/** 居中横排。 */
+function centeredRow(cnt: number, z: number, spacing: number): [number, number][] {
+  return Array.from({ length: cnt }, (_, i) => [(i - (cnt - 1) / 2) * spacing, z]);
+}
 
 /** 心形:经典心形参数方程采样,顶点朝观众(+z)。 */
 export function heartPositions(n: number): [number, number][] {
@@ -23,10 +35,86 @@ export function heartPositions(n: number): [number, number][] {
   return pts.map(([x, y]) => [x * 3.5, y * 2.75 - 0.5]);
 }
 
+/** 三排阶梯式:前中后三排横列,配合台阶逐排增高。 */
+function threeRowRiserPositions(n: number, spacing: number): [number, number][] {
+  const counts = splitCounts(n, 3);
+  const out: [number, number][] = [];
+  counts.forEach((cnt, r) => {
+    out.push(...centeredRow(cnt, 1.2 - r * spacing * 1.6, spacing));
+  });
+  return out;
+}
+
+/** 四排大合唱式:四排横列配合唱台,气势型站位。 */
+function fourRowChorusPositions(n: number, spacing: number): [number, number][] {
+  const counts = splitCounts(n, 4);
+  const out: [number, number][] = [];
+  counts.forEach((cnt, r) => {
+    out.push(...centeredRow(cnt, 1.6 - r * spacing * 1.5, spacing * 0.95));
+  });
+  return out;
+}
+
+/** 弧形环抱式:两排弧线面向指挥/观众呈环抱状,中心略后、两翼前探。 */
+function arcEmbracePositions(n: number, spacing: number): [number, number][] {
+  const counts = splitCounts(n, 2);
+  const out: [number, number][] = [];
+  counts.forEach((cnt, li) => {
+    const radius = 4.2 + li * spacing * 1.5;
+    for (let i = 0; i < cnt; i++) {
+      const t = cnt > 1 ? i / (cnt - 1) : 0.5;
+      const ang = Math.PI * (0.22 + 0.56 * t);
+      out.push([Math.cos(ang) * -radius, 2.2 - Math.sin(ang) * radius * 0.55]);
+    }
+  });
+  return out;
+}
+
+/** 中心领唱放射式:领唱居中靠前,其余呈放射状向后展开。 */
+function radialLeadPositions(n: number, spacing: number): [number, number][] {
+  if (n <= 0) return [];
+  if (n === 1) return [[0, 3.5]];
+  const out: [number, number][] = [[0, 3.5]]; // 领唱位
+  const rest = n - 1;
+  const spokes = 5;
+  for (let i = 0; i < rest; i++) {
+    const spoke = i % spokes;
+    const k = Math.floor(i / spokes) + 1;
+    const ang = Math.PI / 2 + (spoke - (spokes - 1) / 2) * 0.38;
+    out.push([
+      Math.cos(ang) * k * spacing * 1.15,
+      3.5 - Math.sin(ang) * k * spacing * 1.15,
+    ]);
+  }
+  return out;
+}
+
+/** 双阵营对抗式:左右双阵营,中央留 2m 通道。 */
+function twoCampPositions(n: number, spacing: number): [number, number][] {
+  const left = Math.ceil(n / 2);
+  const out: [number, number][] = [];
+  const camp = (cnt: number, dir: -1 | 1) => {
+    const counts = splitCounts(cnt, 2);
+    counts.forEach((rc, r) => {
+      for (let i = 0; i < rc; i++) {
+        out.push([dir * (1.3 + i * spacing), 1.2 - r * spacing * 1.4]);
+      }
+    });
+  };
+  camp(left, -1);
+  camp(n - left, 1);
+  return out;
+}
+
 /** 领域模板 id → 坐标算法。 */
 export const FORMATION_TEMPLATE_COMPUTES: Record<string, (n: number, spacing: number) => [number, number][]> = {
   ...FORMATION_COMPUTES,
   心形: (n) => heartPositions(n),
+  三排阶梯式: threeRowRiserPositions,
+  四排大合唱式: fourRowChorusPositions,
+  弧形环抱式: arcEmbracePositions,
+  中心领唱放射式: radialLeadPositions,
+  双阵营对抗式: twoCampPositions,
 };
 
 /** Epic 首批一键模板(展示顺序)。 */

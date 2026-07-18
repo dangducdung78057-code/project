@@ -4,11 +4,11 @@ import { ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
-import { PROGRAM_TYPES, type StageInputData } from "@/lib/stageos";
+import { PROGRAM_TYPES, SCHOOL_STAGES, type StageInputData } from "@/lib/stageos";
 import { engineModeLabel } from "@/domain/stageos";
 import { extractEditorSnapshot, useStageEditorStore } from "@/stores/stage-editor-store";
 import { Stage25DWorkbench } from "@/features/stage-2.5d/Stage25DWorkbench";
-import FullPageLoader from "@/components/FullPageLoader";
+import { FullPageLoader } from "@/components/FullPageLoader";
 
 /**
  * 2.5D 舞台预览与队形编排工作台(路由页)。
@@ -68,11 +68,12 @@ export default function Stage25DPreview() {
   const inputSummary = useMemo(() => {
     const programLabel =
       PROGRAM_TYPES.find((t) => t.value === input?.programType)?.label ?? input?.programType ?? "未填写";
+    const stageLabel = SCHOOL_STAGES.find((s) => s.value === input?.schoolStage)?.label ?? "未填写";
     return {
       programLabel,
       venueType: input?.venueType ?? "未填写",
-      budgetLevel: input?.budgetLevel ?? "未填写",
-      ageRange: input?.ageRange ?? "未填写",
+      budgetLevel: typeof input?.perPersonBudget === "number" ? `¥${input.perPersonBudget}/人` : "未填写",
+      ageRange: stageLabel,
     };
   }, [input]);
 
@@ -108,7 +109,7 @@ export default function Stage25DPreview() {
     setSaving(false);
   };
 
-  if (loading) return <FullPageLoader />;
+  if (loading) return <FullPageLoader label="正在加载 2.5D 舞台预览…" />;
 
   return (
     <div className="flex flex-col">
