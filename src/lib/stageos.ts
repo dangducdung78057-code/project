@@ -49,67 +49,95 @@ export const CONFIRMATION_STATUSES = [
   { value: "confirmed", label: "已确认" },
 ] as const;
 
-export const STAGEOS_MODULES = [
+// ---------------------------------------------------------------------------
+// 模块注册表（状态制）
+//
+// 规则：未实现的能力一律标 planned，不得以任何形式显示为"已接入"；
+// entries 指向真实实现位置（源码路径或应用内路由），不再展示虚构的 API 路由。
+// ---------------------------------------------------------------------------
+
+export type ModuleStatus = "implemented" | "partial" | "planned";
+
+export const MODULE_STATUS_META: Record<
+  ModuleStatus,
+  { label: string; tone: "success" | "warning" | "muted" }
+> = {
+  implemented: { label: "已实现", tone: "success" },
+  partial: { label: "部分实现", tone: "warning" },
+  planned: { label: "规划中", tone: "muted" },
+};
+
+export type StageOSModule = {
+  group: string;
+  status: ModuleStatus;
+  desc: string;
+  /** 真实实现位置：源码路径或应用内路由 */
+  entries: string[];
+};
+
+export const STAGEOS_MODULES: StageOSModule[] = [
   {
-    group: "StageOS RAG 核心",
-    routes: [
-      "/api/stageos/rag/retrieve",
-      "/api/stageos/rag/compile-prompt",
-      "/api/stageos/rag/self-review",
-      "/api/stageos/rag/gated-output",
-      "/api/stageos/rag/knowledge-map",
+    group: "方案引擎 Plan Engine",
+    status: "implemented",
+    desc: "本地确定性规则引擎：输入校验 → 知识检索 → 约束应用 → 配色 → 服装 → 队形 → 舞台 → 倒排 → 来源标记。离线可用、无需 Token。",
+    entries: ["src/features/plan-engine/", "src/domain/stageos/"],
+  },
+  {
+    group: "知识库 Knowledge Base",
+    status: "implemented",
+    desc: "舞台知识、约束规则与 853 色配色库，前后端共用同一份事实来源。",
+    entries: [
+      "supabase/functions/_shared/stage-knowledge.ts",
+      "supabase/functions/_shared/stage-constraints.ts",
+      "supabase/functions/_shared/palette-library.ts",
     ],
-    desc: "检索、提示词编排、自审与门控输出。",
   },
   {
-    group: "服装总表 Costume Master Plan",
-    routes: [
-      "/api/stageos/costume-master-plan",
-      "/api/stageos/costume-master-plan/search-tags",
-      "/api/stageos/costume-master-plan/self-check",
-      "/api/stageos/costume-master-plan/render-context",
-      "/api/stageos/costume-master-plan/reverse-schedule",
-      "/api/stageos/costume-master-plan/platform-search",
-      "/api/stageos/costume-master-plan/confirm",
-      "/api/stageos/costume-master-plan/export",
+    group: "2.5D 舞台预览与队形编排",
+    status: "partial",
+    desc: "PixiJS/WebGL 中央渲染（非 SVG、非 Three.js）。Phase A 已可用：正面透视、台阶、36 人拖拽、9 种队形模板、关键帧、PNG 导出。框选/对齐均分在 Phase B。",
+    entries: ["src/features/stage-2.5d/", "/projects/:id/preview-25d"],
+  },
+  {
+    group: "配色与服装总表",
+    status: "partial",
+    desc: "本地规则生成已可用并带来源标记；AI 增强生成预留接口，失败自动回退本地规则并标记。",
+    entries: [
+      "src/features/plan-engine/resolve-palette.ts",
+      "src/features/plan-engine/resolve-costume.ts",
     ],
-    desc: "服装总表生成、检索标签、自检、渲染上下文、倒排、平台搜索、确认与导出。",
   },
   {
-    group: "配色 RAG",
-    routes: ["/api/stageos/color-rag"],
-    desc: "面向舞台色彩与灯光风格的知识检索。",
+    group: "3D 验证视图",
+    status: "partial",
+    desc: "React Three Fiber 队形 3D 视图已存在；待接入共享编辑器 store，与 2.5D 共用同一 x/z/riserLevel 米制坐标。",
+    entries: ["/formation-3d", "src/pages/Formation3D.tsx"],
   },
   {
-    group: "蓝图与 2D 预览",
-    routes: ["/api/stageos/blueprint-plan", "/api/stageos/indoor-2d-preview"],
-    desc: "队形/舞美蓝图与室内 2D 预览。",
+    group: "导出中心",
+    status: "partial",
+    desc: "2.5D 高清 PNG 导出已实现（RenderTexture / extract）；PDF 与导出任务队列（export_jobs）规划中。",
+    entries: ["/exports", "src/features/stage-2.5d/export/export-png.ts"],
   },
   {
-    group: "3D 人台",
-    routes: ["/api/stageos/3d-mannequin"],
-    desc: "3D 人台造型预览。",
+    group: "AI 增强生成",
+    status: "planned",
+    desc: "AI 生成入口预留（VITE_ENABLE_AI），未启用或失败时回退本地规则，界面明确标记来源。",
+    entries: ["src/domain/stageos/provenance.ts"],
   },
   {
-    group: "渲染预览",
-    routes: ["/api/stageos/render-preview"],
-    desc: "综合渲染预览。",
+    group: "图片 / 视频渲染",
+    status: "planned",
+    desc: "定妆照与 15s 预览视频渲染，待真实渲染管线接入后开放。",
+    entries: [],
   },
   {
-    group: "图片 / 视频",
-    routes: ["/api/stageos/render-photo-v2", "/api/stageos/render-video-15s"],
-    desc: "静态与短视频渲染(未来集成)。",
+    group: "服装商务建议",
+    status: "planned",
+    desc: "采购建议、参考图与平台搜索，仅提供建议且需人工核验。",
+    entries: [],
   },
-  {
-    group: "服装商务",
-    routes: [
-      "/api/stageos/costume-commerce/suggest",
-      "/api/stageos/costume-commerce/photo",
-      "/api/stageos/costume-commerce/search",
-    ],
-    desc: "商务建议、参考图与搜索(仅建议,需人工核验)。",
-  },
-] as const;
+];
 
 export type StageInputData = {
   schoolStage?: string;
