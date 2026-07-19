@@ -9,6 +9,7 @@ import { buildRisers } from "./layers/risers";
 import { createPerformerNode, defaultColorsFor, getPerformerTexture, syncPerformerNode, type PerformerNode } from "./sprites/performer-sprite";
 import { projectPosition } from "./projection/front-perspective";
 import { attachPerformerDrag, enableStagePointerSurface } from "./interaction/drag-select";
+import { attachMarqueeSelect, consumeMarqueeGuard } from "./interaction/marquee-select";
 import { exportStagePng } from "./export/export-png";
 import { renderFallbackCanvas } from "./fallback-canvas";
 
@@ -24,7 +25,7 @@ type Props = {
 /**
  * 2.5D 舞台视口。
  * 同步策略:Pixi 场景树由 store.subscribe 直接驱动,不经过 React render,
- * 拖拽高频更新不会触发组件重渲染。
+ * 拖拽/框选高频更新不会触发组件重渲染。
  */
 export function Stage25DViewport({ onReady, onWebGLFallback }: Props) {
   const hostRef = useRef<HTMLDivElement | null>(null);
@@ -39,6 +40,7 @@ export function Stage25DViewport({ onReady, onWebGLFallback }: Props) {
     if (!host) return;
     let cancelled = false;
     let unsubscribe: (() => void) | null = null;
+    let detachMarquee: (() => void) | null = null;
 
     const boot = async () => {
       let handle: PixiAppHandle;
@@ -57,7 +59,19 @@ export function Stage25DViewport({ onReady, onWebGLFallback }: Props) {
       handleRef.current = handle;
       const { app, layers } = handle;
 
-      enableStagePointerSurface(app, () => useStageEditorStore.getState().clearSelection());
+      enableStagePointerSurface(app, () => {
+        // 框选抬手的同一次 tap 不清掉刚框出的选择
+        if (consumeMarqueeGuard()) return;
+        useStageEditorStore.getState().clearSelection();
+      });
+      detachMarquee = attachMarqueeSelect({
+        app,
+        layer: layers.selection,
+        getStage: () => useStageEditorStore.getState().stage,
+        getLayout: () => layoutRef.current as Stage25DLayout,
+        getPerformers: () => useStageEditorStore.getState().performers,
+        onSelect: (ids, additive) => useStageEditorStore.getState().select(ids, additive),
+      });
 
       // 静态层构建与缓存(台阶层数变化时重建)
       let staticStageKey = "";
@@ -95,15 +109,26 @@ export function Stage25DViewport({ onReady, onWebGLFallback }: Props) {
               app,
               performerId: p.id,
               target: node.root as Container,
-              stage: st.stage,
+              getStage: () => useStageEditorStore.getState().stage,
               getLayout: () => layoutRef.current as Stage25DLayout,
+              getSnap: () => useStageEditorStore.getState().snapEnabled,
+              getSelection: () => useStageEditorStore.getState().selectedIds,
+              getPosition: (pid) => useStageEditorStore.getState().performers.find((pp) => pp.id === pid)?.position,
               callbacks: {
-                onSelect: (id, additive) =>
-                  additive
-                    ? useStageEditorStore.getState().toggleSelect(id)
-                    : useStageEditorStore.getState().select([id]),
+                onSelect: (id, additive) => {
+                  const st2 = useStageEditorStore.getState();
+                  if (additive) {
+                    st2.toggleSelect(id);
+                    return;
+                  }
+                  // 已处于多选集合内时保持多选,便于整组拖动
+                  if (st2.selectedIds.includes(id) && st2.selectedIds.length > 1) return;
+                  st2.select([id]);
+                },
+                onDragStart: () => useStageEditorStore.getState().beginTransform(),
                 onDragMove: (id, pos) => useStageEditorStore.getState().setPosition(id, pos, { commit: false }),
-                onDragCommit: (id, pos) => useStageEditorStore.getState().setPosition(id, pos, { commit: true }),
+                onDragMoveSelection: (dx, dz) => useStageEditorStore.getState().moveSelectionBy(dx, dz),
+                onDragEnd: () => useStageEditorStore.getState().endTransform(),
               },
             });
             detachRef.current.set(p.id, detach);
@@ -152,6 +177,7 @@ export function Stage25DViewport({ onReady, onWebGLFallback }: Props) {
     return () => {
       cancelled = true;
       unsubscribe?.();
+      detachMarquee?.();
       for (const detach of detachRef.current.values()) detach();
       detachRef.current.clear();
       nodesRef.current.clear();

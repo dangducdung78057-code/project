@@ -31,7 +31,7 @@ export type Stage25DWorkbenchProps = {
 /**
  * 2.5D 舞台预览与队形编排工作台。
  * 顶栏:返回 / 项目名 / 3D 切换 / 撤销重做 / 保存 / 导出
- * 左栏:演出资料摘要;右栏:队形模板 / 台阶 / 标注开关;底部:关键帧时间轴。
+ * 左栏:演出资料摘要;右栏:编排 / 队形模板 / 台阶 / 标注开关;底部:关键帧时间轴。
  */
 export function Stage25DWorkbench({ projectId, projectTitle, inputSummary, provenanceBadge, onSave, saving }: Stage25DWorkbenchProps) {
   const viewportRef = useRef<Stage25DViewportHandle | null>(null);
@@ -49,14 +49,18 @@ export function Stage25DWorkbench({ projectId, projectTitle, inputSummary, prove
   const activeKeyframeId = useStageEditorStore((s) => s.activeKeyframeId);
   const labels = useStageEditorStore((s) => s.labels);
   const riserCount = useStageEditorStore((s) => s.stage.riserCount);
+  const snapEnabled = useStageEditorStore((s) => s.snapEnabled);
 
   const applyTemplate = useStageEditorStore((s) => s.applyTemplate);
   const undo = useStageEditorStore((s) => s.undo);
   const redo = useStageEditorStore((s) => s.redo);
   const setLabels = useStageEditorStore((s) => s.setLabels);
+  const toggleSnap = useStageEditorStore((s) => s.toggleSnap);
   const setRiserCount = useStageEditorStore((s) => s.setRiserCount);
   const recordKeyframe = useStageEditorStore((s) => s.recordKeyframe);
   const activateKeyframe = useStageEditorStore((s) => s.activateKeyframe);
+  const alignSelection = useStageEditorStore((s) => s.alignSelection);
+  const distributeSelection = useStageEditorStore((s) => s.distributeSelection);
 
   const allTemplates = listFormationTemplates();
   const primaryTemplates = PRIMARY_TEMPLATE_NAMES.filter((n) => allTemplates.includes(n));
@@ -159,6 +163,31 @@ export function Stage25DWorkbench({ projectId, projectTitle, inputSummary, prove
 
         {/* 右侧设计面板 */}
         <div className="panel space-y-4 overflow-y-auto p-3 text-sm">
+          <div>
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              编排{selectedCount > 0 ? `(选中 ${selectedCount} 人)` : ""}
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 2} onClick={() => alignSelection("left")}>左对齐</Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 2} onClick={() => alignSelection("centerX")}>水平居中</Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 2} onClick={() => alignSelection("right")}>右对齐</Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 2} onClick={() => alignSelection("back")}>后排对齐</Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 2} onClick={() => alignSelection("centerZ")}>纵深居中</Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 2} onClick={() => alignSelection("front")}>前排对齐</Button>
+            </div>
+            <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 3} onClick={() => distributeSelection("x")}>横向等距</Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs" disabled={selectedCount < 3} onClick={() => distributeSelection("z")}>纵向等距</Button>
+            </div>
+            <label className="mt-2 flex items-center justify-between py-1 text-sm">
+              <span>网格吸附 0.25m</span>
+              <Switch checked={snapEnabled} onCheckedChange={() => toggleSnap()} />
+            </label>
+            <div className="text-[11px] leading-snug text-muted-foreground">
+              拖拽空白处可框选;Shift 增量选择;拖动多选中的任意一人可整组移动。
+            </div>
+          </div>
+
           <div>
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">一键队形</div>
             <div className="grid grid-cols-2 gap-1.5">

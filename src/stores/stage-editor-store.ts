@@ -5,6 +5,7 @@ import {
   DEFAULT_SPACING,
   DEFAULT_STAGE,
   STAGEOS_SCHEMA_VERSION,
+  clampToStage,
   computeTemplatePositions,
   type AppearanceState,
   type FormationKeyframe,
@@ -19,6 +20,7 @@ import {
 type PositionsMap = Record<string, StagePosition>;
 
 export type LabelSwitches = { id: boolean; height: boolean; risk: boolean };
+export type AlignMode = "left" | "centerX" | "right" | "front" | "centerZ" | "back";
 
 export type StageEditorState = {
   projectId: string | null;
@@ -32,10 +34,13 @@ export type StageEditorState = {
   palette: PalettePreset | null;
   selectedIds: string[];
   labels: LabelSwitches;
+  snapEnabled: boolean;
   dirty: boolean;
   lastSavedAt: string | null;
   past: PositionsMap[];
   future: PositionsMap[];
+  /** 拖拽手势起点快照:手势内多次移动不产生累计误差,undo 一次回到手势前。 */
+  transformBase: PositionsMap | null;
 
   initFromStageInput: (projectId: string, input: StageInputData, restored?: StageEditorSnapshot | null) => void;
   setPosition: (id: string, pos: StagePosition, opts?: { commit?: boolean }) => void;
@@ -44,10 +49,16 @@ export type StageEditorState = {
   toggleSelect: (id: string) => void;
   clearSelection: () => void;
   setLabels: (patch: Partial<LabelSwitches>) => void;
+  toggleSnap: () => void;
   setRiserCount: (count: number) => void;
   setPalette: (palette: PalettePreset | null) => void;
   recordKeyframe: (keyframeId: string) => void;
   activateKeyframe: (keyframeId: string) => void;
+  beginTransform: () => void;
+  endTransform: () => void;
+  moveSelectionBy: (dx: number, dz: number) => void;
+  alignSelection: (mode: AlignMode) => void;
+  distributeSelection: (axis: "x" | "z") => void;
   undo: () => void;
   redo: () => void;
   markSaved: () => void;
@@ -123,10 +134,12 @@ export const useStageEditorStore = create<StageEditorState>()((set, get) => ({
   palette: null,
   selectedIds: [],
   labels: { id: true, height: false, risk: true },
+  snapEnabled: true,
   dirty: false,
   lastSavedAt: null,
   past: [],
   future: [],
+  transformBase: null,
 
   initFromStageInput: (projectId, input, restored) => {
     if (restored && restored.schemaVersion === STAGEOS_SCHEMA_VERSION) {
@@ -143,6 +156,7 @@ export const useStageEditorStore = create<StageEditorState>()((set, get) => ({
         selectedIds: [],
         past: [],
         future: [],
+        transformBase: null,
         dirty: false,
         lastSavedAt: restored.savedAt,
       });
@@ -171,6 +185,7 @@ export const useStageEditorStore = create<StageEditorState>()((set, get) => ({
       selectedIds: [],
       past: [],
       future: [],
+      transformBase: null,
       dirty: false,
       lastSavedAt: null,
     });
@@ -224,6 +239,8 @@ export const useStageEditorStore = create<StageEditorState>()((set, get) => ({
 
   setLabels: (patch) => set((s) => ({ labels: { ...s.labels, ...patch } })),
 
+  toggleSnap: () => set((s) => ({ snapEnabled: !s.snapEnabled })),
+
   setRiserCount: (count) => set((s) => ({ stage: { ...s.stage, riserCount: count }, dirty: true })),
 
   setPalette: (palette) => set({ palette, dirty: true }),
@@ -250,6 +267,85 @@ export const useStageEditorStore = create<StageEditorState>()((set, get) => ({
     set({
       performers,
       activeKeyframeId: keyframeId,
+      past: [...state.past.slice(-49), snapshotPositions(state.performers)],
+      future: [],
+      dirty: true,
+    });
+  },
+
+  beginTransform: () => {
+    const state = get();
+    set({
+      transformBase: snapshotPositions(state.performers),
+      past: [...state.past.slice(-49), snapshotPositions(state.performers)],
+      future: [],
+    });
+  },
+
+  endTransform: () => set({ transformBase: null, dirty: true }),
+
+  moveSelectionBy: (dx, dz) => {
+    const state = get();
+    const base = state.transformBase ?? snapshotPositions(state.performers);
+    const ids = new Set(state.selectedIds);
+    if (ids.size === 0) return;
+    const performers = state.performers.map((p) => {
+      if (!ids.has(p.id)) return p;
+      const b = base[p.id] ?? p.position;
+      return {
+        ...p,
+        position: clampToStage({ ...b, x: b.x + dx, z: b.z + dz }, state.stage),
+      };
+    });
+    set({ performers, dirty: true });
+  },
+
+  alignSelection: (mode) => {
+    const state = get();
+    const sel = state.performers.filter((p) => state.selectedIds.includes(p.id));
+    if (sel.length < 2) return;
+    const xs = sel.map((p) => p.position.x);
+    const zs = sel.map((p) => p.position.z);
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const performers = state.performers.map((p) => {
+      if (!state.selectedIds.includes(p.id)) return p;
+      const pos = { ...p.position };
+      switch (mode) {
+        case "left": pos.x = Math.min(...xs); break;
+        case "right": pos.x = Math.max(...xs); break;
+        case "centerX": pos.x = avg(xs); break;
+        case "front": pos.z = Math.max(...zs); break;
+        case "back": pos.z = Math.min(...zs); break;
+        case "centerZ": pos.z = avg(zs); break;
+      }
+      return { ...p, position: pos };
+    });
+    set({
+      performers,
+      past: [...state.past.slice(-49), snapshotPositions(state.performers)],
+      future: [],
+      dirty: true,
+    });
+  },
+
+  distributeSelection: (axis) => {
+    const state = get();
+    const sel = state.performers
+      .filter((p) => state.selectedIds.includes(p.id))
+      .sort((a, b) => a.position[axis] - b.position[axis]);
+    if (sel.length < 3) return;
+    const min = sel[0].position[axis];
+    const max = sel[sel.length - 1].position[axis];
+    const step = (max - min) / (sel.length - 1);
+    const targets = new Map<string, number>();
+    sel.forEach((p, i) => targets.set(p.id, min + i * step));
+    const performers = state.performers.map((p) => {
+      const t = targets.get(p.id);
+      if (t === undefined) return p;
+      return { ...p, position: { ...p.position, [axis]: t } };
+    });
+    set({
+      performers,
       past: [...state.past.slice(-49), snapshotPositions(state.performers)],
       future: [],
       dirty: true,

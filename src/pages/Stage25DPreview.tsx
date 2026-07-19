@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,10 +10,13 @@ import { extractEditorSnapshot, useStageEditorStore } from "@/stores/stage-edito
 import { Stage25DWorkbench } from "@/features/stage-2.5d/Stage25DWorkbench";
 import { FullPageLoader } from "@/components/FullPageLoader";
 
+const AUTOSAVE_INTERVAL_MS = 20_000;
+
 /**
  * 2.5D 舞台预览与队形编排工作台(路由页)。
  * 数据流:stage_inputs.data → stage-editor-store → Pixi 视口;
- * 保存:序列化快照写回 stage_inputs.data.__stageEditor(+ localStorage 兜底)。
+ * 保存:序列化快照写回 stage_inputs.data.__stageEditor + formation_snapshots 不可变版本
+ * (+ localStorage 兜底);每 20s 对脏数据自动保存一次。
  */
 export default function Stage25DPreview() {
   const { id } = useParams<{ id: string }>();
@@ -26,8 +29,7 @@ export default function Stage25DPreview() {
   const [privacyConfirmed, setPrivacyConfirmed] = useState<boolean | null>(null);
 
   const initFromStageInput = useStageEditorStore((s) => s.initFromStageInput);
-  const serialize = useStageEditorStore((s) => s.serialize);
-  const markSaved = useStageEditorStore((s) => s.markSaved);
+  const savingRef = useRef(false);
 
   useEffect(() => {
     if (!id) return;
@@ -77,37 +79,74 @@ export default function Stage25DPreview() {
     };
   }, [input]);
 
-  const handleSave = async () => {
-    if (!id || !user) {
-      toast({ title: "未登录,无法保存", variant: "destructive" });
-      return;
-    }
-    setSaving(true);
-    const snapshot = serialize();
-    const merged = { ...(input as Record<string, unknown>), __stageEditor: snapshot };
-    const { data: existing } = await supabase.from("stage_inputs").select("id").eq("project_id", id).maybeSingle();
-    const { error } = existing
-      ? await supabase.from("stage_inputs").update({ data: merged, user_id: user.id }).eq("project_id", id)
-      : await supabase.from("stage_inputs").insert({ project_id: id, user_id: user.id, data: merged });
-    if (error) {
-      // 本地兜底:离线/RLS 异常时不丢工作成果
-      try {
-        localStorage.setItem(`stageos.editor.${id}`, JSON.stringify(snapshot));
-        toast({ title: "云端保存失败,已保存到本机", description: error.message, variant: "destructive" });
-      } catch {
-        toast({ title: "保存失败", description: error.message, variant: "destructive" });
+  const handleSave = useCallback(
+    async (auto = false) => {
+      if (!id || !user) {
+        if (!auto) toast({ title: "未登录,无法保存", variant: "destructive" });
+        return;
       }
-    } else {
-      try {
-        localStorage.setItem(`stageos.editor.${id}`, JSON.stringify(snapshot));
-      } catch {
-        /* 忽略本地缓存失败 */
+      if (savingRef.current) return;
+      savingRef.current = true;
+      if (!auto) setSaving(true);
+
+      const st = useStageEditorStore.getState();
+      const snapshot = st.serialize();
+      const merged = { ...(input as Record<string, unknown>), __stageEditor: snapshot };
+      const { data: existing } = await supabase.from("stage_inputs").select("id").eq("project_id", id).maybeSingle();
+      const { error } = existing
+        ? await supabase.from("stage_inputs").update({ data: merged, user_id: user.id }).eq("project_id", id)
+        : await supabase.from("stage_inputs").insert({ project_id: id, user_id: user.id, data: merged });
+
+      if (error) {
+        // 本地兜底:离线/RLS 异常时不丢工作成果
+        try {
+          localStorage.setItem(`stageos.editor.${id}`, JSON.stringify(snapshot));
+          if (!auto) {
+            toast({ title: "云端保存失败,已保存到本机", description: error.message, variant: "destructive" });
+          }
+        } catch {
+          if (!auto) toast({ title: "保存失败", description: error.message, variant: "destructive" });
+        }
+      } else {
+        try {
+          localStorage.setItem(`stageos.editor.${id}`, JSON.stringify(snapshot));
+        } catch {
+          /* 忽略本地缓存失败 */
+        }
+        // 写入不可变队形版本快照(失败不阻断主保存流程)
+        try {
+          const stamp = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+          await supabase.from("formation_snapshots").insert({
+            project_id: id,
+            user_id: user.id,
+            name: `${auto ? "自动保存" : "手动保存"} ${stamp}`,
+            keyframe_id: st.activeKeyframeId,
+            formation: snapshot,
+            schema_version: snapshot.schemaVersion,
+          } as any);
+        } catch {
+          /* 版本快照失败仅记录,不打断 */
+        }
+        st.markSaved();
+        if (!auto) toast({ title: "已保存当前队形与设置" });
       }
-      markSaved();
-      toast({ title: "已保存当前队形与设置" });
-    }
-    setSaving(false);
-  };
+      savingRef.current = false;
+      if (!auto) setSaving(false);
+    },
+    [id, user, input],
+  );
+
+  const saveRef = useRef(handleSave);
+  saveRef.current = handleSave;
+
+  // 自动保存:每 20s 检查一次,仅在脏数据且空闲时触发
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const st = useStageEditorStore.getState();
+      if (st.dirty && !savingRef.current) void saveRef.current(true);
+    }, AUTOSAVE_INTERVAL_MS);
+    return () => window.clearInterval(timer);
+  }, []);
 
   if (loading) return <FullPageLoader label="正在加载 2.5D 舞台预览…" />;
 
@@ -124,7 +163,7 @@ export default function Stage25DPreview() {
         projectTitle={projectTitle}
         inputSummary={inputSummary}
         provenanceBadge={provenanceBadge}
-        onSave={handleSave}
+        onSave={() => handleSave(false)}
         saving={saving}
       />
     </div>
