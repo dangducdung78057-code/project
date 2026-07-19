@@ -12,7 +12,8 @@ import {
   SCHOOL_STAGES, PROGRAM_TYPES, REHEARSAL_FREQUENCIES,
   validateStageInput, type StageInputData,
 } from "@/lib/stageos";
-import { generateMockPlan } from "@/lib/mockPlan";
+import { generateStagePlan } from "@/features/plan-engine/generate-plan";
+import { toPlanSnapshotInsert } from "@/features/plan-engine/persist-snapshot";
 import { retrieveStageKnowledge, resolveColorHex } from "@/lib/stageKnowledge";
 import { PresetPaletteSuggestions } from "@/components/PresetPaletteSuggestions";
 import { toast } from "sonner";
@@ -72,7 +73,7 @@ const STEPS: StepDef[] = [
   { key: "counts",  title: "人数与预算",   hint: "总人数 / 男女构成 / 人均预算" },
   { key: "visual",  title: "视觉与期待",   hint: "主题色、灯光风格与特殊期待" },
   { key: "roster",  title: "学生名录",     hint: "匿名 studentId,不采集真实姓名(可选)" },
-  { key: "review",  title: "校验与生成",   hint: "确认信息 → 保存并生成 mock 计划" },
+  { key: "review",  title: "校验与生成",   hint: "确认信息 → 保存并生成方案(本地规则)" },
 ];
 
 export default function ProjectWizard() {
@@ -370,18 +371,18 @@ export default function ProjectWizard() {
       });
       await supabase.from("stage_inputs").upsert({ project_id: projectId, user_id: uid, data: persistedData as any } as any);
 
-      // Generate mock plan snapshot immediately
-      const plan = generateMockPlan(data);
-      await supabase.from("plan_snapshots").insert({
-        project_id: projectId,
-        user_id: uid,
-        version: 1,
-        mode: "mock",
-        costume_plan: plan.costumePlan as any,
-        risks: plan.risks as any,
-        reverse_schedule: plan.reverseSchedule as any,
-        platform_search: plan.platformSearch as any,
-      } as any);
+      // 通过统一方案引擎生成 v1 快照(本地确定性规则引擎,离线可用、无需 Token)
+      let planResult;
+      try {
+        planResult = generateStagePlan(data);
+      } catch (planErr: any) {
+        toast.error("方案生成失败:" + (planErr?.message ?? "未知错误"));
+        setSubmitting(false);
+        return;
+      }
+      await supabase.from("plan_snapshots").insert(
+        toPlanSnapshotInsert({ projectId, userId: uid, version: 1, result: planResult }) as any,
+      );
       await supabase.from("confirmation_records").insert({
         project_id: projectId,
         user_id: uid,
@@ -397,7 +398,7 @@ export default function ProjectWizard() {
       }
       localStorage.removeItem(LEGACY_KEY);
 
-      toast.success("项目已创建,mock 计划已生成");
+      toast.success("项目已创建,方案已生成(本地规则)");
       navigate(`/projects/${projectId}`);
     } catch (e: any) {
       toast.error("提交失败:" + e.message);
@@ -1063,12 +1064,12 @@ export default function ProjectWizard() {
                 <div className="panel border-success/40 bg-success/5">
                   <div className="panel-body flex items-center gap-2 text-sm text-success">
                     <Check className="h-4 w-4" />
-                    所有关键字段一致,可以保存并生成 mock 服装总表。
+                    所有关键字段一致,可以保存并生成服装总表(本地规则引擎)。
                   </div>
                 </div>
               )}
               <div className="text-xs text-muted-foreground">
-                下一步:保存项目 → 写入 stage_inputs → 生成 v1 plan_snapshot(mock)→ 初始化 confirmation_record(draft)。
+                下一步:保存项目 → 写入 stage_inputs → 生成 v1 plan_snapshot(本地规则,带 provenance)→ 初始化 confirmation_record(draft)。
               </div>
             </div>
           )}
@@ -1092,7 +1093,7 @@ export default function ProjectWizard() {
         ) : (
           <Button size="sm" onClick={submit} disabled={submitting}>
             <Wand2 className="h-4 w-4 mr-1" />
-            {submitting ? "生成中…" : "保存并生成 mock 计划"}
+            {submitting ? "生成中…" : "保存并生成方案 · 本地规则"}
           </Button>
         )}
       </div>
@@ -1175,7 +1176,7 @@ function CountsHint({ data }: { data: StageInputData }) {
   return (
     <div className={`text-xs ${ok ? "text-success" : "text-warning"} flex items-center gap-1`}>
       {ok ? <Check className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}
-      男({maleCount}) + 女({femaleCount}) = {sum} {ok ? "= " : "≠ "} 总人��({performerCount})
+      男({maleCount}) + 女({femaleCount}) = {sum} {ok ? "= " : "≠ "} 总人数({performerCount})
     </div>
   );
 }
@@ -1216,4 +1217,3 @@ function Field({ label, required, htmlFor, children }: { label: string; required
     </div>
   );
 }
-
