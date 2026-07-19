@@ -341,7 +341,7 @@ export default function ProjectDetail() {
         console.info("[StageOS Markdown Debug] snapshot.project.title", payload.snapshot.project.title ?? payload.project.title);
         console.info("[StageOS Markdown Debug] renderMarkdown.firstLine", markdown.split(/\r?\n/, 1)[0]?.replace(/^#\s*/, ""));
       }
-      const body = isJson ? JSON.stringify(payload, null, 2) : (markdown.startsWith("\uFEFF") ? markdown : "\uFEFF" + markdown);
+      const body = isJson ? JSON.stringify(payload, null, 2) : (markdown.startsWith("﻿") ? markdown : "﻿" + markdown);
       const blob = new Blob([body], { type: mime });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -381,15 +381,17 @@ export default function ProjectDetail() {
         </div>
         <div className="flex flex-col gap-2 w-full md:flex-row md:w-auto md:items-center md:shrink-0">
           <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center"><Link to={`/projects/${id}/edit`}>编辑输入</Link></Button>
-          <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center"><Link to={`/projects/${id}/preview-25d`}>2.5D 预览</Link></Button>
+          <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center" title="按本项目人数与建议配色/队形打开 3D 编辑器">
+            <Link to={`/formation-3d?project=${id}`}>3D 队形预览</Link>
+          </Button>
           <Button
             size="sm"
             onClick={handleGenerate}
             disabled={busy}
-            title={hasPrivacyConfirmation ? (aiOn ? "生成方案 · AI 增强(失败自动回退本地规则)" : "生成方案 · 本地规则引擎(离线可用)") : "请先完成用户/隐私确认"}
+            title={hasPrivacyConfirmation ? (aiOn ? "生成 AI 排产（失败回退 mock）" : "生成 Mock 排产") : "请先完成用户/隐私确认"}
             className="w-full md:w-auto justify-center"
           >
-            <Sparkles className="h-4 w-4 mr-1" />{aiOn ? "生成方案 · AI 增强" : "生成方案 · 本地规则"}
+            <Sparkles className="h-4 w-4 mr-1" />{aiOn ? "生成 AI 排产" : "生成 Mock 排产"}
             {aiOn && <span className="ml-2 kbd-route whitespace-nowrap">AI</span>}
             {!hasPrivacyConfirmation && <span className="ml-2 kbd-route whitespace-nowrap">需确认</span>}
           </Button>
