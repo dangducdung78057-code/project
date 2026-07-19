@@ -172,6 +172,9 @@ export function StudentGlbModel({
     const scale = size.y > 0.001 ? heightM / size.y : 1;
     cloned.scale.multiplyScalar(scale);
     cloned.position.y = -box.min.y * scale;
+    // 记录人物水平占地宽度(米),供服装叠穿层做宽度匹配
+    // (Q 版娃娃体型宽,真实比例服装需按此加宽才能穿得上)
+    cloned.userData.bodyWidthM = Math.max(size.x, size.z) * scale;
     // 水平居中(扫描模型原点常偏离脚底中心)
     const center = new THREE.Vector3();
     box.getCenter(center);
@@ -193,6 +196,10 @@ export function StudentGlbModel({
         map: src.map ?? null,
         gradientMap,
       });
+      // 关闭色调映射:R3F 默认的 ACESFilmic 会把输出颜色整体压灰压暗,
+      // 注入的 HEX 色号在亮部无法 100% 还原(正是"渲染偏深"的系统性来源)。
+      // 关闭后所选色号线性直出,配合 sRGB 输出色彩空间精确显示。
+      mat.toneMapped = false;
       mat.name = src.name;
       // 单材质白衣模型(如 Tripo AI 生成件)的像素级换色 + 款式分区:
       // 1. 贴图中"高亮度 + ��饱和"的纯白布料染色,皮肤/头发自动豁免;
@@ -241,10 +248,11 @@ uniform vec3 uColorPart3;`,
   float mask1 = idMap.r;
   float mask2 = idMap.g;
   float mask3 = idMap.b;
-  float baseMask = max(0.0, 1.0 - (mask1 + mask2 + mask3));
-  // 正片叠底:染色乘在底图上,保留光影褶皱;无通道覆盖区域(皮肤/头发)保持原色
-  vec3 zoneTint = mask1 * uColorPart1 + mask2 * uColorPart2 + mask3 * uColorPart3 + baseMask * vec3(1.0);
-  diffuseColor.rgb *= zoneTint;
+  float coverage = clamp(mask1 + mask2 + mask3, 0.0, 1.0);
+  // 精确色号替换:服装区域直接输出所选色号(不与底图相乘,不偏色);
+  // 无通道覆盖区域(皮肤/头发)保持原色
+  vec3 zoneColor = mask1 * uColorPart1 + mask2 * uColorPart2 + mask3 * uColorPart3;
+  diffuseColor.rgb = mix(diffuseColor.rgb, zoneColor, coverage);
 }`,
             );
         };
@@ -297,13 +305,18 @@ uniform float uCollarFrom;`,
 {
   float lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
   float sat = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b)) - min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));
-  float whiteMask = smoothstep(0.60, 0.78, lum) * (1.0 - smoothstep(0.06, 0.16, sat));
+  // 布料判定:仅按"低饱和"识别布料(白/浅灰/深灰布料一律覆盖)。
+  // 男生模型的衣服贴图偏灰(亮度低),旧的亮度下限会把大面积灰布判为非布料,
+  // 导致只有肩部亮区染对、其余偏深;改为亮度只用于豁免极暗处(轮廓线/深发色)。
+  float clothMask = smoothstep(0.06, 0.14, lum) * (1.0 - smoothstep(0.12, 0.26, sat));
   // 高度分区选色:默认上装色 -> 分界线以下换下装色 -> 腰带条/领口条换点缀色
   vec3 zone = uTopTint;
   if (vBodyH < uSplit) zone = uBottomTint;
   if (uBeltW > 0.0 && abs(vBodyH - uSplit) < uBeltW) zone = uAccentTint;
   if (vBodyH > uCollarFrom && vBodyH < uCollarFrom + 0.05) zone = uAccentTint;
-  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * zone, whiteMask);
+  // 精确色号均匀输出:布料区域直接给色号本色,明暗交给卡通光照生成,
+  // 不再叠加基于贴图亮度的压暗系数(那会把灰布贴图的暗部二次加深)
+  diffuseColor.rgb = mix(diffuseColor.rgb, zone, clothMask);
 }`,
             );
         };
@@ -352,138 +365,12 @@ uniform float uCollarFrom;`,
 
   // 朝向校正放在外层(绕父级 Y 轴),不与实例内部的 Z-up 校正(rotation.x)相互干扰;
   // 实例已水平居中,绕原点旋转不影响站位与脚底对齐。
-  // 款式按性别解析:男生遇裙装自动换穿替代礼服款(女裙男装)
-  const style = resolveCostumeStyle(styleId, gender);
+  // 服装叠穿功能已停用:���按推荐色号精确染色人物模型自带衣物
   return (
     <group rotation={[0, FACING_FIX_Y, 0]}>
       <primitive object={instance} />
-      {style.modelUrl && style.fit ? (
-        <GarmentOverlay
-          url={style.modelUrl}
-          fit={style.fit}
-          heightM={heightM}
-          colors={colors}
-          onePiece={style.onePiece}
-          split={style.split}
-        />
-      ) : null}
     </group>
   );
 }
 
-/**
- * 服装叠穿覆盖层:把款式服装模型(白衣)按穿着比例套在人物身上。
- * - 服装缩放到 heightM x fit.height,上沿对齐 heightM x fit.top(肩线)
- * - 白色布料按上/下装分区染色(与人物染色同一套色系)
- * - 人物模型完整保留,头手腿正常可见
- */
-function GarmentOverlay({
-  url,
-  fit,
-  heightM,
-  colors,
-  onePiece,
-  split,
-}: {
-  url: string;
-  fit: { height: number; top: number };
-  heightM: number;
-  colors: CostumeColors;
-  onePiece: boolean;
-  split: number;
-}) {
-  const { scene } = useGLTF(url);
 
-  const garment = useMemo(() => {
-    const cloned = scene.clone(true);
-
-    // 姿态归一化(与人物同款逻辑):Z-up 模型立起来
-    const rawBox = new THREE.Box3().setFromObject(cloned);
-    const rawSize = new THREE.Vector3();
-    rawBox.getSize(rawSize);
-    if (rawSize.z > rawSize.y * 1.5) {
-      cloned.rotation.x = Math.PI / 2;
-      cloned.updateMatrixWorld(true);
-    }
-
-    // 穿着定位:缩放到 身高 x fit.height,上沿对齐 身高 x fit.top
-    const box = new THREE.Box3().setFromObject(cloned);
-    const size = new THREE.Vector3();
-    box.getSize(size);
-    const targetH = heightM * fit.height;
-    const scale = size.y > 0.001 ? targetH / size.y : 1;
-    cloned.scale.multiplyScalar(scale);
-    const center = new THREE.Vector3();
-    box.getCenter(center);
-    cloned.position.x = -center.x * scale;
-    cloned.position.z = -center.z * scale;
-    cloned.position.y = heightM * fit.top - box.max.y * scale;
-
-    // 白衣染色:连体款整身上装色;两截款按服装自身高度分上/下装色
-    const gMinY = box.min.y;
-    const gMaxY = box.max.y;
-    const topTint = new THREE.Color(colors.top);
-    const bottomTint = onePiece ? new THREE.Color(colors.top) : new THREE.Color(colors.bottom);
-    const gradientMap = getToonGradientMap();
-    cloned.traverse((obj) => {
-      if (!(obj as THREE.Mesh).isMesh) return;
-      const mesh = obj as THREE.Mesh;
-      mesh.castShadow = true;
-      const convert = (m: THREE.Material): THREE.MeshToonMaterial => {
-        const src = m as THREE.MeshStandardMaterial;
-        const mat = new THREE.MeshToonMaterial({
-          color: src.color?.clone() ?? new THREE.Color("#ffffff"),
-          map: src.map ?? null,
-          gradientMap,
-        });
-        mat.onBeforeCompile = (shader) => {
-          shader.uniforms.uTop = { value: topTint };
-          shader.uniforms.uBottom = { value: bottomTint };
-          shader.uniforms.uSplit = { value: onePiece ? 0 : split };
-          shader.uniforms.uMinY = { value: gMinY };
-          shader.uniforms.uMaxY = { value: gMaxY };
-          shader.vertexShader = shader.vertexShader
-            .replace(
-              "#include <common>",
-              `#include <common>
-varying float vGH;
-uniform float uMinY;
-uniform float uMaxY;`,
-            )
-            .replace(
-              "#include <begin_vertex>",
-              `#include <begin_vertex>
-vGH = clamp((position.y - uMinY) / max(uMaxY - uMinY, 0.001), 0.0, 1.0);`,
-            );
-          shader.fragmentShader = shader.fragmentShader
-            .replace(
-              "#include <common>",
-              `#include <common>
-varying float vGH;
-uniform vec3 uTop;
-uniform vec3 uBottom;
-uniform float uSplit;`,
-            )
-            .replace(
-              "#include <map_fragment>",
-              `#include <map_fragment>
-{
-  float lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
-  float sat = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b)) - min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));
-  float whiteMask = smoothstep(0.55, 0.75, lum) * (1.0 - smoothstep(0.08, 0.2, sat));
-  vec3 zone = vGH < uSplit ? uBottom : uTop;
-  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * zone, whiteMask);
-}`,
-            );
-        };
-        mat.customProgramCacheKey = () =>
-          `garment-${topTint.getHexString()}-${bottomTint.getHexString()}-${onePiece ? 0 : split}`;
-        return mat;
-      };
-      mesh.material = Array.isArray(mesh.material) ? mesh.material.map(convert) : convert(mesh.material);
-    });
-    return cloned;
-  }, [scene, heightM, fit.height, fit.top, colors.top, colors.bottom, onePiece, split]);
-
-  return <primitive object={garment} />;
-}

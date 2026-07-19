@@ -5,6 +5,7 @@
 import { Suspense, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { RotateCcw, Play, Pause } from "lucide-react";
 import { StudentGlbModel, type StageGroup } from "@/components/StudentGlbModel";
@@ -76,7 +77,12 @@ export function ModelPreviewPanel({
         </div>
       </div>
       <div className="h-48 overflow-hidden rounded-xl border border-[#2b303b] bg-[#14161b]">
-        <Canvas camera={{ position: DEFAULT_CAM, fov: 40 }} dpr={[1, 1.5]}>
+        <Canvas
+          camera={{ position: DEFAULT_CAM, fov: 40 }}
+          dpr={[1, 1.5]}
+          // 与主场景一致:强制 sRGB 输出,预览色与主舞台色完全一致
+          gl={{ outputColorSpace: THREE.SRGBColorSpace, antialias: true }}
+        >
           {/* 与主场景一致的本地灯光(无外部 HDR 依赖) */}
           <ambientLight intensity={0.7} />
           <directionalLight position={[3, 5, 4]} intensity={1.4} />
