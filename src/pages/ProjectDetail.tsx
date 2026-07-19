@@ -384,14 +384,17 @@ export default function ProjectDetail() {
           <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center" title="按本项目人数与建议配色/队形打开 3D 编辑器">
             <Link to={`/formation-3d?project=${id}`}>3D 队形预览</Link>
           </Button>
+          <Button asChild variant="outline" size="sm" className="w-full md:w-auto justify-center" title="打开 2.5D 舞台预览与队形编排工作台">
+            <Link to={`/projects/${id}/preview-25d`}>2.5D 预览</Link>
+          </Button>
           <Button
             size="sm"
             onClick={handleGenerate}
             disabled={busy}
-            title={hasPrivacyConfirmation ? (aiOn ? "生成 AI 排产（失败回退 mock）" : "生成 Mock 排产") : "请先完成用户/隐私确认"}
+            title={hasPrivacyConfirmation ? (aiOn ? "生成方案 · AI 增强(失败自动回退本地规则)" : "生成方案 · 本地规则引擎(离线可用)") : "请先完成用户/隐私确认"}
             className="w-full md:w-auto justify-center"
           >
-            <Sparkles className="h-4 w-4 mr-1" />{aiOn ? "生成 AI 排产" : "生成 Mock 排产"}
+            <Sparkles className="h-4 w-4 mr-1" />{aiOn ? "生成方案 · AI 增强" : "生成方案 · 本地规则"}
             {aiOn && <span className="ml-2 kbd-route whitespace-nowrap">AI</span>}
             {!hasPrivacyConfirmation && <span className="ml-2 kbd-route whitespace-nowrap">需确认</span>}
           </Button>
