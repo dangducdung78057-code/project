@@ -132,18 +132,19 @@ export function getPerformerTexture(
 
   // ── 头发(前层) ───────────────────────────────────────
   if (gender === "male") {
-    g.circle(cx, 6.5, 8.6).fill(hair);
+    // 发冠收紧上移:下缘保持在眼睛(y=12.5)上方,避免五官画在头发上
+    g.circle(cx, 3.8, 8.4).fill(hair);
     g.roundRect(cx - 9, 7, 2.2, 7, 1.1).fill(hair);
     g.roundRect(cx + 6.8, 7, 2.2, 7, 1.1).fill(hair);
     // 发际碎发
-    g.circle(cx - 4.5, 10.5, 2.6).fill(hair);
-    g.circle(cx + 2.5, 10.8, 2.8).fill(hair);
+    g.circle(cx - 4.5, 8.6, 2.4).fill(hair);
+    g.circle(cx + 2.5, 8.8, 2.5).fill(hair);
   } else {
-    g.circle(cx, 6, 8.8).fill(hair);
-    // 齐刘海下缘
-    g.circle(cx - 5.5, 9.5, 2.4).fill(hair);
-    g.circle(cx, 10.2, 2.6).fill(hair);
-    g.circle(cx + 5.5, 9.5, 2.4).fill(hair);
+    g.circle(cx, 3.5, 8.4).fill(hair);
+    // 齐刘海下缘(不越过眼睛)
+    g.circle(cx - 5.5, 8.2, 2.2).fill(hair);
+    g.circle(cx, 8.8, 2.4).fill(hair);
+    g.circle(cx + 5.5, 8.2, 2.2).fill(hair);
     if (v === 2) {
       // 发圈(上衣色点缀)
       g.circle(cx - 10.5, 12.5, 1.5).fill(colors.top);
