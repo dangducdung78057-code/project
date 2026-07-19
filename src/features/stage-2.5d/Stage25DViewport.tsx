@@ -6,7 +6,7 @@ import { useStageEditorStore } from "@/stores/stage-editor-store";
 import { createPixiApp, type PixiAppHandle } from "./pixi-app";
 import { buildStageBackground } from "./layers/stage-background";
 import { buildRisers } from "./layers/risers";
-import { createPerformerNode, defaultColorsFor, getPerformerTexture, syncPerformerNode, type PerformerNode } from "./sprites/performer-sprite";
+import { createPerformerNode, defaultColorsFor, getPerformerTexture, hairVariantFor, syncPerformerNode, type PerformerNode } from "./sprites/performer-sprite";
 import { projectPosition } from "./projection/front-perspective";
 import { attachPerformerDrag, enableStagePointerSurface } from "./interaction/drag-select";
 import { attachMarqueeSelect, consumeMarqueeGuard } from "./interaction/marquee-select";
@@ -103,7 +103,7 @@ export function Stage25DViewport({ onReady, onWebGLFallback }: Props) {
           alive.add(p.id);
           let node = nodesRef.current.get(p.id);
           if (!node) {
-            node = createPerformerNode(p, getPerformerTexture(app.renderer, p.gender, defaultColorsFor(p.gender)));
+            node = createPerformerNode(p, getPerformerTexture(app.renderer, p.gender, defaultColorsFor(p.gender), hairVariantFor(p.anonId, p.gender)));
             nodesRef.current.set(p.id, node);
             const detach = attachPerformerDrag({
               app,
