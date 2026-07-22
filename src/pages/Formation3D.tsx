@@ -13,6 +13,7 @@ import type { ColorPalette } from "@/lib/stageKnowledge";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { StageInputData } from "@/lib/stageos";
+import { extractSnapshotPositions } from "@/lib/applyEditorSnapshot3d";
 import { FORMATION_COMPUTES, gridPositions, type FormationCompute } from "@/lib/formationLayouts";
 import * as THREE from "three";
 import { create } from "zustand";
@@ -182,10 +183,10 @@ function samplePos(kfs: Keyframe[], id: string, t: number): [number, number] {
 
 /** 虚拟评委/主摄像机:舞台正前方 10m 外、视线高 1.2m(坐姿评委) */
 const JUDGE = { x: 0, y: 1.2, z: STAGE_D / 2 + 10 };
-/** 每个学生占据半径 0.3 ���的物理判定空间 */
+/** 每个学生占据半径 0.3 米的物理判定空间 */
 const BODY_RADIUS = 0.3;
 
-/** 演员实际身高(米):heightCm 按 150cm �����映射到舞台比例 */
+/** 演员实际身高(米):heightCm 按 150cm 为基准映射到舞台比例 */
 function performerHeightM(p: Performer): number {
   return (p.heightCm / 150) * 1.7;
 }
@@ -197,9 +198,9 @@ const _faceVector = new THREE.Vector3();
 const _direction = new THREE.Vector3();
 
 /**
- * 实时视线遮挡推演:在内存中���速构建"虚拟判定��柱体"(极低开销,不走 GPU 渲染),
- * 从评委视点向每个学生的脸部(身高 90% 处,��睛/脸部而非头顶)发射射线;
- * 若射线击中������一个人不是目标本身,且在目标之前(0.1m 容差防圆柱半径自身误判),判定被遮挡。
+ * 实时视线遮挡推演:在内存中快速构建"虚拟判定圆柱体"(极低开销,不走 GPU 渲染),
+ * 从评委视点向每个学生的脸部(身高 90% 处,眼睛/脸部而非头顶)发射射线;
+ * 若射线击中的第一个人不是目标本身,且在目标之前(0.1m 容差防圆柱半径自身误判),判定被遮挡。
  */
 function computeOcclusions(perfs: Performer[]): Map<string, string> {
   const res = new Map<string, string>();
@@ -696,7 +697,7 @@ function StageScene() {
 
   return (
     <>
-      {/* ���外模式由 Sky 天空穹顶接管背景,不设纯色背景与雾 */}
+      {/* 室外模式由 Sky 天空穹顶接管背景,不设纯色背景与雾 */}
       {!isOutdoor ? (
         <>
           <color attach="background" args={[bg]} />
@@ -993,51 +994,6 @@ function SmartRecommendButton() {
   );
 }
 
-/** 服装款式选择:着色器高度分区染色,同一模型套用不同款式轮廓 */
-function CostumeStyleSection() {
-  const styleId = useEditorStore((s) => s.costumeStyleId);
-  const setStyleId = useEditorStore((s) => s.setCostumeStyleId);
-
-  return (
-    <div className="mt-4 border-t border-[#2b303b] pt-3">
-      <span className="mb-2 flex items-center gap-2 text-xs font-medium text-[#9fb3c8]">
-        <Shirt size={14} />
-        服装款式
-        <span className="ml-auto font-mono text-[10px] text-[#7fd4cb]">{getCostumeStyle(styleId).name}</span>
-      </span>
-      <div className="grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="服装款式">
-        {COSTUME_STYLES.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            role="radio"
-            aria-checked={styleId === s.id}
-            onClick={() => setStyleId(s.id)}
-            title={s.summary}
-            className={cn(
-              "rounded-lg border px-1.5 py-2 text-center text-[11px] leading-tight font-medium transition-colors",
-              styleId === s.id
-                ? "border-[#3aa89e]/50 bg-[#3aa89e]/15 text-[#7fd4cb]"
-                : "border-[#2b303b] text-[#c7d2de] hover:bg-[#262b34]",
-            )}
-          >
-            {s.name}
-          </button>
-        ))}
-      </div>
-      {getCostumeStyle(styleId).maleVariant ? (
-        <p className="mt-1.5 text-[10px] leading-snug text-[#9fb3c8]">
-          {`女裙男装:女生穿「${getCostumeStyle(styleId).name}」,男生自动着「${getCostumeStyle(getCostumeStyle(styleId).maleVariant!).name}」`}
-        </p>
-      ) : getCostumeStyle(styleId).femaleVariant ? (
-        <p className="mt-1.5 text-[10px] leading-snug text-[#9fb3c8]">
-          {`女裙男装:男生穿「${getCostumeStyle(styleId).name}」,���生自动着「${getCostumeStyle(getCostumeStyle(styleId).femaleVariant!).name}」`}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
 /** 服装色系选择:女生着主色、男生着辅色、裙摆点缀色 */
 function CostumeSection() {
   const costume = useEditorStore((s) => s.costume);
@@ -1231,7 +1187,7 @@ function PropertiesPanel() {
   const previewStyleId = useEditorStore((s) => s.costumeStyleId);
   const selected = performers.find((p) => p.id === selectedId);
 
-  // 预览对象:选中谁看谁,未选中���默认展示男生模特
+  // 预览对象:选中谁看谁,未选中时默认展示男生模特
   const previewGender = selected?.gender ?? "male";
   const previewHeightM = ((selected?.heightCm ?? 150) / 150) * 1.7;
   const previewTop = costume
@@ -1321,7 +1277,7 @@ function PropertiesPanel() {
           )}
         >
           <Magnet size={16} />
-          网格���附 {snap ? "开" : "关"}
+          网格吸附 {snap ? "开" : "关"}
         </button>
         <button
           type="button"
@@ -1336,7 +1292,7 @@ function PropertiesPanel() {
   );
 }
 
-/** ���间轴面板:播放/暂停、进度条、关键帧管理 */
+/** 时间轴面板:播放/暂停、进度条、关键帧管理 */
 function TimelinePanel() {
   const currentTime = useEditorStore((s) => s.currentTime);
   const playing = useEditorStore((s) => s.playing);
@@ -1438,7 +1394,7 @@ function TimelinePanel() {
 /** Occlusion Status 终端面板:实时输出遮挡警告 */
 function OcclusionPanel() {
   const performers = useEditorStore((s) => s.performers);
-  // 直接订阅 store 中的报警列��(站位一变即已同步重算,无需组件内再计算)
+  // 直接订阅 store 中的报警列表(站位一变即已同步重算,无需组件内再计算)
   const occlusions = useEditorStore((s) => s.occlusions);
   const warnings = useMemo(() => {
     const byId = new Map(performers.map((p) => [p.id, p]));
@@ -1632,7 +1588,7 @@ function TrialLockGate({
   // 手机端:锁定由 MobileViewerBar 提示,不再叠加横幅与倒计时角标
   if (hideBanner) return null;
 
-  // 试用期���:只显示轻量倒计时角标
+  // 试用期内:只显示轻量倒计时角标
   if (!locked) {
     if (!status.expiresAt || status.adminUnlocked) return null;
     return (
@@ -1695,7 +1651,7 @@ function TrialLockGate({
 /**
  * 项目方案同步:带 ?project=<id> 进入时,从 Supabase 读取该项目的表单输入,
  * 把向导生成方案时使用的同一套知识库建议(配色 / 队形 / 款式)与真实人数
- * 应用到 3D 编辑器,保证「表单建议的东西 = 3D ��渲染的东西」。
+ * 应用到 3D 编辑器,保证「表单建议的东西 = 3D 端渲染的东西」。
  */
 /** 把项目表单输入应用到 3D 编辑器 store(人数 / 学段模特 / 建议配色 / 建议队形 / 建议款式) */
 export function applyStageInputToEditor(input: StageInputData) {
@@ -1740,6 +1696,17 @@ function useProjectPlanSync() {
         .maybeSingle();
       if (cancelled || !row?.data) return;
       applyStageInputToEditor(row.data as StageInputData);
+      // B1:若该项目存在 2.5D 工作台保存的共享快照(__stageEditor),
+      // 用快照站位覆盖 3D 站位——2.5D 端拖动的结果,3D 端能读到(双端互读)。
+      const saved = extractSnapshotPositions(row.data);
+      if (!cancelled && saved) {
+        const st = useEditorStore.getState();
+        const moved = st.performers.map((p) => {
+          const pos = saved.get(p.id);
+          return pos ? { ...p, x: clampSnap(pos.x, BOUND_X, true), z: clampSnap(pos.z, BOUND_Z, true) } : p;
+        });
+        useEditorStore.setState(withOcclusions(moved));
+      }
     })();
     return () => {
       cancelled = true;
