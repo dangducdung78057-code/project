@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import { ShieldAlert } from "lucide-react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { FolderOpen, ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
@@ -17,9 +17,12 @@ const AUTOSAVE_INTERVAL_MS = 20_000;
  * 数据流:stage_inputs.data → stage-editor-store → Pixi 视口;
  * 保存:序列化快照写回 stage_inputs.data.__stageEditor + formation_snapshots 不可变版本
  * (+ localStorage 兜底);每 20s 对脏数据自动保存一次。
+ * 项目 id 支持两种入口:/projects/:id/preview-25d 与 /workbench/preview?project=<id>。
  */
 export default function Stage25DPreview() {
-  const { id } = useParams<{ id: string }>();
+  const { id: routeId } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const id = routeId ?? searchParams.get("project") ?? undefined;
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -148,6 +151,24 @@ export default function Stage25DPreview() {
     return () => window.clearInterval(timer);
   }, []);
 
+  // 空状态:未绑定项目时显式提示并给出返回入口(文档 B1 §1)
+  if (!id) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center gap-4 text-center">
+        <FolderOpen className="h-10 w-10 text-muted-foreground/50" />
+        <p className="text-sm text-muted-foreground">
+          尚未选择项目。请先进入一个项目，再打开 2.5D 预览工作台。
+        </p>
+        <Link
+          to="/projects"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          返回项目列表
+        </Link>
+      </div>
+    );
+  }
+
   if (loading) return <FullPageLoader label="正在加载 2.5D 舞台预览…" />;
 
   return (
@@ -159,7 +180,7 @@ export default function Stage25DPreview() {
         </div>
       )}
       <Stage25DWorkbench
-        projectId={id ?? ""}
+        projectId={id}
         projectTitle={projectTitle}
         inputSummary={inputSummary}
         provenanceBadge={provenanceBadge}

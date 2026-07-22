@@ -29,6 +29,12 @@ const Stage25DPreview = lazy(() => import("./pages/Stage25DPreview"));
 
 const queryClient = new QueryClient();
 
+const previewFallback = (
+  <div className="flex h-96 items-center justify-center text-sm text-muted-foreground">
+    正在加载 2.5D 舞台预览…
+  </div>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
@@ -60,13 +66,16 @@ const App = () => (
                           <Route
                             path="/projects/:id/preview-25d"
                             element={
-                              <Suspense
-                                fallback={
-                                  <div className="flex h-96 items-center justify-center text-sm text-muted-foreground">
-                                    正在加载 2.5D 舞台预览…
-                                  </div>
-                                }
-                              >
+                              <Suspense fallback={previewFallback}>
+                                <Stage25DPreview />
+                              </Suspense>
+                            }
+                          />
+                          {/* B1:文档约定的固定入口,项目 id 走 ?project=<id> 查询参数 */}
+                          <Route
+                            path="/workbench/preview"
+                            element={
+                              <Suspense fallback={previewFallback}>
                                 <Stage25DPreview />
                               </Suspense>
                             }
