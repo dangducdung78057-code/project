@@ -26,12 +26,20 @@ import ScrollToTop from "./components/ScrollToTop";
 
 // 2.5D 舞台预览工作台（含 pixi.js，体积较大）按路由懒加载，避免拖慢首屏
 const Stage25DPreview = lazy(() => import("./pages/Stage25DPreview"));
+// 低模联调试点页（含 three.js）懒加载
+const LowpolyPilot = lazy(() => import("./pages/LowpolyPilot"));
 
 const queryClient = new QueryClient();
 
 const previewFallback = (
   <div className="flex h-96 items-center justify-center text-sm text-muted-foreground">
     正在加载 2.5D 舞台预览…
+  </div>
+);
+
+const pilotFallback = (
+  <div className="flex h-screen items-center justify-center bg-slate-900 text-sm text-slate-300">
+    正在加载低模联调试点…
   </div>
 );
 
@@ -50,6 +58,14 @@ const App = () => (
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/formation-3d" element={<Formation3D />} />
                 <Route path="/stage-2d" element={<Stage2DPro />} />
+                <Route
+                  path="/anim-pilot"
+                  element={
+                    <Suspense fallback={pilotFallback}>
+                      <LowpolyPilot />
+                    </Suspense>
+                  }
+                />
                 <Route path="/index" element={<Navigate to="/" replace />} />
                 <Route
                   path="/*"
