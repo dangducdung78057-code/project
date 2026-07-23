@@ -3,15 +3,15 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
 
-// 联调对象：girl-10y 低模（stageos-unified 任务3分支，公开仓库 raw 直读）
+// 联调对象：girl-10y 低模 walk v2（IK 接触相返工版，stageos-unified 任务3分支 raw 直读）
 const GLB_URL =
   "https://raw.githubusercontent.com/dangducdung78057-code/stageos-unified/refs/heads/assets/v2-task3-girl10y-lowpoly/assets/sprites/girl-10y-school/lowpoly/girl-10y-school.glb";
 
-// 防滑步地速：GLB walk 剪辑实测（前向运动学解算脚骨轨迹，贴地相脚速中位数）
-// 左脚 1.884 / 右脚 1.871 m/s，步幅×步频交叉验证 1.76 m/s → 取 1.85 m/s 为基准
-// （美术官理论值 1.25 系摆角公式纸面估算，与实测偏差 50%，以实测为准）
+// 防滑步地速：walk v2 GLB 脚骨 FK 轨迹实测（趾骨匀速后退段）
+// 左脚 0.599 / 右脚 0.597 m/s，CV 10.8–11.3%，贴地相 60% → 取 0.60 m/s 为基准
+// （v1 因无贴地相全程滑步打回；v2 复测达标。理论公式估算不可信，一律以实测为准）
 const DESIGN_HEIGHT_M = 1.3;
-const DEFAULT_SPEED = 1.85;
+const DEFAULT_SPEED = 0.6;
 const PATH_LEFT = -3;
 const PATH_RIGHT = 3;
 
@@ -124,7 +124,7 @@ export default function LowpolyPilot() {
       </GlbErrorBoundary>
 
       <div className="absolute left-4 top-4 w-72 space-y-3 rounded-lg bg-black/60 p-4 text-xs text-slate-100">
-        <h1 className="text-sm font-semibold">低模联调试点 · girl-10y</h1>
+        <h1 className="text-sm font-semibold">低模联调试点 · girl-10y（walk v2）</h1>
         <div>
           <p className="text-slate-400">剪辑（浏览器实读）</p>
           {meta ? meta.clips.map((c) => <p key={c}>· {c}</p>) : <p>模型加载中…</p>}
@@ -135,12 +135,12 @@ export default function LowpolyPilot() {
           </p>
         )}
         <label className="block">
-          地速 {speed.toFixed(2)} m/s（GLB 实测基准 1.85，微调用）
+          地速 {speed.toFixed(2)} m/s（v2 实测基准 0.60，微调用）
           <input
             type="range"
-            min={1.2}
-            max={2.2}
-            step={0.05}
+            min={0.3}
+            max={1.2}
+            step={0.02}
             value={speed}
             onChange={(e) => setSpeed(Number(e.target.value))}
             className="w-full"
